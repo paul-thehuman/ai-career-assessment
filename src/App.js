@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } => 'react';
 
 // Define the color palette outside the component for global access
 const colors = {
@@ -253,11 +253,11 @@ const generateHtmlReport = (reportData, userProfile, colors) => {
             margin: 0 auto;
             padding: 20px;
             line-height: 1.6;
-            color: ${colors.deepBlack};
-            background-color: ${colors.lightGrey};
+            color: #101216; /* Deep Black */
+            background-color: #eaeaea; /* Light Grey */
         }
         .header {
-            background: linear-gradient(135deg, ${colors.primaryPink} 0%, ${colors.accentPink} 100%);
+            background: linear-gradient(135deg, #ff2e63 0%, #ff6189 100%); /* Primary Pink to Accent Pink */
             color: white;
             padding: 30px;
             border-radius: 10px;
@@ -267,35 +267,35 @@ const generateHtmlReport = (reportData, userProfile, colors) => {
         .section {
             margin-bottom: 40px;
             padding: 20px;
-            border: 1px solid ${colors.lightGrey};
+            border: 1px solid #eaeaea; /* Light Grey */
             border-radius: 8px;
             background: #ffffff;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
         .prose h1, .prose h2, .prose h3 {
-            color: ${colors.slateBlue};
+            color: #3a4252; /* Slate Blue */
         }
         .list-disc, .list-decimal {
             margin-left: 1.5rem;
         }
         .list-disc li, .list-decimal li {
             margin-bottom: 0.5rem;
-            color: ${colors.deepBlack};
+            color: #101216; /* Deep Black */
         }
         a {
-            color: ${colors.accentPink};
+            color: #ff6189; /* Accent Pink */
         }
         strong {
-            color: ${colors.slateBlue};
+            color: #3a4252; /* Slate Blue */
             font-weight: 600;
         }
         .callout-box {
             margin-top: 20px;
             padding: 15px;
-            background: ${colors.lightGrey};
-            border-left: 4px solid ${colors.primaryPink};
+            background: #eaeaea; /* Light Grey */
+            border-left: 4px solid #ff2e63; /* Primary Pink */
             border-radius: 4px;
-            color: ${colors.deepBlack};
+            color: #101216; /* Deep Black */
         }
         .callout-box p {
             margin-bottom: 5px;
@@ -303,32 +303,32 @@ const generateHtmlReport = (reportData, userProfile, colors) => {
         .horizontal-rule {
             border: 0;
             height: 1px;
-            background-color: ${colors.lightGrey};
+            background-color: #eaeaea; /* Light Grey */
             margin: 20px 0;
         }
         .toc-link {
             display: block;
             padding: 8px 12px;
             margin-bottom: 5px;
-            background-color: ${colors.lightGrey};
+            background-color: #eaeaea; /* Light Grey */
             border-radius: 5px;
-            color: ${colors.slateBlue};
+            color: #3a4252; /* Slate Blue */
             text-decoration: none;
             transition: background-color 0.2s ease-in-out;
         }
         .toc-link:hover {
-            background-color: ${colors.primaryPink};
+            background-color: #ff2e63; /* Primary Pink */
             color: white;
         }
         .action-plan-column {
-            background-color: ${colors.lightGrey};
+            background-color: #eaeaea; /* Light Grey */
             padding: 15px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             height: 100%; /* Ensure columns are same height */
         }
         .action-plan-column h3 {
-            color: ${colors.primaryPink};
+            color: #ff2e63; /* Primary Pink */
             margin-top: 0;
             margin-bottom: 10px;
             display: flex;
@@ -382,15 +382,15 @@ const generateHtmlReport = (reportData, userProfile, colors) => {
             <li>Reflecting on career scenarios as opportunities arise</li>
             <li>Retaking this assessment quarterly to track growth</li>
         </ul>
-        <p class="callout-box" style="background: ${colors.lightGrey}; border-left: 4px solid ${colors.primaryPink}; color: ${colors.deepBlack};">
+        <p class="callout-box" style="background: #eaeaea; border-left: 4px solid #ff2e63; color: #101216;">
             <strong>Remember:</strong> Your career isn't a straight line—and neither is the future. The goal isn't to predict the future perfectly, but to build the adaptability and curiosity to thrive in whatever comes next.
         </p>
     </div>
 
-    <div style="text-align: center; margin-top: 40px; padding: 20px; background: ${colors.lightGrey}; border-radius: 8px;">
-        <p style="margin: 0; color: ${colors.slateBlue}; font-size: 0.9rem;">
+    <div style="text-align: center; margin-top: 40px; padding: 20px; background: #eaeaea; border-radius: 8px;">
+        <p style="margin: 0; color: #3a4252; font-size: 0.9rem;">
             Learn more about future-ready career strategies at
-            <a href="https://thehumanco.co" style="color: ${colors.accentPink};">thehumanco.co</a>
+            <a href="https://thehumanco.co" style="color: #ff6189;">thehumanco.co</a>
         </p>
     </div>
 </body>
@@ -687,24 +687,24 @@ const App = () => {
     setIsLoading(true);
     setCurrentPage('results');
 
-    let = `Generate a comprehensive career readiness report for a user with the following profile:\n`;
-    += `Role: ${userProfile.role}\nIndustry: ${userProfile.industry}\n\n`;
-    += `Based on their answers to the following questions:\n\n`;
+    let fullPrompt = `Generate a comprehensive career readiness report for a user with the following profile:\n`;
+    fullPrompt += `Role: ${userProfile.role}\nIndustry: ${userProfile.industry}\n\n`;
+    fullPrompt += `Based on their answers to the following questions:\n\n`;
 
     allAnswers.forEach((item, index) => {
-    += `Question ${index + 1}: ${item.question}\n`;
-    += `Answer ${index + 1}: ${item.answer}\n\n`;
+      fullPrompt += `Question ${index + 1}: ${item.question}\n`;
+      fullPrompt += `Answer ${index + 1}: ${item.answer}\n\n`;
     });
 
-    += `The report should be a JSON object with three keys: "aiImpactAnalysis", "futureScenarios", and "actionPlan". Each value should be Markdown text for that section.\n`;
-    += `For "aiImpactAnalysis", keep paragraphs concise (max 3-4 lines). Use bullet points for key insights. At the end, include a "Key Takeaway" summary box, formatted as a Markdown blockquote (> Key Takeaway: Your summary here.).\n`;
-    += `For "futureScenarios", generate three distinct future scenarios relevant to their career path, considering industry trends. Each scenario should start with '### Scenario X: [Scenario Title]' and include concise paragraphs and bullet points. For each scenario, describe not just the potential success, but also **what stands in the way right now**, using conditional "this future happens if..." phrasing to drive action. Introduce **operational debt, personal blind spots, or growth risks** that need solving. At the end of this section, include a "What to do next" summary box, formatted as a Markdown blockquote (> What to do next: Your summary here.).\n`;
-    += `For "actionPlan", provide a 30/60/90-day roadmap. This should be a JSON object with keys "day30", "day60", "day90", and "summary". Each of "day30", "day60", "day90" should contain Markdown text with concrete, actionable steps tailored to their specific answers, role, and industry. **It is absolutely critical that all three day plans (30, 60, 90) are fully populated with content. If unique ideas are limited, provide general but relevant actions for that timeframe to ensure no section is left blank.** Remove checklist-style phrasing. Make each item a **challenge with a clear call to courage or decisive movement**. Use **active voice** (e.g., "Ship something before it's perfect.", "Get uncomfortable in public."). Use numbered lists for steps. Use bolding for key terms within list items (e.g., **Toolkit MVP**). The "summary" key should contain Markdown text for a "Key Action" summary box, formatted as a Markdown blockquote (> Key Action: Your summary here.).\n`;
-    += `Optionally, somewhere in the report (e.g., within AI Impact Analysis or Action Plan), include 1-2 punchy, emotionally intelligent lines as a "Truth You Might Be Avoiding" sidebar, formatted as a Markdown blockquote (> Truth You Might Be Avoiding: Your uncomfortable truth here.).\n`;
-    += `Maintain a confident, future-focused, human-first, strategic, and jargon-free tone, reflecting 'The Human Co.' ethos of being rebellious but practical. Prioritise clarity, movement and momentum. The tone should feel like a trusted advisor who knows the game and won’t let you coast.`;
+    fullPrompt += `The report should be a JSON object with three keys: "aiImpactAnalysis", "futureScenarios", and "actionPlan". Each value should be Markdown text for that section.\n`;
+    fullPrompt += `For "aiImpactAnalysis", keep paragraphs concise (max 3-4 lines). Use bullet points for key insights. At the end, include a "Key Takeaway" summary box, formatted as a Markdown blockquote (> Key Takeaway: Your summary here.).\n`;
+    fullPrompt += `For "futureScenarios", generate three distinct future scenarios relevant to their career path, considering industry trends. Each scenario should start with '### Scenario X: [Scenario Title]' and include concise paragraphs and bullet points. For each scenario, describe not just the potential success, but also **what stands in the way right now**, using conditional "this future happens if..." phrasing to drive action. Introduce **operational debt, personal blind spots, or growth risks** that need solving. At the end of this section, include a "What to do next" summary box, formatted as a Markdown blockquote (> What to do next: Your summary here.).\n`;
+    fullPrompt += `For "actionPlan", provide a 30/60/90-day roadmap. This should be a JSON object with keys "day30", "day60", "day90", and "summary". Each of "day30", "day60", "day90" should contain Markdown text with concrete, actionable steps tailored to their specific answers, role, and industry. **It is absolutely critical that all three day plans (30, 60, 90) are fully populated with content. If unique ideas are limited, provide general but relevant actions for that timeframe to ensure no section is left blank.** Remove checklist-style phrasing. Make each item a **challenge with a clear call to courage or decisive movement**. Use **active voice** (e.g., "Ship something before it's perfect.", "Get uncomfortable in public."). Use numbered lists for steps. Use bolding for key terms within list items (e.g., **Toolkit MVP**). The "summary" key should contain Markdown text for a "Key Action" summary box, formatted as a Markdown blockquote (> Key Action: Your summary here.).\n`;
+    fullPrompt += `Optionally, somewhere in the report (e.g., within AI Impact Analysis or Action Plan), include 1-2 punchy, emotionally intelligent lines as a "Truth You Might Be Avoiding" sidebar, formatted as a Markdown blockquote (> Truth You Might Be Avoiding: Your uncomfortable truth here.).\n`;
+    fullPrompt += `Maintain a confident, future-focused, human-first, strategic, and jargon-free tone, reflecting 'The Human Co.' ethos of being rebellious but practical. Prioritise clarity, movement and momentum. The tone should feel like a trusted advisor who knows the game and won’t let you coast.`;
 
 
-    const reportContent = await callGeminiAPI(true, reportSchema, setIsLoading);
+    const reportContent = await callGeminiAPI(fullPrompt, true, reportSchema, setIsLoading);
     setAiReport(reportContent);
   };
 
@@ -722,7 +722,7 @@ const App = () => {
     prompt += `**Order the skills from most critical to least critical**, where criticality is determined by a high importance rating and a low current capability rating (i.e., the biggest gaps first). For each skill, also indicate its priority: "Immediate Focus" (big gap, high importance), "Emerging Priority" (moderate gap/importance), or "Low Priority" (small gap/low importance).\n`;
     prompt += `**Sharpen the language:** Avoid vague or polite language. Make the **cost of not closing the gap explicit**. Where relevant, **contrast ambition with infrastructure** (e.g., "Your ideas scale fast. Your systems don’t."). Keep paragraphs concise (max 3-4 lines). Use bolding for key terms.\n`;
     prompt += `The "summary" key should contain Markdown text for a "Skill Focus" summary box, formatted as a Markdown blockquote (> Skill Focus: Your summary here.).\n`;
-    prompt += `Maintain a confident, future-focused, human-first, strategic, and jargon-free tone, reflecting 'The Human Co.' ethos of being rebellious but practical. Prioritise clarity, movement and momentum. The tone should feel like a trusted advisor who knows the game and won’t let you coast.`;
+    prompt += `Maintain a confident, future-focused, human-first, strategic, and jargon-free tone, reflecting 'The Human Co.' ethos of being rebellious but practical. Prioritise clarity, movement and momentum. The tone should feel like a trusted advisor who knows the game and won’t let you coast.`; // FIX: Moved this line from outside the prompt to inside.
 
     const analysis = await callGeminiAPI(prompt, true, skillGapSchema, setIsGeneratingSkillGap);
     setSkillGapAnalysis(analysis);
