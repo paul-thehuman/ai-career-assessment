@@ -1,4 +1,4 @@
-import React, { useState, useEffect } => 'react';
+import React, { useState, useEffect } from 'react';
 
 // Define the color palette outside the component for global access
 const colors = {
