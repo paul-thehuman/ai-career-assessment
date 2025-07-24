@@ -461,7 +461,7 @@ const MarkdownRenderer = ({ reportData }) => {
   const renderActionPlan = () => {
     if (!reportData.aiReport?.actionPlan) return null;
 
-    const actionPlan = reportData.aiReport.actionPlan;
+    const actionPlan = reportData.aiReport.action;
     return (
       <>
         <h2 className="text-2xl font-semibold mt-6 mb-3" style={{ color: colors.slateBlue }}>Personalized Action Plan</h2>
@@ -605,8 +605,7 @@ const App = () => {
       };
     }
 
-    // IMPORTANT: Replace "YOUR_GEMINI_API_KEY_HERE" with your actual Gemini API Key
-    const apiKey = "AIzaSyD5yDQt8mhJackSMBxEMo9fp9x393Cze40"; // <--- INSERT YOUR API KEY HERE
+    const apiKey = "AIzaSyBekYG65Fp6bV72nDNYSWHu033BC52P8mM";
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
     try {
@@ -891,4 +890,27 @@ const App = () => {
                 type="text"
                 id="industry"
                 value={userProfile.industry}
-                onChange={(e) => setUserProfile({ ...userProfile, industry: e.target.value 
+                onChange={(e) => setUserProfile({ ...userProfile, industry: e.target.value })}
+                className="w-full p-2 border rounded-md focus:ring-accent-pink focus:border-border-accent-pink"
+                style={{ borderColor: colors.slateBlue, color: colors.deepBlack, backgroundColor: 'white' }}
+                placeholder="e.g., Tech, Healthcare, Finance"
+              />
+            </div>
+            <button
+              onClick={handleSaveProfile}
+              className="font-bold py-2 px-4 rounded-full shadow-md transition duration-300 ease-in-out"
+              style={{ backgroundColor: colors.primaryPink, color: 'white' }}
+            >
+              Continue
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Removed Download Report Confirmation Modal */}
+      {/* {showReportModal && ( ... )} */}
+    </div>
+  );
+};
+
+export default App;
