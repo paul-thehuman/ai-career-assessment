@@ -20,26 +20,22 @@ const initialCoreQuestions = [
 
 // Helper function to generate visual capability bar
 const generateCapabilityBar = (rating) => {
-  const filled = '▓'; // Full block
-  const empty = '░'; // Empty block
+  const filled = '▓';
+  const empty = '░';
   const totalBlocks = 5;
-  const filledBlocks = Math.round(rating); // Round to nearest whole number for blocks
+  const filledBlocks = Math.round(rating);
   const emptyBlocks = totalBlocks - filledBlocks;
   return filled.repeat(filledBlocks) + empty.repeat(emptyBlocks);
 };
 
 // Helper function to escape problematic characters for HTML embedding
-// This is crucial for content *within* HTML elements and for preventing template literal breaks
 const escapeHtmlString = (str) => {
-  if (typeof str !== 'string') return str; // Ensure it's a string before processing
-  // Replace backticks with a unique placeholder that won't break template literals
-  // This placeholder will be reverted back to backticks in generateHtmlReport
+  if (typeof str !== 'string') return str;
   return str
-    .replace(/`/g, '&#96;') // HTML entity for backtick
-    .replace(/'/g, '&#39;') // HTML entity for single quote
-    .replace(/"/g, '&quot;'); // HTML entity for double quote
+    .replace(/`/g, '&#96;')
+    .replace(/'/g, '&#39;')
+    .replace(/"/g, '&quot;');
 };
-
 
 // Helper function to render Markdown to HTML
 const markdownToHtml = (markdown, colors) => {
@@ -51,7 +47,6 @@ const markdownToHtml = (markdown, colors) => {
   let inBlockquote = false;
 
   lines.forEach(line => {
-    // Handle Blockquotes (Callout Boxes)
     if (line.startsWith('> ')) {
       if (!inBlockquote) {
         if (inList) { html += '</ul>'; inList = false; }
@@ -60,52 +55,47 @@ const markdownToHtml = (markdown, colors) => {
         inBlockquote = true;
       }
       let content = line.substring(2).trim();
-      content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Bold text
-      html += `<p style="margin-bottom: 5px;">${escapeHtmlString(content)}</p>`; // Escape content
+      content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      html += `<p style="margin-bottom: 5px;">${escapeHtmlString(content)}</p>`;
     } else {
       if (inBlockquote) { html += '</div>'; inBlockquote = false; }
 
-      // Handle Headings (only H3 and H2 expected within sections from AI)
       if (line.startsWith('### ')) {
         if (inList) { html += '</ul>'; inList = false; }
         if (inNumberedList) { html += '</ol>'; inNumberedList = false; }
-        html += `<h3 class="text-xl font-semibold mt-5 mb-2" style="color: ${colors.slateBlue};">${escapeHtmlString(line.substring(4))}</h3>`; // Escape content
+        html += `<h3 class="text-xl font-semibold mt-5 mb-2" style="color: ${colors.slateBlue};">${escapeHtmlString(line.substring(4))}</h3>`;
       } else if (line.startsWith('## ')) {
         if (inList) { html += '</ul>'; inList = false; }
         if (inNumberedList) { html += '</ol>'; inNumberedList = false; }
-        html += `<h2 class="text-2xl font-semibold mt-6 mb-3" style="color: ${colors.slateBlue};">${escapeHtmlString(line.substring(3))}</h2>`; // Escape content
+        html += `<h2 class="text-2xl font-semibold mt-6 mb-3" style="color: ${colors.slateBlue};">${escapeHtmlString(line.substring(3))}</h2>`;
       }
-      // Handle Lists
       else if (line.startsWith('* ') || line.startsWith('- ')) {
         if (!inList) { html += '<ul class="list-disc pl-6 mb-4 space-y-1">'; inList = true; }
         if (inNumberedList) { html += '</ol>'; inNumberedList = false; }
         let content = line.substring(2).trim();
-        content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Bold text within list items
-        html += `<li class="mb-2" style="color: ${colors.deepBlack};">${escapeHtmlString(content)}</li>`; // Escape content
+        content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        html += `<li class="mb-2" style="color: ${colors.deepBlack};">${escapeHtmlString(content)}</li>`;
       } else if (line.match(/^\d+\.\s/)) {
         if (!inNumberedList) { html += '<ol class="list-decimal pl-6 mb-4 space-y-1">'; inNumberedList = true; }
         if (inList) { html += '</ul>'; inList = false; }
         let content = line.split('. ')[1].trim();
-        content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Bold text within list items
-        html += `<li class="mb-2" style="color: ${colors.deepBlack};">${escapeHtmlString(content)}</li>`; // Escape content
+        content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        html += `<li class="mb-2" style="color: ${colors.deepBlack};">${escapeHtmlString(content)}</li>`;
       }
-      // Handle Empty Lines (for spacing)
       else if (line.trim() === '') {
         if (inList) { html += '</ul>'; inList = false; }
         if (inNumberedList) { html += '</ol>'; inNumberedList = false; }
         html += '<br />';
       }
-      // Handle Paragraphs
       else {
         if (inList) { html += '</ul>'; inList = false; }
         if (inNumberedList) { html += '</ol>'; inNumberedList = false; }
         let content = line.trim();
-        content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Bold text within paragraphs
-        html += `<p class="mb-2" style="color: ${colors.deepBlack};">${escapeHtmlString(content)}</p>`; // Escape content
+        content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        html += `<p class="mb-2" style="color: ${colors.deepBlack};">${escapeHtmlString(content)}</p>`;
       }
     }
   });
-  // Close any open lists or blockquotes at the end of the content
   if (inList) { html += '</ul>'; }
   if (inNumberedList) { html += '</ol>'; }
   if (inBlockquote) { html += '</div>'; }
@@ -116,11 +106,9 @@ const markdownToHtml = (markdown, colors) => {
 const generateHtmlReport = (reportData, userProfile, colors) => {
   const date = new Date().toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' });
 
-  // Generate HTML for each section from structured data
   const aiImpactHtml = reportData.aiReport?.aiImpactAnalysis ? markdownToHtml(reportData.aiReport.aiImpactAnalysis, colors) : '';
   const futureScenariosHtml = reportData.aiReport?.futureScenarios ? markdownToHtml(reportData.aiReport.futureScenarios, colors) : '';
 
-  // Fallback for action plan content if AI doesn't populate
   const actionPlanHtml30 = reportData.aiReport?.actionPlan?.day30 ? markdownToHtml(reportData.aiReport.actionPlan.day30, colors) : markdownToHtml(`
     1. **Ship the MVP:** Launch a minimal viable product for your core offering. Get it out there.
     2. **Gather Raw Feedback:** Engage directly with early users. Listen for friction, not just praise.
@@ -143,12 +131,11 @@ const generateHtmlReport = (reportData, userProfile, colors) => {
   if (reportData.skillGapAnalysis?.skills) {
     skillGapContentHtml += `<h3 class="text-xl font-semibold mt-5 mb-2" style="color: ${colors.slateBlue};">Identified Skill Gaps & Priorities</h3>`;
 
-    // Sort skills by criticality (importance - capability, descending)
     const sortedSkills = [...reportData.skillGapAnalysis.skills].sort((a, b) => {
       const gapA = a.importanceRating - a.currentCapabilityRating;
       const gapB = b.importanceRating - b.currentCapabilityRating;
-      if (gapA !== gapB) return gapB - gapA; // Sort by gap first
-      return b.importanceRating - a.importanceRating; // Then by importance
+      if (gapA !== gapB) return gapB - gapA;
+      return b.importanceRating - a.importanceRating;
     });
 
     sortedSkills.forEach(skill => {
@@ -178,11 +165,10 @@ const generateHtmlReport = (reportData, userProfile, colors) => {
     });
     if (reportData.skillGapAnalysis.summary) {
       skillGapContentHtml += `<h3 class="text-xl font-semibold mt-5 mb-2" style="color: ${colors.slateBlue};">Skill Focus</h3>`;
-      skillGapContentHtml += markdownToHtml(reportData.skillGapAnalysis.summary, colors); // No need to escape again here, markdownToHtml already does it internally
+      skillGapContentHtml += markdownToHtml(reportData.skillGapAnalysis.summary, colors);
     }
   }
 
-  // Construct the HTML string using concatenation
   let htmlContentSections = '';
   if (reportData.aiReport) {
     htmlContentSections += `
@@ -204,25 +190,19 @@ const generateHtmlReport = (reportData, userProfile, colors) => {
         <h2 class="text-xl font-semibold mb-4 text-slate-blue">Personalized Action Plan</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 action-plan-grid">
             <div class="action-plan-column">
-                <h3>
-                    📅 30-Day Plan
-                </h3>
+                <h3>📅 30-Day Plan</h3>
                 <div class="prose">
                     ${actionPlanHtml30}
                 </div>
             </div>
             <div class="action-plan-column">
-                <h3>
-                    📅 60-Day Plan
-                </h3>
+                <h3>📅 60-Day Plan</h3>
                 <div class="prose">
                     ${actionPlanHtml60}
                 </div>
             </div>
             <div class="action-plan-column">
-                <h3>
-                    📅 90-Day Plan
-                </h3>
+                <h3>📅 90-Day Plan</h3>
                 <div class="prose">
                     ${actionPlanHtml90}
                 </div>
@@ -259,11 +239,11 @@ const generateHtmlReport = (reportData, userProfile, colors) => {
             margin: 0 auto;
             padding: 20px;
             line-height: 1.6;
-            color: #101216; /* Deep Black */
-            background-color: #eaeaea; /* Light Grey */
+            color: #101216;
+            background-color: #eaeaea;
         }
         .header {
-            background: linear-gradient(135deg, #ff2e63 0%, #ff6189 100%); /* Primary Pink to Accent Pink */
+            background: linear-gradient(135deg, #ff2e63 0%, #ff6189 100%);
             color: white;
             padding: 30px;
             border-radius: 10px;
@@ -273,85 +253,68 @@ const generateHtmlReport = (reportData, userProfile, colors) => {
         .section {
             margin-bottom: 40px;
             padding: 20px;
-            border: 1px solid #eaeaea; /* Light Grey */
+            border: 1px solid #eaeaea;
             border-radius: 8px;
             background: #ffffff;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
         .prose h1, .prose h2, .prose h3 {
-            color: #3a4252; /* Slate Blue */
+            color: #3a4252;
         }
         .list-disc, .list-decimal {
             margin-left: 1.5rem;
         }
         .list-disc li, .list-decimal li {
             margin-bottom: 0.5rem;
-            color: #101216; /* Deep Black */
+            color: #101216;
         }
         a {
-            color: #ff6189; /* Accent Pink */
+            color: #ff6189;
         }
         strong {
-            color: #3a4252; /* Slate Blue */
+            color: #3a4252;
             font-weight: 600;
         }
         .callout-box {
             margin-top: 20px;
             padding: 15px;
-            background: #eaeaea; /* Light Grey */
-            border-left: 4px solid #ff2e63; /* Primary Pink */
+            background: #eaeaea;
+            border-left: 4px solid #ff2e63;
             border-radius: 4px;
-            color: #101216; /* Deep Black */
+            color: #101216;
         }
         .callout-box p {
             margin-bottom: 5px;
-        }
-        .horizontal-rule {
-            border: 0;
-            height: 1px;
-            background-color: #eaeaea; /* Light Grey */
-            margin: 20px 0;
         }
         .toc-link {
             display: block;
             padding: 8px 12px;
             margin-bottom: 5px;
-            background-color: #eaeaea; /* Light Grey */
+            background-color: #eaeaea;
             border-radius: 5px;
-            color: #3a4252; /* Slate Blue */
+            color: #3a4252;
             text-decoration: none;
             transition: background-color 0.2s ease-in-out;
         }
         .toc-link:hover {
-            background-color: #ff2e63; /* Primary Pink */
+            background-color: #ff2e63;
             color: white;
         }
         .action-plan-column {
-            background-color: #eaeaea; /* Light Grey */
+            background-color: #eaeaea;
             padding: 15px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            height: 100%; /* Ensure columns are same height */
+            height: 100%;
         }
         .action-plan-column h3 {
-            color: #ff2e63; /* Primary Pink */
+            color: #ff2e63;
             margin-top: 0;
             margin-bottom: 10px;
-            display: flex;
-            align-items: center;
         }
-        .action-plan-column h3 svg {
-            margin-right: 8px;
-        }
-
         @media print {
             .section {
                 break-inside: avoid;
-            }
-        }
-        @media (max-width: 768px) {
-            .action-plan-grid {
-                grid-template-columns: 1fr; /* Stack columns on mobile */
             }
         }
     </style>
@@ -402,7 +365,6 @@ const generateHtmlReport = (reportData, userProfile, colors) => {
 </body>
 </html>`;
 
-  // Restore backticks after the entire HTML string is constructed
   return finalHtml.replace(/&#96;/g, '`');
 };
 
@@ -412,22 +374,20 @@ const MarkdownRenderer = ({ reportData }) => {
     return null;
   }
 
-  // Render Skill Gap Analysis visually in-app
   const renderSkillGapAnalysis = () => {
     if (!reportData.skillGapAnalysis?.skills) return null;
 
-    // Sort skills by criticality (importance - capability, descending)
     const sortedSkills = [...reportData.skillGapAnalysis.skills].sort((a, b) => {
       const gapA = a.importanceRating - a.currentCapabilityRating;
       const gapB = b.importanceRating - b.currentCapabilityRating;
-      if (gapA !== gapB) return gapB - gapA; // Sort by gap first
-      return b.importanceRating - a.importanceRating; // Then by importance
+      if (gapA !== gapB) return gapB - gapA;
+      return b.importanceRating - a.importanceRating;
     });
 
     return (
       <>
         <h2 className="text-2xl font-semibold mt-6 mb-3" style={{ color: colors.slateBlue }}>Skill Gap Analysis</h2>
-        <h3 class="text-xl font-semibold mt-5 mb-2" style={{ color: colors.slateBlue }}>Identified Skill Gaps & Priorities</h3>
+        <h3 className="text-xl font-semibold mt-5 mb-2" style={{ color: colors.slateBlue }}>Identified Skill Gaps & Priorities</h3>
         {sortedSkills.map((skill, index) => {
           const capabilityBar = generateCapabilityBar(skill.currentCapabilityRating);
           let priorityTag = 'Low Priority';
@@ -463,7 +423,6 @@ const MarkdownRenderer = ({ reportData }) => {
     );
   };
 
-  // Render Action Plan visually in-app
   const renderActionPlan = () => {
     if (!reportData.aiReport?.actionPlan) return null;
 
@@ -473,12 +432,165 @@ const MarkdownRenderer = ({ reportData }) => {
         <h2 className="text-2xl font-semibold mt-6 mb-3" style={{ color: colors.slateBlue }}>Personalized Action Plan</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="action-plan-column" style={{ backgroundColor: colors.lightGrey }}>
-            <h3>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={colors.primaryPink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-calendar-check"><path d="M8 2v4"/><path d="M16 2v4"/><path d="M21 13V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8"/><path d="M21 13a5 5 0 1 1-5 5h5v-5Z"/><path d="M16 18h2l4 4"/></svg>
-              30-Day Plan
-            </h3>
+            <h3>📅 30-Day Plan</h3>
             <div dangerouslySetInnerHTML={{ __html: markdownToHtml(actionPlan.day30, colors) }} />
           </div>
           <div className="action-plan-column" style={{ backgroundColor: colors.lightGrey }}>
-            <h3>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={colors.primaryPink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-calendar-plus"><path d="M21 12V6a2 2
+            <h3>📅 60-Day Plan</h3>
+            <div dangerouslySetInnerHTML={{ __html: markdownToHtml(actionPlan.day60, colors) }} />
+          </div>
+          <div className="action-plan-column" style={{ backgroundColor: colors.lightGrey }}>
+            <h3>📅 90-Day Plan</h3>
+            <div dangerouslySetInnerHTML={{ __html: markdownToHtml(actionPlan.day90, colors) }} />
+          </div>
+        </div>
+        {actionPlan.summary && (
+          <div dangerouslySetInnerHTML={{ __html: markdownToHtml(actionPlan.summary, colors) }} />
+        )}
+      </>
+    );
+  };
+
+  return (
+    <div className="markdown-body">
+      {reportData.aiReport && (
+        <>
+          <h2 className="text-2xl font-semibold mt-6 mb-3" style={{ color: colors.slateBlue }}>AI Impact Analysis</h2>
+          <div dangerouslySetInnerHTML={{ __html: markdownToHtml(reportData.aiReport.aiImpactAnalysis, colors) }} />
+
+          <h2 className="text-2xl font-semibold mt-6 mb-3" style={{ color: colors.slateBlue }}>Future Scenarios</h2>
+          <div dangerouslySetInnerHTML={{ __html: markdownToHtml(reportData.aiReport.futureScenarios, colors) }} />
+
+          {renderActionPlan()}
+        </>
+      )}
+
+      {renderSkillGapAnalysis()}
+    </div>
+  );
+};
+
+// Main App Component
+const App = () => {
+  const [currentPage, setCurrentPage] = useState('intro');
+  const [userProfile, setUserProfile] = useState({ role: '', industry: '' });
+  const [answers, setAnswers] = useState([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [questions, setQuestions] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [aiReport, setAiReport] = useState(null);
+  const [skillGapAnalysis, setSkillGapAnalysis] = useState(null);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportDownloadContent, setReportDownloadContent] = useState('');
+  const [currentInput, setCurrentInput] = useState('');
+  const [isGeneratingSkillGap, setIsGeneratingSkillGap] = useState(false);
+
+  const reportSchema = {
+    type: "OBJECT",
+    properties: {
+      aiImpactAnalysis: { "type": "STRING" },
+      futureScenarios: { "type": "STRING" },
+      actionPlan: {
+        type: "OBJECT",
+        properties: {
+          day30: { "type": "STRING" },
+          day60: { "type": "STRING" },
+          day90: { "type": "STRING" },
+          summary: { "type": "STRING" }
+        },
+        propertyOrdering: ["day30", "day60", "day90", "summary"]
+      }
+    },
+    propertyOrdering: ["aiImpactAnalysis", "futureScenarios", "actionPlan"]
+  };
+
+  const skillGapSchema = {
+    type: "OBJECT",
+    properties: {
+      skills: {
+        type: "ARRAY",
+        items: {
+          type: "OBJECT",
+          properties: {
+            skillName: { "type": "STRING" },
+            importanceRating: { "type": "NUMBER" },
+            currentCapabilityRating: { "type": "NUMBER" },
+            description: { "type": "STRING" }
+          },
+          propertyOrdering: ["skillName", "importanceRating", "currentCapabilityRating", "description"]
+        }
+      },
+      summary: { "type": "STRING" }
+    },
+    propertyOrdering: ["skills", "summary"]
+  };
+
+  useEffect(() => {
+    setQuestions(initialCoreQuestions);
+  }, []);
+
+  const callGeminiAPI = async (prompt, isStructured = false, schema = null, setLoadingState = null) => {
+    if (setLoadingState) setLoadingState(true);
+    let chatHistory = [];
+    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+
+    const payload = { contents: chatHistory };
+    if (isStructured && schema) {
+      payload.generationConfig = {
+        responseMimeType: "application/json",
+        responseSchema: schema
+      };
+    }
+
+    const apiKey = "";
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const result = await response.json();
+
+      if (result.candidates && result.candidates.length > 0 &&
+          result.candidates[0].content && result.candidates[0].content.parts &&
+          result.candidates[0].content.parts.length > 0) {
+        let text = result.candidates[0].content.parts[0].text;
+        if (isStructured) {
+          try {
+            return JSON.parse(text);
+          } catch (e) {
+            console.error("Failed to parse JSON response:", e, text);
+            return null;
+          }
+        }
+        return text;
+      } else {
+        console.error("Unexpected API response structure:", result);
+        return "Error: Could not generate content. Please try again.";
+      }
+    } catch (error) {
+      console.error("Error calling Gemini API:", error);
+      return "Error: Failed to connect to AI. Please check your network.";
+    } finally {
+      if (setLoadingState) setLoadingState(false);
+    }
+  };
+
+  const handleStartAssessment = () => {
+    setShowProfileModal(true);
+  };
+
+  const handleSaveProfile = () => {
+    if (userProfile.role && userProfile.industry) {
+      setShowProfileModal(false);
+      setCurrentPage('assessment');
+    } else {
+      console.log("Please enter your role and industry to start the assessment.");
+    }
+  };
+
+  const handleSubmitAnswer = async (question, answer) => {
+    if (!answer.trim
