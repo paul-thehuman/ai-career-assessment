@@ -2,14 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
       content="AI-Powered Career Readiness Assessment"
     />
     <title>Career Readiness Assessment</title>
-    <!-- Tailwind CSS CDN -->
+    <!-- Tailwind CSS CDN - Keep this for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
       /* Custom Tailwind Configuration for JIT */
@@ -28,15 +28,18 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <!-- React and Babel for in-browser compilation (development only) -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
-    <script type="text/babel" src="./src/App.js"></script>
-    <script type="text/babel">
-      // Mount the React App
-      ReactDOM.createRoot(document.getElementById('root')).render(<App />);
-    </script>
+    <!--
+      IMPORTANT:
+      The React app's compiled JavaScript files are automatically injected here
+      by 'react-scripts build' into the 'build/index.html'.
+      We DO NOT need to manually link App.js or index.js here,
+      nor do we need Babel or React UMD CDNs.
+      The GitHub Actions workflow handles creating the correct index.html
+      in the 'build' folder.
+
+      The original public/index.html is just a template.
+      The actual deployed index.html will be the one generated in 'build/'.
+      So, this file should be minimal.
+    -->
   </body>
 </html>
