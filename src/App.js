@@ -205,8 +205,7 @@ const generateHtmlReport = (reportData, userProfile, colors) => {
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 action-plan-grid">
             <div class="action-plan-column">
                 <h3>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${colors.primaryPink}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-check"><path d="M8 2v4"/><path d="M16 2v4"/><path d="M21 13V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8"/><path d="M21 13a5 5 0 1 1-5 5h5v-5Z"/><path d="M16 18h2l4 4"/></svg>
-                    30-Day Plan
+                    📅 30-Day Plan
                 </h3>
                 <div class="prose">
                     ${actionPlanHtml30}
@@ -214,8 +213,7 @@ const generateHtmlReport = (reportData, userProfile, colors) => {
             </div>
             <div class="action-plan-column">
                 <h3>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${colors.primaryPink}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-plus"><path d="M21 12V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="M18 21v-6"/><path d="M15 18h6"/></svg>
-                    60-Day Plan
+                    📅 60-Day Plan
                 </h3>
                 <div class="prose">
                     ${actionPlanHtml60}
@@ -223,8 +221,7 @@ const generateHtmlReport = (reportData, userProfile, colors) => {
             </div>
             <div class="action-plan-column">
                 <h3>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${colors.primaryPink}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-range"><path d="M21 10H3"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M16 14H8"/></svg>
-                    90-Day Plan
+                    📅 90-Day Plan
                 </h3>
                 <div class="prose">
                     ${actionPlanHtml90}
