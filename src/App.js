@@ -39,6 +39,7 @@ const markdownToHtml = (markdown, colors) => {
   let inBlockquote = false;
 
   lines.forEach(line => {
+    // Handle Blockquotes (Callout Boxes)
     if (line.startsWith('> ')) {
       if (!inBlockquote) {
         if (inList) { html += '</ul>'; inList = false; }
@@ -95,7 +96,7 @@ const markdownToHtml = (markdown, colors) => {
 };
 
 // Function to generate the full HTML report for download (standalone)
-const generateHtmlReport = (reportData, userProfile, colors, logoUrl) => { // Added logoUrl parameter
+const generateHtmlReport = (reportData, userProfile, colors, logoUrl) => {
   const date = new Date().toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' });
 
   const aiImpactHtml = reportData.aiReport?.aiImpactAnalysis ? markdownToHtml(reportData.aiReport.aiImpactAnalysis, colors) : '';
@@ -602,7 +603,7 @@ const App = () => {
     }
 
     // IMPORTANT: Replace "YOUR_GEMINI_API_KEY_HERE" with your actual Gemini API Key
-    const apiKey = "YOUR_GEMINI_API_KEY_HERE"; // <--- INSERT YOUR API KEY HERE
+    const apiKey = "AIzaSyAgDXFjAEbnquSGqExxLr3zu5V2L_YDIFs"; // <--- INSERT YOUR API KEY HERE
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
     try {
@@ -755,7 +756,7 @@ const App = () => {
     const shareText = encodeURIComponent("Check out my personalized Career Readiness Report from The Human Co. - powered by AI! #CareerDevelopment #AI #FutureOfWork");
 
     let shareUrl = "";
-    if (platform === "twitter") {
+    if (platform === "x") { // Changed from twitter to x
       shareUrl = `https://twitter.com/intent/tweet?text=${shareText}&url=${encodeURIComponent(siteUrl)}`;
     } else if (platform === "linkedin") {
       shareUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(siteUrl)}&title=${encodeURIComponent("AI-Powered Career Readiness Assessment")}&summary=${shareText}`;
@@ -880,11 +881,11 @@ const App = () => {
                       {isGeneratingSkillGap ? 'Analyzing Skills...' : 'Generate Skill Gap Analysis ✨'}
                     </button>
                     <button
-                        onClick={() => handleShare('twitter')}
+                        onClick={() => handleShare('x')} // Changed platform to 'x'
                         className="font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
                         style={{ backgroundColor: '#1DA1F2', color: 'white' }} // Twitter blue
                     >
-                        Share on Twitter
+                        Share on X
                     </button>
                     <button
                         onClick={() => handleShare('linkedin')}
