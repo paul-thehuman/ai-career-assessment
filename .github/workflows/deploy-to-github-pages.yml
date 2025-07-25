@@ -26,6 +26,8 @@ jobs:
 
       - name: Build React App 🏗️
         run: npm run build
+        env: # <--- ADD THIS BLOCK
+          REACT_APP_GEMINI_API_KEY: ${{ secrets.REACT_APP_GEMINI_API_KEY }} # <--- THIS INJECTS THE SECRET
 
       - name: Deploy to GitHub Pages 🚀
         uses: peaceiris/actions-gh-pages@v3
