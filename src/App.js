@@ -603,7 +603,7 @@ const App = () => {
     }
 
     // IMPORTANT: Replace "YOUR_GEMINI_API_KEY_HERE" with your actual Gemini API Key
-    const apiKey = "AIzaSyAgDXFjAEbnquSGqExxLr3zu5V2L_YDIFs"; // <--- INSERT YOUR API KEY HERE
+    const apiKey = process.env.REACT_APP_GEMINI_API_KEY; // Read from environment variable
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
     try {
