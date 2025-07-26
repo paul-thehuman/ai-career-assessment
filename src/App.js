@@ -672,7 +672,6 @@ const App = () => {
     setAnswers(updatedAnswers);
     setCurrentInput(''); // Clear the textarea input
 
-    // Logic for adaptive questions
     if (currentQuestionIndex < initialCoreQuestions.length) { // Condition to correctly handle adaptive questions after all initial core questions are answered
       const prompt = `Given the user's role as "${userProfile.role}" in the "${userProfile.industry}" industry, and their previous answer to the question "${question}" which was "${answer}", generate a single, concise follow-up question to delve deeper into their career readiness or aspirations. The question should be adaptive and relevant to their specific context.`;
       const newQuestion = await callGeminiAPI(prompt, false, null, setIsLoading);
@@ -883,7 +882,7 @@ const App = () => {
                 </div>
               ) : (
                 <>
-                  <div className="prose max-w-none leading-relaxed mb-8 overflow-y-auto max-h-[60vh] p-2 border rounded-lg" style={{ borderColor: colors.slateBlue, color: colors.deepBlack }}>
+                  <div className="prose max-w-none leading-relaxed mb-8 p-2" style={{ borderColor: colors.slateBlue, color: colors.deepBlack }}> {/* Removed overflow-y-auto max-h-[60vh] */}
                     {/* Pass the structured report data to MarkdownRenderer */}
                     <MarkdownRenderer reportData={{ aiReport, skillGapAnalysis }} />
                   </div>
