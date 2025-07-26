@@ -475,7 +475,7 @@ const MarkdownRenderer = ({ reportData }) => {
           </div>
           <div className="action-plan-column" style={{ backgroundColor: colors.lightGrey }}>
             <h3>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={colors.primaryPink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-calendar-range"><path d="M21 10H3"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M16 14H8"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={colors.primaryPink} strokeWidth="2" strokeLinecap="round" stroke-linejoin="round" className="lucide lucide-calendar-range"><path d="M21 10H3"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M16 14H8"/></svg>
               90-Day Plan
             </h3>
             <div dangerouslySetInnerHTML={{ __html: markdownToHtml(actionPlan.day90, colors) }} />
@@ -874,7 +874,29 @@ const App = () => {
         return (
           <div className="flex flex-col items-center justify-center min-h-screen p-4" style={{ backgroundColor: colors.deepBlack, color: colors.lightGrey }}>
             <div className="p-8 rounded-xl shadow-2xl max-w-3xl w-full" style={{ backgroundColor: colors.lightGrey, color: colors.deepBlack }}>
-              <img src={logoUrl} alt="The Human Co. Logo" className="mx-auto mb-4 rounded-lg" style={{ maxWidth: '120px', height: 'auto' }} onError={(e) => e.target.style.display='none'} />
+              {/* Top-left social share icons and top-right logo */}
+              <div className="flex justify-between items-center w-full mb-4">
+                  <div className="flex gap-2">
+                      <button
+                          onClick={() => handleShare('x')}
+                          aria-label="Share on X"
+                          className="p-2 rounded-full transition duration-300 ease-in-out hover:scale-110"
+                          style={{ backgroundColor: '#1DA1F2', color: 'white' }} // X blue
+                      >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                      </button>
+                      <button
+                          onClick={() => handleShare('linkedin')}
+                          aria-label="Share on LinkedIn"
+                          className="p-2 rounded-full transition duration-300 ease-in-out hover:scale-110"
+                          style={{ backgroundColor: '#0A66C2', color: 'white' }} // LinkedIn blue
+                      >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-linkedin"><path d="M16 8a6 6 0 0 16 6v7h-4V18a4 4 0 00-4-4c-2.2 0-3.5 1.5-3.5 3.5V22H2V9h4v2.02A5.5 5.5 0 0110.5 8z"/><circle cx="4" cy="4" r="2"/></svg>
+                      </button>
+                  </div>
+                  <img src={logoUrl} alt="The Human Co. Logo" className="rounded-lg" style={{ maxWidth: '120px', height: 'auto' }} onError={(e) => e.target.style.display='none'} />
+              </div>
+
               <h2 className="text-3xl font-bold mb-6 text-center" style={{ color: colors.primaryPink }}>Your Personalized Career Report</h2>
               {isLoading ? (
                 <div className="text-center py-10 text-xl font-medium" style={{ color: colors.accentPink }}>
@@ -882,18 +904,11 @@ const App = () => {
                 </div>
               ) : (
                 <>
-                  <div className="prose max-w-none leading-relaxed mb-8 p-2" style={{ borderColor: colors.slateBlue, color: colors.deepBlack }}> {/* Removed overflow-y-auto max-h-[60vh] */}
-                    {/* Pass the structured report data to MarkdownRenderer */}
+                  <div className="prose max-w-none leading-relaxed mb-8 p-2" style={{ borderColor: colors.slateBlue, color: colors.deepBlack }}>
                     <MarkdownRenderer reportData={{ aiReport, skillGapAnalysis }} />
                   </div>
-                  <div className="flex flex-wrap justify-center gap-4 mt-6">
-                    <button
-                      onClick={() => setShowReportModal(true)} // Show download modal
-                      className="font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
-                      style={{ backgroundColor: colors.primaryPink, color: 'white' }}
-                    >
-                      Download Full Report
-                    </button>
+                  {/* Main Action Buttons - Centered Column */}
+                  <div className="flex flex-col items-center gap-4 mt-6">
                     <button
                       onClick={handleGenerateSkillGapAnalysis}
                       disabled={isGeneratingSkillGap}
@@ -903,20 +918,14 @@ const App = () => {
                       {isGeneratingSkillGap ? 'Analyzing Skills...' : 'Generate Skill Gap Analysis ✨'}
                     </button>
                     <button
-                        onClick={() => handleShare('x')}
-                        className="font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
-                        style={{ backgroundColor: '#1DA1F2', color: 'white' }} // X blue
+                      onClick={() => setShowReportModal(true)}
+                      className="font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+                      style={{ backgroundColor: colors.primaryPink, color: 'white' }}
                     >
-                        Share on X
-                    </button>
-                    <button
-                        onClick={() => handleShare('linkedin')}
-                        className="font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
-                        style={{ backgroundColor: '#0A66C2', color: 'white' }} // LinkedIn blue
-                    >
-                        Share on LinkedIn
+                      Download Full Report
                     </button>
                   </div>
+
                   {/* Google Forms Feedback Section */}
                   <div className="section mt-8 w-full">
                       <h2 className="text-xl font-semibold mb-4 text-slate-blue text-center">We'd Love Your Feedback!</h2>
@@ -933,6 +942,12 @@ const App = () => {
                               Loading…
                           </iframe>
                       </div>
+                  </div>
+                  {/* Footer with website link */}
+                  <div style={{ textAlign: 'center', marginTop: '40px', padding: '20px', background: colors.lightGrey, borderRadius: '8px', width: '100%' }}>
+                      <p style={{ margin: '0', color: colors.slateBlue, fontSize: '0.9rem' }}>
+                          Created by <a href="https://thehumanco.co" target="_blank" rel="noopener noreferrer" style={{ color: colors.accentPink, textDecoration: 'underline' }}>The Human Co.</a>
+                      </p>
                   </div>
                 </>
               )}
