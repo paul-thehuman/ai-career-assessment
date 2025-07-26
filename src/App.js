@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { FaXTwitter, FaLinkedin } from 'react-icons/fa6';
 
 // Define the color palette outside the component for global access
 const colors = {
@@ -904,17 +905,19 @@ const App = () => {
                     </button>
                     <button
                         onClick={() => handleShare('x')}
-                        className="font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+                        aria-label="Share on X"
+                        className="font-bold p-3 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
                         style={{ backgroundColor: '#1DA1F2', color: 'white' }} // X blue
                     >
-                        Share on X
+                        <FaXTwitter size={24} />
                     </button>
                     <button
                         onClick={() => handleShare('linkedin')}
-                        className="font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+                        aria-label="Share on LinkedIn"
+                        className="font-bold p-3 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
                         style={{ backgroundColor: '#0A66C2', color: 'white' }} // LinkedIn blue
                     >
-                        Share on LinkedIn
+                        <FaLinkedin size={24} />
                     </button>
                   </div>
                   {/* Google Forms Feedback Section */}
