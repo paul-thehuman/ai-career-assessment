@@ -530,6 +530,8 @@ const App = () => {
 
   // Logo URL - IMPORTANT: Replace this with your actual logo URL
   const logoUrl = "https://placehold.co/150x50/3a4252/ffffff?text=Your+Logo"; // Placeholder logo
+  // Google Form Embed URL - IMPORTANT: Replace this with your actual Google Form embed URL
+  const googleFormEmbedUrl = "https://docs.google.com/forms/d/e/1FAIpQLSddjSYI034-DNEk8xgSGphL2IPsM164xFUTAZ8jDDyptTt5iQ/viewform?embedded=true"; // Your Google Form embed URL
 
   // Define JSON schemas for structured AI responses
   const reportSchema = {
@@ -713,7 +715,7 @@ const App = () => {
     });
 
     fullPrompt += `The report should be a JSON object with three keys: "aiImpactAnalysis", "futureScenarios", and "actionPlan". Each value should be Markdown text for that section.\n`;
-    fullPrompt += `For "aiImpactAnalysis", keep paragraphs concise (max 3-4 lines). Use bullet points for key insights. Clarify the kind of AI tools being referred to with relevant examples (e.g., generative design tools, analytics software, automation platforms, AI-driven content creation, intelligent automation, predictive analytics). At the end, include a "Key Takeaway" summary box, formatted as a Markdown blockquote (> Key Takeaway: Your summary here.).\n`; // FIX: Added clarity on AI tools
+    fullPrompt += `For "aiImpactAnalysis", keep paragraphs concise (max 3-4 lines). Use bullet points for key insights. Clarify the kind of AI tools being referred to with relevant examples (e.g., generative design tools, analytics software, automation platforms, AI-driven content creation, intelligent automation, predictive analytics). At the end, include a "Key Takeaway" summary box, formatted as a Markdown blockquote (> Key Takeaway: Your summary here.).\n`;
     fullPrompt += `For "futureScenarios", generate three distinct future scenarios relevant to their career path, considering industry trends. Each scenario should start with '### Scenario X: [Scenario Title]' and include concise paragraphs and bullet points. For each scenario, describe not just the potential success, but also **what stands in the way right now**, using conditional "this future happens if..." phrasing to drive action. Introduce **operational debt, personal blind spots, or growth risks** that need solving. At the end of this section, include a "What to do next" summary box, formatted as a Markdown blockquote (> What to do next: Your summary here.).\n`;
     fullPrompt += `For "actionPlan", provide a 30/60/90-day roadmap. This should be a JSON object with keys "day30", "day60", "day90", and "summary". Each of "day30", "day60", "day90" should contain Markdown text with concrete, actionable steps tailored to their specific answers, role, and industry. **It is absolutely critical that all three day plans (30, 60, 90) are fully populated with content. If unique ideas are limited, provide general but relevant actions for that timeframe to ensure no section is left blank.** Remove checklist-style phrasing. Make each item a **challenge with a clear call to courage or decisive movement**. Use **active voice** (e.g., "Ship something before it's perfect.", "Get uncomfortable in public."). Use numbered lists for steps. Use bolding for key terms within list items (e.g., **Toolkit MVP**). The "summary" key should contain Markdown text for a "Key Action" summary box, formatted as a Markdown blockquote (> Key Action: Your summary here.).\n`;
     fullPrompt += `Optionally, somewhere in the report (e.g., within AI Impact Analysis or Action Plan), include 1-2 punchy, emotionally intelligent lines as a "Truth You Might Be Avoiding" sidebar, formatted as a Markdown blockquote (> Truth You Might Be Avoiding: Your uncomfortable truth here.).\n`;
@@ -915,6 +917,23 @@ const App = () => {
                     >
                         Share on LinkedIn
                     </button>
+                  </div>
+                  {/* Google Forms Feedback Section */}
+                  <div className="section mt-8 w-full">
+                      <h2 className="text-xl font-semibold mb-4 text-slate-blue text-center">We'd Love Your Feedback!</h2>
+                      <p className="text-center text-gray-700 mb-6">Help us improve this assessment by sharing your thoughts. Your insights could even become a testimonial!</p>
+                      <div style={{ position: 'relative', width: '100%', paddingTop: '150%' }}> {/* Aspect ratio container */}
+                          <iframe
+                              src={googleFormEmbedUrl}
+                              title="Assessment Feedback Form"
+                              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
+                              marginHeight="0"
+                              marginWidth="0"
+                              loading="lazy"
+                          >
+                              Loading…
+                          </iframe>
+                      </div>
                   </div>
                 </>
               )}
