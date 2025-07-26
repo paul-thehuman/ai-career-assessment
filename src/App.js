@@ -600,12 +600,14 @@ const App = () => {
       };
     }
 
-    // IMPORTANT: Replace "YOUR_GEMINI_API_KEY_HERE" with your actual Gemini API Key
+    // IMPORTANT: API Key is now read from environment variable for security
     const apiKey = process.env.REACT_APP_GEMINI_API_KEY; // Read from environment variable
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
+    console.log("API Key being used (first few chars):", apiKey ? apiKey.substring(0, 5) + "..." : "Not set"); // Debug log for API key presence
+    console.log("Calling Gemini API with prompt:", prompt); // Log the prompt
+
     try {
-      console.log("Calling Gemini API with prompt:", prompt); // Log the prompt
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -669,7 +671,7 @@ const App = () => {
     setCurrentInput(''); // Clear the textarea input
 
     // Logic for adaptive questions
-    if (currentQuestionIndex < initialCoreQuestions.length) { // FIX: Changed condition to correctly handle adaptive questions after all initial core questions are answered
+    if (currentQuestionIndex < initialCoreQuestions.length) { // Condition to correctly handle adaptive questions after all initial core questions are answered
       const prompt = `Given the user's role as "${userProfile.role}" in the "${userProfile.industry}" industry, and their previous answer to the question "${question}" which was "${answer}", generate a single, concise follow-up question to delve deeper into their career readiness or aspirations. The question should be adaptive and relevant to their specific context.`;
       const newQuestion = await callGeminiAPI(prompt, false, null, setIsLoading);
 
@@ -711,7 +713,7 @@ const App = () => {
     });
 
     fullPrompt += `The report should be a JSON object with three keys: "aiImpactAnalysis", "futureScenarios", and "actionPlan". Each value should be Markdown text for that section.\n`;
-    fullPrompt += `For "aiImpactAnalysis", keep paragraphs concise (max 3-4 lines). Use bullet points for key insights. At the end, include a "Key Takeaway" summary box, formatted as a Markdown blockquote (> Key Takeaway: Your summary here.).\n`;
+    fullPrompt += `For "aiImpactAnalysis", keep paragraphs concise (max 3-4 lines). Use bullet points for key insights. Clarify the kind of AI tools being referred to with relevant examples (e.g., generative design tools, analytics software, automation platforms, AI-driven content creation, intelligent automation, predictive analytics). At the end, include a "Key Takeaway" summary box, formatted as a Markdown blockquote (> Key Takeaway: Your summary here.).\n`; // FIX: Added clarity on AI tools
     fullPrompt += `For "futureScenarios", generate three distinct future scenarios relevant to their career path, considering industry trends. Each scenario should start with '### Scenario X: [Scenario Title]' and include concise paragraphs and bullet points. For each scenario, describe not just the potential success, but also **what stands in the way right now**, using conditional "this future happens if..." phrasing to drive action. Introduce **operational debt, personal blind spots, or growth risks** that need solving. At the end of this section, include a "What to do next" summary box, formatted as a Markdown blockquote (> What to do next: Your summary here.).\n`;
     fullPrompt += `For "actionPlan", provide a 30/60/90-day roadmap. This should be a JSON object with keys "day30", "day60", "day90", and "summary". Each of "day30", "day60", "day90" should contain Markdown text with concrete, actionable steps tailored to their specific answers, role, and industry. **It is absolutely critical that all three day plans (30, 60, 90) are fully populated with content. If unique ideas are limited, provide general but relevant actions for that timeframe to ensure no section is left blank.** Remove checklist-style phrasing. Make each item a **challenge with a clear call to courage or decisive movement**. Use **active voice** (e.g., "Ship something before it's perfect.", "Get uncomfortable in public."). Use numbered lists for steps. Use bolding for key terms within list items (e.g., **Toolkit MVP**). The "summary" key should contain Markdown text for a "Key Action" summary box, formatted as a Markdown blockquote (> Key Action: Your summary here.).\n`;
     fullPrompt += `Optionally, somewhere in the report (e.g., within AI Impact Analysis or Action Plan), include 1-2 punchy, emotionally intelligent lines as a "Truth You Might Be Avoiding" sidebar, formatted as a Markdown blockquote (> Truth You Might Be Avoiding: Your uncomfortable truth here.).\n`;
