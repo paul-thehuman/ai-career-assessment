@@ -391,7 +391,6 @@ const generateHtmlReport = (reportData, userProfile, colors, logoUrl) => {
 </body>
 </html>`;
 
-  // Restore backticks after the entire HTML string is constructed
   return finalHtml.replace(/&#96;/g, '`');
 };
 
@@ -405,12 +404,11 @@ const MarkdownRenderer = ({ reportData }) => {
   const renderSkillGapAnalysis = () => {
     if (!reportData.skillGapAnalysis?.skills) return null;
 
-    // Sort skills by criticality (importance - capability, descending)
     const sortedSkills = [...reportData.skillGapAnalysis.skills].sort((a, b) => {
       const gapA = a.importanceRating - a.currentCapabilityRating;
       const gapB = b.importanceRating - b.currentCapabilityRating;
-      if (gapA !== gapB) return gapB - gapA; // Sort by gap first
-      return b.importanceRating - a.importanceRating; // Then by importance
+      if (gapA !== gapB) return gapB - gapA;
+      return b.importanceRating - a.importanceRating;
     });
 
     return (
@@ -603,7 +601,7 @@ const App = () => {
     }
 
     // IMPORTANT: Replace "YOUR_GEMINI_API_KEY_HERE" with your actual Gemini API Key
-    const apiKey = process.env.REACT_APP_GEMINI_API_KEY; // Read from environment variable
+    const apiKey = "YOUR_GEMINI_API_KEY_HERE"; // <--- INSERT YOUR API KEY HERE
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
     try {
@@ -756,7 +754,7 @@ const App = () => {
     const shareText = encodeURIComponent("Check out my personalized Career Readiness Report from The Human Co. - powered by AI! #CareerDevelopment #AI #FutureOfWork");
 
     let shareUrl = "";
-    if (platform === "x") { // Changed from twitter to x
+    if (platform === "x") {
       shareUrl = `https://twitter.com/intent/tweet?text=${shareText}&url=${encodeURIComponent(siteUrl)}`;
     } else if (platform === "linkedin") {
       shareUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(siteUrl)}&title=${encodeURIComponent("AI-Powered Career Readiness Assessment")}&summary=${shareText}`;
@@ -797,13 +795,18 @@ const App = () => {
       case 'assessment':
         const currentQuestion = questions[currentQuestionIndex];
         const isAnswerEmpty = !currentInput.trim();
+        const progressPercentage = ((currentQuestionIndex + 1) / initialCoreQuestions.length) * 100; // Calculate progress
 
         return (
           <div className="flex flex-col items-center justify-center min-h-screen p-4" style={{ backgroundColor: colors.deepBlack, color: colors.lightGrey }}>
             <div className="p-8 rounded-xl shadow-2xl max-w-2xl w-full" style={{ backgroundColor: colors.lightGrey, color: colors.deepBlack }}>
               <h2 className="text-3xl font-bold mb-6 text-center" style={{ color: colors.primaryPink }}>
-                Assessment: Question {currentQuestionIndex + 1} of {questions.length}
+                Assessment: Question {currentQuestionIndex + 1}
               </h2>
+              {/* Progress Bar */}
+              <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+                <div className="h-2.5 rounded-full" style={{ width: `${progressPercentage}%`, backgroundColor: colors.primaryPink }}></div>
+              </div>
               <div className="mb-6">
                 <label htmlFor="question" className="block text-lg font-medium mb-2" style={{ color: colors.slateBlue }}>
                   {currentQuestion}
@@ -881,7 +884,7 @@ const App = () => {
                       {isGeneratingSkillGap ? 'Analyzing Skills...' : 'Generate Skill Gap Analysis ✨'}
                     </button>
                     <button
-                        onClick={() => handleShare('x')} // Changed platform to 'x'
+                        onClick={() => handleShare('x')}
                         className="font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
                         style={{ backgroundColor: '#1DA1F2', color: 'white' }} // Twitter blue
                     >
@@ -925,7 +928,7 @@ const App = () => {
                 onChange={(e) => setUserProfile({ ...userProfile, role: e.target.value })}
                 className="w-full p-2 border rounded-md focus:ring-accent-pink focus:border-accent-pink"
                 style={{ borderColor: colors.slateBlue, color: colors.deepBlack, backgroundColor: 'white' }}
-                placeholder="e.g., Software Engineer, Marketing Manager"
+                placeholder="e.g., Creative Director & Founder"
               />
             </div>
             <div className="mb-6">
@@ -937,7 +940,7 @@ const App = () => {
                 onChange={(e) => setUserProfile({ ...userProfile, industry: e.target.value })}
                 className="w-full p-2 border rounded-md focus:ring-accent-pink focus:border-border-accent-pink"
                 style={{ borderColor: colors.slateBlue, color: colors.deepBlack, backgroundColor: 'white' }}
-                placeholder="e.g., Tech, Healthcare, Finance"
+                placeholder="e.g., Leadership & Learning"
               />
             </div>
             <button
