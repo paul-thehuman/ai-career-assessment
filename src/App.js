@@ -601,24 +601,29 @@ const App = () => {
     }
 
     // IMPORTANT: Replace "YOUR_GEMINI_API_KEY_HERE" with your actual Gemini API Key
-    const apiKey = "YOUR_GEMINI_API_KEY_HERE"; // <--- INSERT YOUR API KEY HERE
+    const apiKey = process.env.REACT_APP_GEMINI_API_KEY; // Read from environment variable
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
     try {
+      console.log("Calling Gemini API with prompt:", prompt); // Log the prompt
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
       const result = await response.json();
+      console.log("Gemini API raw response:", result); // Log the raw response
 
       if (result.candidates && result.candidates.length > 0 &&
           result.candidates[0].content && result.candidates[0].content.parts &&
           result.candidates[0].content.parts.length > 0) {
         let text = result.candidates[0].content.parts[0].text;
+        console.log("Gemini API response text:", text); // Log the response text
         if (isStructured) {
           try {
-            return JSON.parse(text);
+            const parsedJson = JSON.parse(text);
+            console.log("Gemini API parsed JSON:", parsedJson); // Log parsed JSON
+            return parsedJson;
           } catch (e) {
             console.error("Failed to parse JSON response:", e, text);
             return null;
@@ -626,12 +631,12 @@ const App = () => {
         }
         return text;
       } else {
-        console.error("Unexpected API response structure:", result);
-        return "Error: Could not generate content. Please try again.";
+        console.error("Unexpected API response structure or empty content:", result);
+        return "Error: Could not generate content. Please try again. Check console for details.";
       }
     } catch (error) {
       console.error("Error calling Gemini API:", error);
-      return "Error: Failed to connect to AI. Please check your network.";
+      return "Error: Failed to connect to AI. Please check your network or API key.";
     } finally {
       if (setLoadingState) setLoadingState(false);
     }
@@ -663,20 +668,31 @@ const App = () => {
     setAnswers(updatedAnswers);
     setCurrentInput(''); // Clear the textarea input
 
-    if (currentQuestionIndex < initialCoreQuestions.length - 1) {
+    // Logic for adaptive questions
+    if (currentQuestionIndex < initialCoreQuestions.length) { // FIX: Changed condition to correctly handle adaptive questions after all initial core questions are answered
       const prompt = `Given the user's role as "${userProfile.role}" in the "${userProfile.industry}" industry, and their previous answer to the question "${question}" which was "${answer}", generate a single, concise follow-up question to delve deeper into their career readiness or aspirations. The question should be adaptive and relevant to their specific context.`;
       const newQuestion = await callGeminiAPI(prompt, false, null, setIsLoading);
+
       if (newQuestion && !newQuestion.startsWith("Error:")) {
+        // If AI successfully generates a new question, add it and move to it
         setQuestions(prevQuestions => [...prevQuestions, newQuestion]);
         setCurrentQuestionIndex(prevIndex => prevIndex + 1);
       } else {
-        console.log("Failed to generate a follow-up question. Moving to the next core question.");
-        setCurrentQuestionIndex(prevIndex => prevIndex + 1);
+        // If AI fails or it's the last core question, move to report generation
+        console.log("AI failed to generate a follow-up question or all core questions answered. Proceeding to report generation.");
+        await generateFullReport(updatedAnswers);
       }
-    } else if (currentQuestionIndex === questions.length - 1) {
-      await generateFullReport(updatedAnswers);
     } else {
-      setCurrentQuestionIndex(prevIndex => prevIndex + 1);
+      // This 'else' branch handles moving through *already generated* adaptive questions
+      // or if the initial question count was somehow exceeded without report generation.
+      // After the last core question, it should ideally go to report generation.
+      // If we are already past the initial core questions and a new one was just generated, move to it.
+      if (currentQuestionIndex < questions.length -1) { // Check if there's a next question in the array
+         setCurrentQuestionIndex(prevIndex => prevIndex + 1);
+      } else {
+         // If no more questions in the array (meaning the last one was answered), generate report
+         await generateFullReport(updatedAnswers);
+      }
     }
   };
 
@@ -886,7 +902,7 @@ const App = () => {
                     <button
                         onClick={() => handleShare('x')}
                         className="font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
-                        style={{ backgroundColor: '#1DA1F2', color: 'white' }} // Twitter blue
+                        style={{ backgroundColor: '#1DA1F2', color: 'white' }} // X blue
                     >
                         Share on X
                     </button>
