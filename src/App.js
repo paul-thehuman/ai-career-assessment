@@ -447,7 +447,7 @@ const MarkdownRenderer = ({ reportData }) => {
   const renderActionPlan = () => {
     if (!reportData.aiReport?.actionPlan) return null;
 
-    const actionPlan = reportData.aiReport.actionPlan;
+    const actionPlan = reportData.aiReport.action;
     return (
       <>
         <h2 className="text-2xl font-semibold mt-6 mb-3" style={{ color: colors.slateBlue }}>Personalized Action Plan</h2>
@@ -468,7 +468,7 @@ const MarkdownRenderer = ({ reportData }) => {
           </div>
           <div className="action-plan-column" style={{ backgroundColor: colors.lightGrey }}>
             <h3>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={colors.primaryPink} strokeWidth="2" strokeLinecap="round" stroke-linejoin="round" className="lucide lucide-calendar-range"><path d="M21 10H3"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M16 14H8"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={colors.primaryPink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-calendar-range"><path d="M21 10H3"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M16 14H8"/></svg>
               90-Day Plan
             </h3>
             <div dangerouslySetInnerHTML={{ __html: markdownToHtml(actionPlan.day90, colors) }} />
@@ -769,4 +769,233 @@ const App = () => {
             <div className="p-8 rounded-xl shadow-2xl max-w-2xl text-center" style={{ backgroundColor: colors.lightGrey, color: colors.deepBlack }}>
               <h1 className="text-4xl font-extrabold mb-6" style={{ color: colors.primaryPink }}>CTRL+ALT+CAREER</h1> {/* Updated title */}
               <img
-                src="https://m
+                src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExZnY4azR0MW51d2ticHBzdTNxazU3cWp3NXhhcWlsbGp1N3Y2ZTdvMyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/10lBhcF4eTJZWU/giphy.gif"
+                alt="Abstract AI animation"
+                className="mx-auto mb-4 rounded-lg"
+                style={{ maxWidth: '100%', height: 'auto', maxHeight: '200px' }} // Adjusted styling for GIF
+                onError={(e) => e.target.style.display='none'} // Hide if GIF fails to load
+              />
+              <p className="text-lg mb-4 leading-relaxed">
+                Stuck in autopilot? It’s time for a system check. This AI-powered reboot adapts to you in real time — think less personality quiz, more upgrade path. {/* Updated text */}
+              </p>
+              <p className="text-lg mb-8 leading-relaxed">
+                You’ll get a personalised report with future-of-work forecasts, automation risks, and a no-nonsense plan to keep your career one step ahead of the bots. {/* Updated text */}
+              </p>
+              <button
+                onClick={handleStartAssessment}
+                className="font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+                style={{ backgroundColor: colors.primaryPink, color: 'white' }}
+              >
+                Start Assessment
+              </button>
+            </div>
+          </div>
+        );
+
+      case 'assessment':
+        const currentQuestion = questions[currentQuestionIndex];
+        const isAnswerEmpty = !currentInput.trim();
+        const progressPercentage = ((currentQuestionIndex + 1) / initialCoreQuestions.length) * 100; // Calculate progress
+
+        return (
+          <div className="flex flex-col items-center justify-center min-h-screen p-4" style={{ backgroundColor: colors.deepBlack, color: colors.lightGrey }}>
+            <div className="p-8 rounded-xl shadow-2xl max-w-2xl w-full" style={{ backgroundColor: colors.lightGrey, color: colors.deepBlack }}>
+              <h2 className="text-3xl font-bold mb-6 text-center" style={{ color: colors.primaryPink }}>
+                Assessment: Question {currentQuestionIndex + 1}
+              </h2>
+              {/* Progress Bar */}
+              <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+                <div className="h-2.5 rounded-full" style={{ width: `${progressPercentage}%`, backgroundColor: colors.primaryPink }}></div>
+              </div>
+              <div className="mb-6">
+                <label htmlFor="question" className="block text-lg font-medium mb-2" style={{ color: colors.slateBlue }}>
+                  {currentQuestion}
+                </label>
+                <textarea
+                  id="question"
+                  rows="5"
+                  className="w-full p-3 border rounded-lg focus:ring-accent-pink focus:border-accent-pink resize-y"
+                  style={{ borderColor: colors.slateBlue, color: colors.deepBlack, backgroundColor: 'white' }}
+                  placeholder="Type your answer here..."
+                  value={currentInput}
+                  onChange={(e) => setCurrentInput(e.target.value)}
+                ></textarea>
+              </div>
+              <div className="flex justify-between items-center">
+                <button
+                  onClick={() => {
+                    setCurrentQuestionIndex(prev => Math.max(0, prev - 1));
+                    setCurrentInput(answers[currentQuestionIndex - 1]?.answer || '');
+                  }}
+                  disabled={currentQuestionIndex === 0 || isLoading}
+                  className="font-bold py-2 px-6 rounded-full transition duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ backgroundColor: colors.slateBlue, color: 'white' }}
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={() => handleSubmitAnswer(currentQuestion, currentInput)}
+                  disabled={isLoading || isAnswerEmpty}
+                  className="font-bold py-2 px-6 rounded-full shadow-md transition duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ backgroundColor: colors.primaryPink, color: 'white' }}
+                >
+                  {isLoading ? 'Generating...' : (currentQuestionIndex === questions.length - 1 ? 'Finish Assessment' : 'Next')}
+                </button>
+              </div>
+              {isLoading && (
+                <div className="mt-4 text-center font-medium" style={{ color: colors.accentPink }}>
+                  AI is thinking...
+                </div>
+              )}
+            </div>
+          </div>
+        );
+
+      case 'results':
+        // Determine button colors based on skillGapAnalysis presence
+        const generateSkillGapBtnColor = colors.slateBlue;
+        const downloadReportBtnColor = skillGapAnalysis ? colors.primaryPink : colors.slateBlue; // Highlight if skillGapAnalysis is available
+
+        return (
+          <div className="flex flex-col items-center justify-center min-h-screen p-4" style={{ backgroundColor: colors.deepBlack, color: colors.lightGrey }}>
+            <div className="p-8 rounded-xl shadow-2xl max-w-3xl w-full" style={{ backgroundColor: colors.lightGrey, color: colors.deepBlack }}>
+              <h2 className="text-3xl font-bold mb-6 text-center" style={{ color: colors.primaryPink }}>Your Personalized Career Report</h2>
+              {isLoading ? (
+                <div className="text-center py-10 text-xl font-medium" style={{ color: colors.accentPink }}>
+                  Generating your detailed report...
+                </div>
+              ) : (
+                <>
+                  <div className="prose max-w-none leading-relaxed mb-8 p-2" style={{ borderColor: colors.slateBlue, color: colors.deepBlack }}>
+                    <MarkdownRenderer reportData={{ aiReport, skillGapAnalysis }} />
+                  </div>
+                  {/* Main Action Buttons - Centered Column */}
+                  <div className="flex flex-col items-center gap-4 mt-6">
+                    <button
+                      onClick={handleGenerateSkillGapAnalysis}
+                      disabled={isGeneratingSkillGap}
+                      className="font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                      style={{ backgroundColor: generateSkillGapBtnColor, color: 'white' }}
+                    >
+                      {isGeneratingSkillGap ? 'Analyzing Skills...' : 'Generate Skill Gap Analysis ✨'}
+                    </button>
+                    <button
+                      onClick={() => setShowReportModal(true)} // Show download modal
+                      className="font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+                      style={{ backgroundColor: downloadReportBtnColor, color: 'white' }}
+                    >
+                      Download Full Report
+                    </button>
+                  </div>
+
+                  {/* Google Forms Feedback Section */}
+                  <div className="section mt-8 w-full">
+                      <h2 className="text-xl font-semibold mb-4 text-slate-blue text-center">We'd Love Your Feedback!</h2>
+                      <p className="text-center text-gray-700 mb-6">Help us improve this assessment by sharing your thoughts. Your insights could even become a testimonial!</p>
+                      <div style={{ position: 'relative', width: '100%', paddingTop: '150%' }}> {/* Aspect ratio container */}
+                          <iframe
+                              src={googleFormEmbedUrl}
+                              title="Assessment Feedback Form"
+                              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
+                              marginHeight="0"
+                              marginWidth="0"
+                              loading="lazy"
+                          >
+                              Loading…
+                          </iframe>
+                      </div>
+                  </div>
+                  {/* Footer with website link */}
+                  <div style={{ textAlign: 'center', marginTop: '40px', padding: '20px', background: colors.lightGrey, borderRadius: '8px', width: '100%' }}>
+                      <p style={{ margin: '0', color: colors.slateBlue, fontSize: '0.9rem' }}>
+                          Created by <a href="https://thehumanco.co" target="_blank" rel="noopener noreferrer" style={{ color: colors.accentPink, textDecoration: 'underline' }}>The Human Co.</a>
+                      </p>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="App">
+      {renderPage()}
+
+      {/* User Profile Modal */}
+      {showProfileModal && (
+        <div className={modalOverlayStyle}>
+          <div className={modalContentStyle} style={{ backgroundColor: colors.lightGrey, color: colors.deepBlack }}>
+            <h3 className="text-2xl font-bold mb-4" style={{ color: colors.primaryPink }}>Tell Us About Yourself</h3>
+            <p className="mb-4">This helps us personalize your assessment and report.</p>
+            <div className="mb-4">
+              <label htmlFor="role" className="block text-sm font-medium mb-1" style={{ color: colors.slateBlue }}>Your Current Role:</label>
+              <input
+                type="text"
+                id="role"
+                value={userProfile.role}
+                onChange={(e) => setUserProfile({ ...userProfile, role: e.target.value })}
+                className="w-full p-2 border rounded-md focus:ring-accent-pink focus:border-accent-pink"
+                style={{ borderColor: colors.slateBlue, color: colors.deepBlack, backgroundColor: 'white' }}
+                placeholder="e.g., Creative Director & Founder"
+              />
+            </div>
+            <div className="mb-6">
+              <label htmlFor="industry" className="block text-sm font-medium mb-1" style={{ color: colors.slateBlue }}>Your Industry:</label>
+              <input
+                type="text"
+                id="industry"
+                value={userProfile.industry}
+                onChange={(e) => setUserProfile({ ...userProfile, industry: e.target.value })}
+                className="w-full p-2 border rounded-md focus:ring-accent-pink focus:border-border-accent-pink"
+                style={{ borderColor: colors.slateBlue, color: colors.deepBlack, backgroundColor: 'white' }}
+                placeholder="e.g., Leadership & Learning"
+              />
+            </div>
+            <button
+              onClick={handleSaveProfile}
+              className="font-bold py-2 px-4 rounded-full shadow-md transition duration-300 ease-in-out"
+              style={{ backgroundColor: colors.primaryPink, color: 'white' }}
+            >
+              Continue
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Download Report Confirmation Modal */}
+      {showReportModal && (
+        <div className={modalOverlayStyle}>
+          <div className={modalContentStyle} style={{ backgroundColor: colors.lightGrey, color: colors.deepBlack }}>
+            <h3 className="text-2xl font-bold mb-4" style={{ color: colors.primaryPink }}>Download Your Report</h3>
+            <p className="mb-6">
+              Click "Download" to save your personalized career readiness report as an HTML file. This file will be fully formatted and mobile-responsive.
+            </p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={() => setShowReportModal(false)}
+                className="font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out"
+                style={{ backgroundColor: colors.slateBlue, color: 'white' }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDownloadReport}
+                className="font-bold py-2 px-4 rounded-full shadow-md transition duration-300 ease-in-out"
+                style={{ backgroundColor: colors.primaryPink, color: 'white' }}
+              >
+                Download
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default App;
