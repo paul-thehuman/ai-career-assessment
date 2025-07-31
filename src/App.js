@@ -454,7 +454,7 @@ const MarkdownRenderer = ({ reportData }) => {
   const renderActionPlan = () => {
     if (!reportData.aiReport?.actionPlan) return null;
 
-    const actionPlan = reportData.aiReport.actionPlan;
+    const actionPlan = reportData.aiReport.action;
     return (
       <>
         <h2 className="text-2xl font-semibold mt-6 mb-3" style={{ color: colors.slateBlue }}>Personalized Action Plan</h2>
@@ -475,7 +475,7 @@ const MarkdownRenderer = ({ reportData }) => {
           </div>
           <div className="action-plan-column" style={{ backgroundColor: colors.lightGrey }}>
             <h3>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={colors.primaryPink} strokeWidth="2" strokeLinecap="round" stroke-linejoin="round" className="lucide lucide-calendar-range"><path d="M21 10H3"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M16 14H8"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={colors.primaryPink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-calendar-range"><path d="M21 10H3"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M16 14H8"/></svg>
               90-Day Plan
             </h3>
             <div dangerouslySetInnerHTML={{ __html: markdownToHtml(actionPlan.day90, colors) }} />
@@ -521,7 +521,6 @@ const App = () => {
   const [skillGapAnalysis, setSkillGapAnalysis] = useState(null);
 
   const [showProfileModal, setShowProfileModal] = useState(false);
-  // Re-added for download functionality
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportDownloadContent, setReportDownloadContent] = useState('');
   const [currentInput, setCurrentInput] = useState(''); // State to manage current textarea input
@@ -761,7 +760,6 @@ const App = () => {
       link.href = URL.createObjectURL(blob);
       link.download = `Career_Readiness_Report_${userProfile.role.replace(/\s/g, '_')}.html`;
       document.body.appendChild(link);
-      link.click();
       document.body.removeChild(link);
       setShowReportModal(false); // Close modal after download
     }
@@ -871,29 +869,37 @@ const App = () => {
         );
 
       case 'results':
+        // Determine button colors based on skillGapAnalysis presence
+        const generateSkillGapBtnColor = colors.slateBlue;
+        const downloadReportBtnColor = skillGapAnalysis ? colors.primaryPink : colors.slateBlue; // Highlight if skillGapAnalysis is available
+
         return (
           <div className="flex flex-col items-center justify-center min-h-screen p-4" style={{ backgroundColor: colors.deepBlack, color: colors.lightGrey }}>
             <div className="p-8 rounded-xl shadow-2xl max-w-3xl w-full" style={{ backgroundColor: colors.lightGrey, color: colors.deepBlack }}>
               {/* Top-left social share icons and top-right logo */}
               <div className="flex justify-between items-center w-full mb-4">
+                  {/* Social Share Icons */}
                   <div className="flex gap-2">
+                      {/* X (Twitter) Icon */}
                       <button
                           onClick={() => handleShare('x')}
                           aria-label="Share on X"
                           className="p-2 rounded-full transition duration-300 ease-in-out hover:scale-110"
-                          style={{ backgroundColor: '#1DA1F2', color: 'white' }} // X blue
+                          style={{ backgroundColor: colors.slateBlue, color: 'white' }} // Using slateBlue for icons
                       >
                           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                       </button>
+                      {/* LinkedIn Icon */}
                       <button
                           onClick={() => handleShare('linkedin')}
                           aria-label="Share on LinkedIn"
                           className="p-2 rounded-full transition duration-300 ease-in-out hover:scale-110"
-                          style={{ backgroundColor: '#0A66C2', color: 'white' }} // LinkedIn blue
+                          style={{ backgroundColor: colors.slateBlue, color: 'white' }} // Using slateBlue for icons
                       >
                           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-linkedin"><path d="M16 8a6 6 0 0 16 6v7h-4V18a4 4 0 00-4-4c-2.2 0-3.5 1.5-3.5 3.5V22H2V9h4v2.02A5.5 5.5 0 0110.5 8z"/><circle cx="4" cy="4" r="2"/></svg>
                       </button>
                   </div>
+                  {/* Logo (top-right) */}
                   <img src={logoUrl} alt="The Human Co. Logo" className="rounded-lg" style={{ maxWidth: '120px', height: 'auto' }} onError={(e) => e.target.style.display='none'} />
               </div>
 
@@ -913,14 +919,14 @@ const App = () => {
                       onClick={handleGenerateSkillGapAnalysis}
                       disabled={isGeneratingSkillGap}
                       className="font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-                      style={{ backgroundColor: colors.slateBlue, color: 'white' }}
+                      style={{ backgroundColor: generateSkillGapBtnColor, color: 'white' }} // Dynamic color
                     >
                       {isGeneratingSkillGap ? 'Analyzing Skills...' : 'Generate Skill Gap Analysis ✨'}
                     </button>
                     <button
-                      onClick={() => setShowReportModal(true)}
+                      onClick={() => setShowReportModal(true)} // Show download modal
                       className="font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
-                      style={{ backgroundColor: colors.primaryPink, color: 'white' }}
+                      style={{ backgroundColor: downloadReportBtnColor, color: 'white' }} // Dynamic color
                     >
                       Download Full Report
                     </button>
