@@ -447,7 +447,7 @@ const MarkdownRenderer = ({ reportData }) => {
   const renderActionPlan = () => {
     if (!reportData.aiReport?.actionPlan) return null;
 
-    const actionPlan = reportData.aiReport.actionPlan;
+    const actionPlan = reportData.aiReport.action;
     return (
       <>
         <h2 className="text-2xl font-semibold mt-6 mb-3" style={{ color: colors.slateBlue }}>Personalized Action Plan</h2>
@@ -520,8 +520,8 @@ const App = () => {
 
   const [isGeneratingSkillGap, setIsGeneratingSkillGap] = useState(false);
 
-  // Logo URL - IMPORTANT: Replace this with your actual logo URL
-  const logoUrl = "https://placehold.co/150x50/3a4252/ffffff?text=Your+Logo"; // Placeholder logo
+  // Logo URL - IMPORTANT: This variable is no longer used in rendering, but kept for context if needed elsewhere.
+  // const logoUrl = "https://placehold.co/150x50/3a4252/ffffff?text=Your+Logo"; // Placeholder logo
   // Google Form Embed URL - IMPORTANT: Replace this with your actual Google Form embed URL
   const googleFormEmbedUrl = "https://docs.google.com/forms/d/e/1FAIpQLSddjSYI034-DNEk8xgSGphL2IPsM164xFUTAZ8jDDyptTt5iQ/viewform?embedded=true"; // Your Google Form embed URL
 
@@ -753,13 +753,14 @@ const App = () => {
       link.href = URL.createObjectURL(blob);
       link.download = `Career_Readiness_Report_${userProfile.role.replace(/\s/g, '_')}.html`;
       document.body.appendChild(link);
+      link.click();
       document.body.removeChild(link);
       setShowReportModal(false); // Close modal after download
     }
   };
 
   // Common styles for modals
-  const modalOverlayStyle = "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
+  const modalOverlayStyle = "fixed inset-0 bg-black bg-opacity50 flex items-center justify-center z-50";
   const modalContentStyle = "bg-white p-6 rounded-lg shadow-xl max-w-lg w-full mx-4";
 
   // Render different pages
