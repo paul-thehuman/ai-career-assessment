@@ -96,7 +96,7 @@ const markdownToHtml = (markdown, colors) => {
 };
 
 // Function to generate the full HTML report for download (standalone)
-const generateHtmlReport = (reportData, userProfile, colors, logoUrl) => {
+const generateHtmlReport = (reportData, userProfile, colors) => { // Removed logoUrl parameter
   const date = new Date().toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' });
 
   const aiImpactHtml = reportData.aiReport?.aiImpactAnalysis ? markdownToHtml(reportData.aiReport.aiImpactAnalysis, colors) : '';
@@ -251,12 +251,6 @@ const generateHtmlReport = (reportData, userProfile, colors, logoUrl) => {
             border-radius: 10px;
             text-align: center;
             margin-bottom: 30px;
-        }
-        .header img { /* Style for logo */
-            max-width: 150px;
-            height: auto;
-            margin-bottom: 15px;
-            border-radius: 8px; /* Rounded corners for logo */
         }
         .section {
             margin-bottom: 40px;
@@ -747,11 +741,11 @@ const App = () => {
   useEffect(() => {
     if (aiReport || skillGapAnalysis) {
       // Set content for download when report or skill analysis is ready
-      setReportDownloadContent(generateHtmlReport({ aiReport, skillGapAnalysis }, userProfile, colors, logoUrl));
+      setReportDownloadContent(generateHtmlReport({ aiReport, skillGapAnalysis }, userProfile, colors));
     }
-  }, [aiReport, skillGapAnalysis, userProfile, logoUrl]); // Added logoUrl to dependencies
+  }, [aiReport, skillGapAnalysis, userProfile]);
 
-  // Handle Download Report
+  // Download the report
   const handleDownloadReport = () => {
     if (reportDownloadContent) {
       const blob = new Blob([reportDownloadContent], { type: 'text/html;charset=utf-8' });
@@ -759,24 +753,9 @@ const App = () => {
       link.href = URL.createObjectURL(blob);
       link.download = `Career_Readiness_Report_${userProfile.role.replace(/\s/g, '_')}.html`;
       document.body.appendChild(link);
-      link.click();
       document.body.removeChild(link);
       setShowReportModal(false); // Close modal after download
     }
-  };
-
-  // Handle Social Share
-  const handleShare = (platform) => {
-    const siteUrl = "https://paul-thehuman.github.io/ai-career-assessment/"; // Your live assessment URL
-    const shareText = encodeURIComponent("Check out my personalized Career Readiness Report from The Human Co. - powered by AI! #CareerDevelopment #AI #FutureOfWork");
-
-    let shareUrl = "";
-    if (platform === "x") {
-      shareUrl = `https://twitter.com/intent/tweet?text=${shareText}&url=${encodeURIComponent(siteUrl)}`;
-    } else if (platform === "linkedin") {
-      shareUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(siteUrl)}&title=${encodeURIComponent("AI-Powered Career Readiness Assessment")}&summary=${shareText}`;
-    }
-    window.open(shareUrl, '_blank', 'noopener,noreferrer');
   };
 
   // Common styles for modals
@@ -790,7 +769,6 @@ const App = () => {
         return (
           <div className="flex flex-col items-center justify-center min-h-screen p-4" style={{ backgroundColor: colors.deepBlack, color: colors.lightGrey }}>
             <div className="p-8 rounded-xl shadow-2xl max-w-2xl text-center" style={{ backgroundColor: colors.lightGrey, color: colors.deepBlack }}>
-              <img src={logoUrl} alt="The Human Co. Logo" className="mx-auto mb-4 rounded-lg" style={{ maxWidth: '150px', height: 'auto' }} onError={(e) => e.target.style.display='none'} />
               <h1 className="text-4xl font-extrabold mb-6" style={{ color: colors.primaryPink }}>Career Readiness Assessment</h1>
               <p className="text-lg mb-4 leading-relaxed">
                 Welcome to your personalized career readiness journey! This tool uses advanced AI to adapt questions based on your responses, ensuring deeply relevant insights.
@@ -812,18 +790,13 @@ const App = () => {
       case 'assessment':
         const currentQuestion = questions[currentQuestionIndex];
         const isAnswerEmpty = !currentInput.trim();
-        const progressPercentage = ((currentQuestionIndex + 1) / initialCoreQuestions.length) * 100; // Calculate progress
 
         return (
           <div className="flex flex-col items-center justify-center min-h-screen p-4" style={{ backgroundColor: colors.deepBlack, color: colors.lightGrey }}>
             <div className="p-8 rounded-xl shadow-2xl max-w-2xl w-full" style={{ backgroundColor: colors.lightGrey, color: colors.deepBlack }}>
               <h2 className="text-3xl font-bold mb-6 text-center" style={{ color: colors.primaryPink }}>
-                Assessment: Question {currentQuestionIndex + 1}
+                Assessment: Question {currentQuestionIndex + 1} of {questions.length}
               </h2>
-              {/* Progress Bar */}
-              <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-                <div className="h-2.5 rounded-full" style={{ width: `${progressPercentage}%`, backgroundColor: colors.primaryPink }}></div>
-              </div>
               <div className="mb-6">
                 <label htmlFor="question" className="block text-lg font-medium mb-2" style={{ color: colors.slateBlue }}>
                   {currentQuestion}
@@ -876,32 +849,8 @@ const App = () => {
         return (
           <div className="flex flex-col items-center justify-center min-h-screen p-4" style={{ backgroundColor: colors.deepBlack, color: colors.lightGrey }}>
             <div className="p-8 rounded-xl shadow-2xl max-w-3xl w-full" style={{ backgroundColor: colors.lightGrey, color: colors.deepBlack }}>
-              {/* Top section: Social Share (icons, top-left) and Logo (top-right) */}
-              <div className="flex justify-between items-start w-full mb-4"> {/* Changed items-center to items-start */}
-                  {/* Social Share Icons */}
-                  <div className="flex gap-2">
-                      {/* X (Twitter) Icon */}
-                      <button
-                          onClick={() => handleShare('x')}
-                          aria-label="Share on X"
-                          className="p-2 rounded-full transition duration-300 ease-in-out hover:scale-110"
-                          style={{ backgroundColor: colors.slateBlue, color: 'white' }} // Using slateBlue for icons
-                      >
-                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                      </button>
-                      {/* LinkedIn Icon */}
-                      <button
-                          onClick={() => handleShare('linkedin')}
-                          aria-label="Share on LinkedIn"
-                          className="p-2 rounded-full transition duration-300 ease-in-out hover:scale-110"
-                          style={{ backgroundColor: colors.slateBlue, color: 'white' }} // Using slateBlue for icons
-                      >
-                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-linkedin"><path d="M16 8a6 6 0 0 16 6v7h-4V18a4 4 0 00-4-4c-2.2 0-3.5 1.5-3.5 3.5V22H2V9h4v2.02A5.5 5.5 0 0110.5 8z"/><circle cx="4" cy="4" r="2"/></svg>
-                      </button>
-                  </div>
-                  {/* Logo (top-right) */}
-                  <img src={logoUrl} alt="The Human Co. Logo" className="rounded-lg" style={{ maxWidth: '120px', height: 'auto' }} onError={(e) => e.target.style.display='none'} />
-              </div>
+              {/* Removed Top-left social share icons and top-right logo */}
+              {/* <div className="flex justify-between items-start w-full mb-4"> ... </div> */}
 
               <h2 className="text-3xl font-bold mb-6 text-center" style={{ color: colors.primaryPink }}>Your Personalized Career Report</h2>
               {isLoading ? (
@@ -924,7 +873,7 @@ const App = () => {
                       {isGeneratingSkillGap ? 'Analyzing Skills...' : 'Generate Skill Gap Analysis ✨'}
                     </button>
                     <button
-                      onClick={() => setShowReportModal(true)}
+                      onClick={() => setShowReportModal(true)} // Show download modal
                       className="font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
                       style={{ backgroundColor: downloadReportBtnColor, color: 'white' }}
                     >
