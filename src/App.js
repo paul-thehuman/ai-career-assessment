@@ -346,7 +346,6 @@ const generateHtmlReport = (reportData, userProfile, colors, logoUrl) => {
 </head>
 <body>
     <div class="header">
-        <img src="${escapeHtmlString(logoUrl)}" alt="The Human Co. Logo" onerror="this.style.display='none'">
         <h1 class="text-3xl font-bold mb-2">AI-Powered Career Readiness Report</h1>
         <p class="text-lg">Here’s your personalised report based on your role as Creative Director & Founder of The Human Co. You’re not just watching the future of work unfold — you’re helping shape it. Let’s get to work.</p>
         <p class="text-sm opacity-90">Generated on ${date}</p>
@@ -454,7 +453,7 @@ const MarkdownRenderer = ({ reportData }) => {
   const renderActionPlan = () => {
     if (!reportData.aiReport?.actionPlan) return null;
 
-    const actionPlan = reportData.aiReport.action;
+    const actionPlan = reportData.aiReport.actionPlan;
     return (
       <>
         <h2 className="text-2xl font-semibold mt-6 mb-3" style={{ color: colors.slateBlue }}>Personalized Action Plan</h2>
@@ -760,6 +759,7 @@ const App = () => {
       link.href = URL.createObjectURL(blob);
       link.download = `Career_Readiness_Report_${userProfile.role.replace(/\s/g, '_')}.html`;
       document.body.appendChild(link);
+      link.click();
       document.body.removeChild(link);
       setShowReportModal(false); // Close modal after download
     }
@@ -876,8 +876,8 @@ const App = () => {
         return (
           <div className="flex flex-col items-center justify-center min-h-screen p-4" style={{ backgroundColor: colors.deepBlack, color: colors.lightGrey }}>
             <div className="p-8 rounded-xl shadow-2xl max-w-3xl w-full" style={{ backgroundColor: colors.lightGrey, color: colors.deepBlack }}>
-              {/* Top-left social share icons and top-right logo */}
-              <div className="flex justify-between items-center w-full mb-4">
+              {/* Top section: Social Share (icons, top-left) and Logo (top-right) */}
+              <div className="flex justify-between items-start w-full mb-4"> {/* Changed items-center to items-start */}
                   {/* Social Share Icons */}
                   <div className="flex gap-2">
                       {/* X (Twitter) Icon */}
@@ -919,14 +919,14 @@ const App = () => {
                       onClick={handleGenerateSkillGapAnalysis}
                       disabled={isGeneratingSkillGap}
                       className="font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-                      style={{ backgroundColor: generateSkillGapBtnColor, color: 'white' }} // Dynamic color
+                      style={{ backgroundColor: generateSkillGapBtnColor, color: 'white' }}
                     >
                       {isGeneratingSkillGap ? 'Analyzing Skills...' : 'Generate Skill Gap Analysis ✨'}
                     </button>
                     <button
-                      onClick={() => setShowReportModal(true)} // Show download modal
+                      onClick={() => setShowReportModal(true)}
                       className="font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
-                      style={{ backgroundColor: downloadReportBtnColor, color: 'white' }} // Dynamic color
+                      style={{ backgroundColor: downloadReportBtnColor, color: 'white' }}
                     >
                       Download Full Report
                     </button>
