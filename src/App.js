@@ -400,8 +400,8 @@ const MarkdownRenderer = ({ reportData }) => {
     const sortedSkills = [...reportData.skillGapAnalysis.skills].sort((a, b) => {
       const gapA = a.importanceRating - a.currentCapabilityRating;
       const gapB = b.importanceRating - b.currentCapabilityRating;
-      if (gapA !== gapB) return gapB - gapA;
-      return b.importanceRating - a.importanceRating;
+      if (gapA !== gapB) return gapB - gapA; // Sort by gap first
+      return b.importanceRating - a.importanceRating; // Then by importance
     });
 
     return (
@@ -520,8 +520,6 @@ const App = () => {
 
   const [isGeneratingSkillGap, setIsGeneratingSkillGap] = useState(false);
 
-  // Logo URL - IMPORTANT: This variable is no longer used in rendering, but kept for context if needed elsewhere.
-  // const logoUrl = "https://placehold.co/150x50/3a4252/ffffff?text=Your+Logo"; // Placeholder logo
   // Google Form Embed URL - IMPORTANT: Replace this with your actual Google Form embed URL
   const googleFormEmbedUrl = "https://docs.google.com/forms/d/e/1FAIpQLSddjSYI034-DNEk8xgSGphL2IPsM164xFUTAZ8jDDyptTt5iQ/viewform?embedded=true"; // Your Google Form embed URL
 
@@ -760,7 +758,7 @@ const App = () => {
   };
 
   // Common styles for modals
-  const modalOverlayStyle = "fixed inset-0 bg-black bg-opacity50 flex items-center justify-center z-50";
+  const modalOverlayStyle = "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
   const modalContentStyle = "bg-white p-6 rounded-lg shadow-xl max-w-lg w-full mx-4";
 
   // Render different pages
@@ -770,12 +768,12 @@ const App = () => {
         return (
           <div className="flex flex-col items-center justify-center min-h-screen p-4" style={{ backgroundColor: colors.deepBlack, color: colors.lightGrey }}>
             <div className="p-8 rounded-xl shadow-2xl max-w-2xl text-center" style={{ backgroundColor: colors.lightGrey, color: colors.deepBlack }}>
-              <h1 className="text-4xl font-extrabold mb-6" style={{ color: colors.primaryPink }}>Career Readiness Assessment</h1>
+              <h1 className="text-4xl font-extrabold mb-6" style={{ color: colors.primaryPink }}>CTRL+ALT+CAREER</h1> {/* Updated title */}
               <p className="text-lg mb-4 leading-relaxed">
-                Welcome to your personalized career readiness journey! This tool uses advanced AI to adapt questions based on your responses, ensuring deeply relevant insights.
+                Stuck in autopilot? It’s time for a system check. This AI-powered reboot adapts to you in real time — think less personality quiz, more upgrade path. {/* Updated text */}
               </p>
               <p className="text-lg mb-8 leading-relaxed">
-                You'll receive a comprehensive report with an AI impact analysis, future scenarios tailored to your industry, and a concrete action plan designed specifically for your role and aspirations.
+                You’ll get a personalised report with future-of-work forecasts, automation risks, and a no-nonsense plan to keep your career one step ahead of the bots. {/* Updated text */}
               </p>
               <button
                 onClick={handleStartAssessment}
