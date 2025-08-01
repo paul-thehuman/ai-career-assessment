@@ -376,7 +376,7 @@ const generateHtmlReport = (reportData, userProfile, colors) => {
             <li>Reflecting on career scenarios as opportunities arise</li>
             <li>Retaking this assessment quarterly to track growth</li>
         </ul>
-        <p class="callout-box" style="background: ${colors.lightGrey}; border-left: 4px solid ${colors.primaryPink}; color: #101216;">
+        <p class="callout-box" style="background: #eaeaea; border-left: 4px solid #ff2e63; color: #101216;">
             <strong>Remember:</strong> Your career isn't a straight line—and neither is the future. The goal isn't to predict the future perfectly, but to build the adaptability and curiosity to thrive in whatever comes next.
         </p>
     </div>
@@ -395,15 +395,62 @@ const generateHtmlReport = (reportData, userProfile, colors) => {
 
 // Component to render Markdown content (for display within the app)
 const MarkdownRenderer = ({ reportData }) => {
-  if (!reportData || (!reportData.aiReport && !reportData.skillGapAnalysis)) {
-    return null;
-  }
+  const renderAiReport = () => {
+    const aiReportData = reportData?.aiReport;
+    if (!aiReportData) return null;
+    return (
+      <>
+        <div className="section">
+          <h2 className="text-xl font-semibold mb-4 text-slate-blue">AI Impact Analysis</h2>
+          <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReportData.aiImpactAnalysis, colors) }} />
+        </div>
 
-  // Render Skill Gap Analysis visually in-app
+        <div className="section">
+          <h2 className="text-xl font-semibold mb-4 text-slate-blue">Future Scenarios</h2>
+          <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReportData.futureScenarios, colors) }} />
+        </div>
+
+        {aiReportData.actionPlan && (
+          <div className="section">
+            <h2 className="text-xl font-semibold mb-4 text-slate-blue">Personalized Action Plan</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="action-plan-column" style={{ backgroundColor: colors.lightGrey }}>
+                <h3>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={colors.primaryPink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-calendar-check"><path d="M8 2v4"/><path d="M16 2v4"/><path d="M21 13V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8"/><path d="M21 13a5 5 0 1 1-5 5h5v-5Z"/><path d="M16 18h2l4 4"/></svg>
+                  30-Day Plan
+                </h3>
+                <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReportData.actionPlan.day30, colors) }} />
+              </div>
+              <div className="action-plan-column" style={{ backgroundColor: colors.lightGrey }}>
+                <h3>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={colors.primaryPink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-calendar-plus"><path d="M21 12V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="M18 21v-6"/><path d="M15 18h6"/></svg>
+                  60-Day Plan
+                </h3>
+                <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReportData.actionPlan.day60, colors) }} />
+              </div>
+              <div className="action-plan-column" style={{ backgroundColor: colors.lightGrey }}>
+                <h3>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={colors.primaryPink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-calendar-range"><path d="M21 10H3"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M16 14H8"/></svg>
+                  90-Day Plan
+                </h3>
+                <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReportData.actionPlan.day90, colors) }} />
+              </div>
+            </div>
+            {aiReportData.actionPlan.summary && (
+              <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReportData.actionPlan.summary, colors) }} />
+            )}
+          </div>
+        )}
+      </>
+    );
+  };
+  
+  // Conditionally render the skill gap analysis section
   const renderSkillGapAnalysis = () => {
-    if (!reportData.skillGapAnalysis?.skills) return null;
+    const skillGapData = reportData?.skillGapAnalysis;
+    if (!skillGapData?.skills) return null;
 
-    const sortedSkills = [...reportData.skillGapAnalysis.skills].sort((a, b) => {
+    const sortedSkills = [...skillGapData.skills].sort((a, b) => {
       const gapA = a.importanceRating - a.currentCapabilityRating;
       const gapB = b.importanceRating - b.currentCapabilityRating;
       if (gapA !== gapB) return gapB - gapA; // Sort by gap first
@@ -413,7 +460,7 @@ const MarkdownRenderer = ({ reportData }) => {
     return (
       <div className="section">
         <h2 className="text-xl font-semibold mb-4 text-slate-blue">Skill Gap Analysis</h2>
-        <h3 class="text-xl font-semibold mt-5 mb-2" style={{ color: colors.slateBlue }}>Identified Skill Gaps & Priorities</h3>
+        <h3 className="text-xl font-semibold mt-5 mb-2" style={{ color: colors.slateBlue }}>Identified Skill Gaps & Priorities</h3>
         {sortedSkills.map((skill, index) => {
           const capabilityBar = generateCapabilityBar(skill.currentCapabilityRating);
           let priorityTag = 'Low Priority';
@@ -448,63 +495,36 @@ const MarkdownRenderer = ({ reportData }) => {
       </div>
     );
   };
+  
+  // Main rendering logic for the report
+  const renderReportContent = (reportData) => {
+    // FIX: This function should receive reportData as an argument
+    const aiReportData = reportData?.aiReport;
+    const skillGapData = reportData?.skillGapAnalysis;
 
-  // Render Action Plan visually in-app
-  const renderActionPlan = () => {
-    if (!reportData.aiReport?.actionPlan) return null;
+    if (!aiReportData && !skillGapData) {
+      return (
+        <div className="p-4 text-center">
+          <p className="text-gray-700">The report could not be generated. Please ensure your API key is correctly set up.</p>
+        </div>
+      );
+    }
 
-    const actionPlan = reportData.aiReport.actionPlan;
     return (
       <>
-        <h2 className="text-2xl font-semibold mt-6 mb-3" style={{ color: colors.slateBlue }}>Personalized Action Plan</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="action-plan-column" style={{ backgroundColor: colors.lightGrey }}>
-            <h3>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={colors.primaryPink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-calendar-check"><path d="M8 2v4"/><path d="M16 2v4"/><path d="M21 13V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8"/><path d="M21 13a5 5 0 1 1-5 5h5v-5Z"/><path d="M16 18h2l4 4"/></svg>
-              30-Day Plan
-            </h3>
-            <div dangerouslySetInnerHTML={{ __html: markdownToHtml(actionPlan.day30, colors) }} />
-          </div>
-          <div className="action-plan-column" style={{ backgroundColor: colors.lightGrey }}>
-            <h3>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={colors.primaryPink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-calendar-plus"><path d="M21 12V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="M18 21v-6"/><path d="M15 18h6"/></svg>
-              60-Day Plan
-            </h3>
-            <div dangerouslySetInnerHTML={{ __html: markdownToHtml(actionPlan.day60, colors) }} />
-          </div>
-          <div className="action-plan-column" style={{ backgroundColor: colors.lightGrey }}>
-            <h3>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={colors.primaryPink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-calendar-range"><path d="M21 10H3"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M16 14H8"/></svg>
-              90-Day Plan
-            </h3>
-            <div dangerouslySetInnerHTML={{ __html: markdownToHtml(actionPlan.day90, colors) }} />
-          </div>
-        </div>
-        {actionPlan.summary && (
-          <div dangerouslySetInnerHTML={{ __html: markdownToHtml(actionPlan.summary, colors) }} />
-        )}
+        {renderAiReport()}
+        {renderSkillGapAnalysis()}
       </>
     );
   };
-
-  return (
-    <div className="markdown-body">
-      {reportData.aiReport && (
-        <>
-          <h2 className="text-2xl font-semibold mt-6 mb-3" style={{ color: colors.slateBlue }}>AI Impact Analysis</h2>
-          <div dangerouslySetInnerHTML={{ __html: markdownToHtml(reportData.aiReport.aiImpactAnalysis, colors) }} />
-
-          <h2 className="text-2xl font-semibold mt-6 mb-3" style={{ color: colors.slateBlue }}>Future Scenarios</h2>
-          <div dangerouslySetInnerHTML={{ __html: markdownToHtml(reportData.aiReport.futureScenarios, colors) }} />
-
-          {renderActionPlan()}
-        </>
-      )}
-
-      {renderSkillGapAnalysis()}
-    </div>
-  );
-};
+  
+  const MarkdownRenderer = ({ reportData }) => {
+    return (
+      <div className="prose max-w-none leading-relaxed mb-8 p-2" style={{ borderColor: colors.slateBlue, color: colors.deepBlack }}>
+        {renderReportContent(reportData)}
+      </div>
+    );
+  };
 
 
 // Main App Component
@@ -741,7 +761,7 @@ const App = () => {
   // Effect to update reportDownloadContent whenever aiReport or skillGapAnalysis changes
   useEffect(() => {
     if (aiReport || skillGapAnalysis) {
-      // Set content for download when report or skill analysis is ready
+      // Pass the structured report data to generateHtmlReport
       setReportDownloadContent(generateHtmlReport({ aiReport, skillGapAnalysis }, userProfile, colors));
     }
   }, [aiReport, skillGapAnalysis, userProfile]);
@@ -884,23 +904,6 @@ const App = () => {
                     >
                       Download Full Report
                     </button>
-                  </div>
-
-                  <div className="section mt-8 w-full">
-                      <h2 className="text-xl font-semibold mb-4 text-slate-blue text-center">We'd Love Your Feedback!</h2>
-                      <p className="text-center text-gray-700 mb-6">Help us improve this assessment by sharing your thoughts. Your insights could even become a testimonial!</p>
-                      <div style={{ position: 'relative', width: '100%', paddingTop: '150%' }}>
-                          <iframe
-                              src={googleFormEmbedUrl}
-                              title="Assessment Feedback Form"
-                              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
-                              marginHeight="0"
-                              marginWidth="0"
-                              loading="lazy"
-                          >
-                              Loading…
-                          </iframe>
-                      </div>
                   </div>
                 </>
               )}
