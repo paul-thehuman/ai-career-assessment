@@ -237,7 +237,7 @@ const MarkdownRenderer = ({ reportData }) => {
 
     return (
       <div className="prose max-w-none leading-relaxed mb-8 p-2" style={{ borderColor: colors.slateBlue, color: colors.deepBlack }}>
-        {renderReportContent()}
+        {renderReportContent(reportData)}
       </div>
     );
   };
@@ -574,6 +574,10 @@ const App = () => {
         );
 
       case 'results':
+        // Determine button colors based on skillGapAnalysis presence
+        const generateSkillGapBtnColor = colors.primaryPink; // Prominent
+        const downloadReportBtnColor = colors.slateBlue; // Secondary
+
         return (
           <div className="flex flex-col items-center justify-center min-h-screen p-4" style={{ backgroundColor: colors.deepBlack, color: colors.lightGrey }}>
             <div className="p-8 rounded-xl shadow-2xl max-w-3xl w-full" style={{ backgroundColor: colors.lightGrey, color: colors.deepBlack }}>
@@ -592,36 +596,17 @@ const App = () => {
                       onClick={handleGenerateSkillGapAnalysis}
                       disabled={isGeneratingSkillGap}
                       className="font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-                      style={{ backgroundColor: colors.slateBlue, color: 'white' }}
+                      style={{ backgroundColor: generateSkillGapBtnColor, color: 'white' }}
                     >
                       {isGeneratingSkillGap ? 'Analyzing Skills...' : 'Generate Skill Gap Analysis ✨'}
                     </button>
-                    {skillGapAnalysis && ( // Only show download button if skill gap analysis is present
-                        <button
-                          onClick={() => setShowReportModal(true)}
-                          className="font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
-                          style={{ backgroundColor: colors.primaryPink, color: 'white' }}
-                        >
-                          Download Full Report
-                        </button>
-                    )}
-                  </div>
-
-                  <div className="section mt-8 w-full">
-                      <h2 className="text-xl font-semibold mb-4 text-slate-blue text-center">We'd Love Your Feedback!</h2>
-                      <p className="text-center text-gray-700 mb-6">Help us improve this assessment by sharing your thoughts. Your insights could even become a testimonial!</p>
-                      <div style={{ position: 'relative', width: '100%', paddingTop: '150%' }}>
-                          <iframe
-                              src={googleFormEmbedUrl}
-                              title="Assessment Feedback Form"
-                              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
-                              marginHeight="0"
-                              marginWidth="0"
-                              loading="lazy"
-                          >
-                              Loading…
-                          </iframe>
-                      </div>
+                    <button
+                      onClick={() => setShowReportModal(true)}
+                      className="font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+                      style={{ backgroundColor: downloadReportBtnColor, color: 'white' }}
+                    >
+                      Download Full Report
+                    </button>
                   </div>
                 </>
               )}
