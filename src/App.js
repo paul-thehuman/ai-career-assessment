@@ -252,12 +252,6 @@ const generateHtmlReport = (reportData, userProfile, colors) => {
             text-align: center;
             margin-bottom: 30px;
         }
-        .header img { /* Style for logo */
-            max-width: 150px;
-            height: auto;
-            margin-bottom: 15px;
-            border-radius: 8px; /* Rounded corners for logo */
-        }
         .section {
             margin-bottom: 40px;
             padding: 20px;
@@ -395,57 +389,11 @@ const generateHtmlReport = (reportData, userProfile, colors) => {
 
 // Component to render Markdown content (for display within the app)
 const MarkdownRenderer = ({ reportData }) => {
-  const renderAiReport = () => {
-    const aiReportData = reportData?.aiReport;
-    if (!aiReportData) return null;
-    return (
-      <>
-        <div className="section">
-          <h2 className="text-xl font-semibold mb-4 text-slate-blue">AI Impact Analysis</h2>
-          <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReportData.aiImpactAnalysis, colors) }} />
-        </div>
+  if (!reportData || (!reportData.aiReport && !reportData.skillGapAnalysis)) {
+    return null;
+  }
 
-        <div className="section">
-          <h2 className="text-xl font-semibold mb-4 text-slate-blue">Future Scenarios</h2>
-          <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReportData.futureScenarios, colors) }} />
-        </div>
-
-        {aiReportData.actionPlan && (
-          <div className="section">
-            <h2 className="text-xl font-semibold mb-4 text-slate-blue">Personalized Action Plan</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="action-plan-column" style={{ backgroundColor: colors.lightGrey }}>
-                <h3>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={colors.primaryPink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-calendar-check"><path d="M8 2v4"/><path d="M16 2v4"/><path d="M21 13V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8"/><path d="M21 13a5 5 0 1 1-5 5h5v-5Z"/><path d="M16 18h2l4 4"/></svg>
-                  30-Day Plan
-                </h3>
-                <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReportData.actionPlan.day30, colors) }} />
-              </div>
-              <div className="action-plan-column" style={{ backgroundColor: colors.lightGrey }}>
-                <h3>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={colors.primaryPink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-calendar-plus"><path d="M21 12V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="M18 21v-6"/><path d="M15 18h6"/></svg>
-                  60-Day Plan
-                </h3>
-                <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReportData.actionPlan.day60, colors) }} />
-              </div>
-              <div className="action-plan-column" style={{ backgroundColor: colors.lightGrey }}>
-                <h3>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={colors.primaryPink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-calendar-range"><path d="M21 10H3"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M16 14H8"/></svg>
-                  90-Day Plan
-                </h3>
-                <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReportData.actionPlan.day90, colors) }} />
-              </div>
-            </div>
-            {aiReportData.actionPlan.summary && (
-              <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReportData.actionPlan.summary, colors) }} />
-            )}
-          </div>
-        )}
-      </>
-    );
-  };
-  
-  // Conditionally render the skill gap analysis section
+  // Render Skill Gap Analysis visually in-app
   const renderSkillGapAnalysis = () => {
     const skillGapData = reportData?.skillGapAnalysis;
     if (!skillGapData?.skills) return null;
@@ -495,33 +443,94 @@ const MarkdownRenderer = ({ reportData }) => {
       </div>
     );
   };
-  
-  // Main rendering logic for the report
-  const renderReportContent = (reportData) => {
-    // FIX: This function should receive reportData as an argument
+
+  // Render Action Plan visually in-app
+  const renderActionPlan = () => {
     const aiReportData = reportData?.aiReport;
-    const skillGapData = reportData?.skillGapAnalysis;
+    if (!aiReportData?.actionPlan) return null;
 
-    if (!aiReportData && !skillGapData) {
-      return (
-        <div className="p-4 text-center">
-          <p className="text-gray-700">The report could not be generated. Please ensure your API key is correctly set up.</p>
+    const actionPlan = aiReportData.actionPlan;
+    return (
+      <div className="section">
+        <h2 className="text-xl font-semibold mb-4 text-slate-blue">Personalized Action Plan</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="action-plan-column" style={{ backgroundColor: colors.lightGrey }}>
+            <h3>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={colors.primaryPink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-calendar-check"><path d="M8 2v4"/><path d="M16 2v4"/><path d="M21 13V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8"/><path d="M21 13a5 5 0 1 1-5 5h5v-5Z"/><path d="M16 18h2l4 4"/></svg>
+              30-Day Plan
+            </h3>
+            <div dangerouslySetInnerHTML={{ __html: markdownToHtml(actionPlan.day30, colors) }} />
+          </div>
+          <div className="action-plan-column" style={{ backgroundColor: colors.lightGrey }}>
+            <h3>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={colors.primaryPink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-calendar-plus"><path d="M21 12V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="M18 21v-6"/><path d="M15 18h6"/></svg>
+              60-Day Plan
+            </h3>
+            <div dangerouslySetInnerHTML={{ __html: markdownToHtml(actionPlan.day60, colors) }} />
+          </div>
+          <div className="action-plan-column" style={{ backgroundColor: colors.lightGrey }}>
+            <h3>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={colors.primaryPink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-calendar-range"><path d="M21 10H3"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M16 14H8"/></svg>
+              90-Day Plan
+            </h3>
+            <div dangerouslySetInnerHTML={{ __html: markdownToHtml(actionPlan.day90, colors) }} />
+          </div>
         </div>
-      );
-    }
+        {actionPlan.summary && (
+          <div dangerouslySetInnerHTML={{ __html: markdownToHtml(actionPlan.summary, colors) }} />
+        )}
+      </>
+    );
+  };
 
+  const renderAiReport = () => {
+    const aiReportData = reportData?.aiReport;
+    if (!aiReportData) return null;
     return (
       <>
-        {renderAiReport()}
-        {renderSkillGapAnalysis()}
+        <div className="section">
+          <h2 className="text-xl font-semibold mb-4 text-slate-blue">AI Impact Analysis</h2>
+          <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReportData.aiImpactAnalysis, colors) }} />
+        </div>
+
+        <div className="section">
+          <h2 className="text-xl font-semibold mb-4 text-slate-blue">Future Scenarios</h2>
+          <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReportData.futureScenarios, colors) }} />
+        </div>
+
+        {aiReportData.actionPlan && (
+          <div className="section">
+            {renderActionPlan()}
+          </div>
+        )}
       </>
     );
   };
   
   const MarkdownRenderer = ({ reportData }) => {
+    const renderReportContent = () => {
+      const aiReportData = reportData?.aiReport;
+      const skillGapData = reportData?.skillGapAnalysis;
+
+      if (!aiReportData && !skillGapData) {
+        return (
+          <div className="p-4 text-center">
+            <p className="text-gray-700">The report could not be generated. Please ensure your API key is correctly set up.</p>
+          </div>
+        );
+      }
+
+      return (
+        <>
+          {renderAiReport()}
+          {renderSkillGapAnalysis()}
+        </>
+      );
+    };
+
     return (
       <div className="prose max-w-none leading-relaxed mb-8 p-2" style={{ borderColor: colors.slateBlue, color: colors.deepBlack }}>
-        {renderReportContent(reportData)}
+        {renderReportContent()}
       </div>
     );
   };
@@ -615,7 +624,6 @@ const App = () => {
       };
     }
 
-    // IMPORTANT: API Key is now read from environment variable for security
     const apiKey = process.env.REACT_APP_GEMINI_API_KEY; // Read from environment variable
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
@@ -685,30 +693,20 @@ const App = () => {
     setAnswers(updatedAnswers);
     setCurrentInput(''); // Clear the textarea input
 
-    if (currentQuestionIndex < initialCoreQuestions.length) { // Condition to correctly handle adaptive questions after all initial core questions are answered
+    if (currentQuestionIndex < initialCoreQuestions.length - 1) {
       const prompt = `Given the user's role as "${userProfile.role}" in the "${userProfile.industry}" industry, and their previous answer to the question "${question}" which was "${answer}", generate a single, concise follow-up question to delve deeper into their career readiness or aspirations. The question should be adaptive and relevant to their specific context.`;
       const newQuestion = await callGeminiAPI(prompt, false, null, setIsLoading);
-
       if (newQuestion && !newQuestion.startsWith("Error:")) {
-        // If AI successfully generates a new question, add it and move to it
         setQuestions(prevQuestions => [...prevQuestions, newQuestion]);
         setCurrentQuestionIndex(prevIndex => prevIndex + 1);
       } else {
-        // If AI fails or it's the last core question, move to report generation
-        console.log("AI failed to generate a follow-up question or all core questions answered. Proceeding to report generation.");
-        await generateFullReport(updatedAnswers);
+        console.log("Failed to generate a follow-up question. Moving to the next core question.");
+        setCurrentQuestionIndex(prevIndex => prevIndex + 1);
       }
+    } else if (currentQuestionIndex === questions.length - 1) {
+      await generateFullReport(updatedAnswers);
     } else {
-      // This 'else' branch handles moving through *already generated* adaptive questions
-      // or if the initial question count was somehow exceeded without report generation.
-      // After the last core question, it should ideally go to report generation.
-      // If we are already past the initial core questions and a new one was just generated, move to it.
-      if (currentQuestionIndex < questions.length -1) { // Check if there's a next question in the array
-         setCurrentQuestionIndex(prevIndex => prevIndex + 1);
-      } else {
-         // If no more questions in the array (meaning the last one was answered), generate report
-         await generateFullReport(updatedAnswers);
-      }
+      setCurrentQuestionIndex(prevIndex => prevIndex + 1);
     }
   };
 
