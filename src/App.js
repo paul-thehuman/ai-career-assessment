@@ -101,7 +101,6 @@ const MarkdownRenderer = ({ reportData }) => {
     return null;
   }
 
-  const renderSkillGapAnalysis = () => {
     if (!reportData.skillGapAnalysis?.skills) return null;
 
     const sortedSkills = [...reportData.skillGapAnalysis.skills].sort((a, b) => {
