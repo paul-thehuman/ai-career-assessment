@@ -261,7 +261,6 @@ const MarkdownRenderer = ({ reportData }) => {
     );
   };
   
-  const MarkdownRenderer = ({ reportData }) => {
     const aiReportData = reportData?.aiReport;
     const skillGapData = reportData?.skillGapAnalysis;
 
