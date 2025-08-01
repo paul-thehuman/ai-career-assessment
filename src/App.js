@@ -97,14 +97,11 @@ const markdownToHtml = (markdown, colors) => {
 
 // Component to render Markdown content (for display within the app)
 const MarkdownRenderer = ({ reportData }) => {
-  if (!reportData || (!reportData.aiReport && !reportData.skillGapAnalysis)) {
-    return null;
-  }
-
   const renderSkillGapAnalysis = () => {
-    if (!reportData.skillGapAnalysis?.skills) return null;
+    const skillGapData = reportData?.skillGapAnalysis;
+    if (!skillGapData?.skills) return null;
 
-    const sortedSkills = [...reportData.skillGapAnalysis.skills].sort((a, b) => {
+    const sortedSkills = [...skillGapData.skills].sort((a, b) => {
       const gapA = a.importanceRating - a.currentCapabilityRating;
       const gapB = b.importanceRating - b.currentCapabilityRating;
       if (gapA !== gapB) return gapB - gapA;
@@ -112,41 +109,43 @@ const MarkdownRenderer = ({ reportData }) => {
     });
 
     return (
-      <div className="section">
-        <h2 className="text-xl font-semibold mb-4 text-slate-blue">Skill Gap Analysis</h2>
-        <h3 className="text-xl font-semibold mt-5 mb-2" style={{ color: colors.slateBlue }}>Identified Skill Gaps & Priorities</h3>
-        {sortedSkills.map((skill, index) => {
-          const capabilityBar = generateCapabilityBar(skill.currentCapabilityRating);
-          let priorityTag = 'Low Priority';
-          const gap = skill.importanceRating - skill.currentCapabilityRating;
+      <>
+        <div className="section">
+          <h2 className="text-xl font-semibold mb-4 text-slate-blue">Skill Gap Analysis</h2>
+          <h3 className="text-xl font-semibold mt-5 mb-2" style={{ color: colors.slateBlue }}>Identified Skill Gaps & Priorities</h3>
+          {sortedSkills.map((skill, index) => {
+            const capabilityBar = generateCapabilityBar(skill.currentCapabilityRating);
+            let priorityTag = 'Low Priority';
+            const gap = skill.importanceRating - skill.currentCapabilityRating;
 
-          if (skill.importanceRating >= 4 && skill.currentCapabilityRating <= 2) {
-            priorityTag = 'Immediate Focus';
-          } else if (skill.importanceRating >= 3 && gap >= 1) {
-            priorityTag = 'Emerging Priority';
-          }
+            if (skill.importanceRating >= 4 && skill.currentCapabilityRating <= 2) {
+              priorityTag = 'Immediate Focus';
+            } else if (skill.importanceRating >= 3 && gap >= 1) {
+              priorityTag = 'Emerging Priority';
+            }
 
-          return (
-            <div key={index} className="mb-4 p-3 rounded-lg border" style={{ borderColor: colors.lightGrey, background: '#fdfdfd' }}>
-              <p className="font-bold mb-1" style={{ color: colors.deepBlack }}>{skill.skillName}</p>
-              <div className="flex items-center text-sm mb-1">
-                  <span style={{ color: colors.slateBlue }}>Importance: {skill.importanceRating}/5</span>
-                  <span className="mx-2 text-gray-400">|</span>
-                  <span style={{ color: colors.slateBlue }}>Capability: {skill.currentCapabilityRating}/5</span>
-                  <span className="mx-2 text-gray-400">|</span>
-                  <span className="font-bold" style={{ color: priorityTag === 'Immediate Focus' ? '#ef4444' : (priorityTag === 'Emerging Priority' ? '#f59e0b' : colors.slateBlue)}}>{priorityTag}</span>
+            return (
+              <div key={index} className="mb-4 p-3 rounded-lg border" style={{ borderColor: colors.lightGrey, background: '#fdfdfd' }}>
+                <p className="font-bold mb-1" style={{ color: colors.deepBlack }}>{skill.skillName}</p>
+                <div className="flex items-center text-sm mb-1">
+                    <span style={{ color: colors.slateBlue }}>Importance: {skill.importanceRating}/5</span>
+                    <span className="mx-2 text-gray-400">|</span>
+                    <span style={{ color: colors.slateBlue }}>Capability: {skill.currentCapabilityRating}/5</span>
+                    <span className="mx-2 text-gray-400">|</span>
+                    <span className="font-bold" style={{ color: priorityTag === 'Immediate Focus' ? '#ef4444' : (priorityTag === 'Emerging Priority' ? '#f59e0b' : colors.slateBlue)}}>{priorityTag}</span>
+                </div>
+                <p className="text-sm" style={{ color: colors.deepBlack }}>{capabilityBar} {skill.description}</p>
               </div>
-              <p className="text-sm" style={{ color: colors.deepBlack }}>{capabilityBar} {skill.description}</p>
-            </div>
-          );
-        })}
-        {skillGapData.summary && (
-          <>
-            <h3 className="text-xl font-semibold mt-5 mb-2" style={{ color: colors.slateBlue }}>Skill Focus</h3>
-            <div dangerouslySetInnerHTML={{ __html: markdownToHtml(skillGapData.summary, colors) }} />
-          </>
-        )}
-      </div>
+            );
+          })}
+          {skillGapData.summary && (
+            <>
+              <h3 className="text-xl font-semibold mt-5 mb-2" style={{ color: colors.slateBlue }}>Skill Focus</h3>
+              <div dangerouslySetInnerHTML={{ __html: markdownToHtml(skillGapData.summary, colors) }} />
+            </>
+          )}
+        </div>
+      </>
     );
   };
 
@@ -233,6 +232,7 @@ const MarkdownRenderer = ({ reportData }) => {
     );
   };
 
+
 // Main App Component
 const App = () => {
   const [currentPage, setCurrentPage] = useState('intro'); // 'intro', 'assessment', 'results'
@@ -252,7 +252,8 @@ const App = () => {
 
   const [isGeneratingSkillGap, setIsGeneratingSkillGap] = useState(false);
 
-  // Define JSON schemas for structured AI responses
+  const googleFormEmbedUrl = "https://docs.google.com/forms/d/e/1FAIpQLSddjSYI034-DNEk8xgSGphL2IPsM164xFUTAZ8jDDyptTt5iQ/viewform?embedded=true"; // Your Google Form embed URL
+
   const reportSchema = {
     type: "OBJECT",
     properties: {
@@ -294,20 +295,18 @@ const App = () => {
   };
 
 
-  // Initial core questions
   const initialCoreQuestions = useMemo(() => [
     "Describe your current professional role and primary responsibilities.",
     "What are your top 3 career aspirations for the next 5 years?",
     "What specific skills or knowledge areas do you believe are most critical for your career growth in your industry?",
     "What is the biggest challenge you foresee in achieving your career goals?",
     "How do you currently approach professional development and learning new skills?"
-  ], []); // Empty dependency array means it's created once
+  ], []);
 
   useEffect(() => {
     setQuestions(initialCoreQuestions);
-  }, [initialCoreQuestions]); // Added initialCoreQuestions to dependency array
+  }, [initialCoreQuestions]);
 
-  // Function to call the Gemini API
   const callGeminiAPI = async (prompt, isStructured = false, schema = null, setLoadingState = null) => {
     if (setLoadingState) setLoadingState(true);
     let chatHistory = [];
@@ -321,11 +320,11 @@ const App = () => {
       };
     }
 
-    const apiKey = process.env.REACT_APP_GEMINI_API_KEY; // Read from environment variable
+    const apiKey = process.env.REACT_APP_GEMINI_API_KEY;
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
-    console.log("API Key being used (first few chars):", apiKey ? apiKey.substring(0, 5) + "..." : "Not set"); // Debug log for API key presence
-    console.log("Calling Gemini API with prompt:", prompt); // Log the prompt
+    console.log("API Key being used (first few chars):", apiKey ? apiKey.substring(0, 5) + "..." : "Not set");
+    console.log("Calling Gemini API with prompt:", prompt);
 
     try {
       const response = await fetch(apiUrl, {
@@ -334,13 +333,13 @@ const App = () => {
         body: JSON.stringify(payload)
       });
       const result = await response.json();
-      console.log("Gemini API raw response:", result); // Log the raw response
+      console.log("Gemini API raw response:", result);
 
       if (result.candidates && result.candidates.length > 0 &&
           result.candidates[0].content && result.candidates[0].content.parts &&
           result.candidates[0].content.parts.length > 0) {
         let text = result.candidates[0].content.parts[0].text;
-        console.log("Gemini API response text:", text); // Log the response text
+        console.log("Gemini API response text:", text);
         if (isStructured) {
           try {
             return JSON.parse(text);
@@ -362,12 +361,10 @@ const App = () => {
     }
   };
 
-  // Handle starting the assessment
   const handleStartAssessment = () => {
     setShowProfileModal(true);
   };
 
-  // Handle saving user profile and moving to assessment
   const handleSaveProfile = () => {
     if (userProfile.role && userProfile.industry) {
       setShowProfileModal(false);
@@ -377,7 +374,6 @@ const App = () => {
     }
   };
 
-  // Handle submitting an answer and generating next question/report
   const handleSubmitAnswer = async (question, answer) => {
     if (!answer.trim()) {
       console.log("Please provide an answer before proceeding.");
@@ -386,7 +382,7 @@ const App = () => {
 
     const updatedAnswers = [...answers, { question, answer }];
     setAnswers(updatedAnswers);
-    setCurrentInput(''); // Clear the textarea input
+    setCurrentInput('');
 
     if (currentQuestionIndex < initialCoreQuestions.length - 1) {
       const prompt = `Given the user's role as "${userProfile.role}" in the "${userProfile.industry}" industry, and their previous answer to the question "${question}" which was "${answer}", generate a single, concise follow-up question to delve deeper into their career readiness or aspirations. The question should be adaptive and relevant to their specific context.`;
@@ -405,7 +401,6 @@ const App = () => {
     }
   };
 
-  // Generate the full AI report
   const generateFullReport = async (allAnswers) => {
     setIsLoading(true);
     setCurrentPage('results');
@@ -751,13 +746,12 @@ const App = () => {
     "What specific skills or knowledge areas do you believe are most critical for your career growth in your industry?",
     "What is the biggest challenge you foresee in achieving your career goals?",
     "How do you currently approach professional development and learning new skills?"
-  ], []); // Empty dependency array means it's created once
+  ], []);
 
   useEffect(() => {
     setQuestions(initialCoreQuestions);
-  }, [initialCoreQuestions]); // Added initialCoreQuestions to dependency array
+  }, [initialCoreQuestions]);
 
-  // Function to call the Gemini API
   const callGeminiAPI = async (prompt, isStructured = false, schema = null, setLoadingState = null) => {
     if (setLoadingState) setLoadingState(true);
     let chatHistory = [];
@@ -771,11 +765,11 @@ const App = () => {
       };
     }
 
-    const apiKey = process.env.REACT_APP_GEMINI_API_KEY; // Read from environment variable
+    const apiKey = process.env.REACT_APP_GEMINI_API_KEY;
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
-    console.log("API Key being used (first few chars):", apiKey ? apiKey.substring(0, 5) + "..." : "Not set"); // Debug log for API key presence
-    console.log("Calling Gemini API with prompt:", prompt); // Log the prompt
+    console.log("API Key being used (first few chars):", apiKey ? apiKey.substring(0, 5) + "..." : "Not set");
+    console.log("Calling Gemini API with prompt:", prompt);
 
     try {
       const response = await fetch(apiUrl, {
@@ -784,13 +778,13 @@ const App = () => {
         body: JSON.stringify(payload)
       });
       const result = await response.json();
-      console.log("Gemini API raw response:", result); // Log the raw response
+      console.log("Gemini API raw response:", result);
 
       if (result.candidates && result.candidates.length > 0 &&
           result.candidates[0].content && result.candidates[0].content.parts &&
           result.candidates[0].content.parts.length > 0) {
         let text = result.candidates[0].content.parts[0].text;
-        console.log("Gemini API response text:", text); // Log the response text
+        console.log("Gemini API response text:", text);
         if (isStructured) {
           try {
             return JSON.parse(text);
@@ -801,23 +795,21 @@ const App = () => {
         }
         return text;
       } else {
-        console.error("Unexpected API response structure or empty content:", result);
-        return "Error: Could not generate content. Please try again. Check console for details.";
+        console.error("Unexpected API response structure:", result);
+        return "Error: Could not generate content. Please try again.";
       }
     } catch (error) {
       console.error("Error calling Gemini API:", error);
-      return "Error: Failed to connect to AI. Please check your network or API key.";
+      return "Error: Failed to connect to AI. Please check your network.";
     } finally {
       if (setLoadingState) setLoadingState(false);
     }
   };
 
-  // Handle starting the assessment
   const handleStartAssessment = () => {
     setShowProfileModal(true);
   };
 
-  // Handle saving user profile and moving to assessment
   const handleSaveProfile = () => {
     if (userProfile.role && userProfile.industry) {
       setShowProfileModal(false);
@@ -827,7 +819,6 @@ const App = () => {
     }
   };
 
-  // Handle submitting an answer and generating next question/report
   const handleSubmitAnswer = async (question, answer) => {
     if (!answer.trim()) {
       console.log("Please provide an answer before proceeding.");
@@ -836,7 +827,7 @@ const App = () => {
 
     const updatedAnswers = [...answers, { question, answer }];
     setAnswers(updatedAnswers);
-    setCurrentInput(''); // Clear the textarea input
+    setCurrentInput('');
 
     if (currentQuestionIndex < initialCoreQuestions.length - 1) {
       const prompt = `Given the user's role as "${userProfile.role}" in the "${userProfile.industry}" industry, and their previous answer to the question "${question}" which was "${answer}", generate a single, concise follow-up question to delve deeper into their career readiness or aspirations. The question should be adaptive and relevant to their specific context.`;
@@ -855,7 +846,6 @@ const App = () => {
     }
   };
 
-  // Generate the full AI report
   const generateFullReport = async (allAnswers) => {
     setIsLoading(true);
     setCurrentPage('results');
@@ -1025,46 +1015,91 @@ const App = () => {
               ) : (
                 <>
                   <div className="prose max-w-none leading-relaxed mb-8 p-2" style={{ borderColor: colors.slateBlue, color: colors.deepBlack }}>
-                    <MarkdownRenderer reportData={{ aiReport, skillGapAnalysis }} />
-                  </div>
-                  <div className="flex flex-col items-center gap-4 mt-6">
-                    <button
-                      onClick={handleGenerateSkillGapAnalysis}
-                      disabled={isGeneratingSkillGap}
-                      className="font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-                      style={{ backgroundColor: colors.primaryPink, color: 'white' }}
-                    >
-                      {isGeneratingSkillGap ? 'Analyzing Skills...' : 'Generate Skill Gap Analysis ✨'}
-                    </button>
-                    {skillGapAnalysis && (
-                        <button
-                          onClick={() => setShowReportModal(true)}
-                          className="font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
-                          style={{ backgroundColor: colors.slateBlue, color: 'white' }}
-                        >
-                          Download Full Report
-                        </button>
-                    )}
-                  </div>
+                    {aiReport && (
+                        <>
+                            <div className="section">
+                                <h2 className="text-xl font-semibold mb-4 text-slate-blue">AI Impact Analysis</h2>
+                                <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReport.aiImpactAnalysis, colors) }} />
+                            </div>
+                            <div className="section">
+                                <h2 className="text-xl font-semibold mb-4 text-slate-blue">Future Scenarios</h2>
+                                <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReport.futureScenarios, colors) }} />
+                            </div>
+                            {aiReport.actionPlan && (
+                                <div className="section">
+                                    <h2 className="text-xl font-semibold mb-4 text-slate-blue">Personalized Action Plan</h2>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div className="action-plan-column" style={{ backgroundColor: colors.lightGrey }}>
+                                            <h3>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={colors.primaryPink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-calendar-check"><path d="M8 2v4"/><path d="M16 2v4"/><path d="M21 13V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8"/><path d="M21 13a5 5 0 1 1-5 5h5v-5Z"/><path d="M16 18h2l4 4"/></svg>
+                                                30-Day Plan
+                                            </h3>
+                                            <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReport.actionPlan.day30, colors) }} />
+                                        </div>
+                                        <div className="action-plan-column" style={{ backgroundColor: colors.lightGrey }}>
+                                            <h3>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={colors.primaryPink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-calendar-plus"><path d="M21 12V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="M18 21v-6"/><path d="M15 18h6"/></svg>
+                                                60-Day Plan
+                                            </h3>
+                                            <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReport.actionPlan.day60, colors) }} />
+                                        </div>
+                                        <div className="action-plan-column" style={{ backgroundColor: colors.lightGrey }}>
+                                            <h3>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={colors.primaryPink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-calendar-range"><path d="M21 10H3"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M16 14H8"/></svg>
+                                                90-Day Plan
+                                            </h3>
+                                            <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReport.actionPlan.day90, colors) }} />
+                                        </div>
+                                      </div>
+                                      {aiReport.actionPlan.summary && (
+                                        <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReport.actionPlan.summary, colors) }} />
+                                      )}
+                                  </div>
+                              )}
+                              {skillGapAnalysis && (
+                                  <div className="section">
+                                      <h2 className="text-xl font-semibold mb-4 text-slate-blue">Skill Gap Analysis</h2>
+                                      <h3 className="text-xl font-semibold mt-5 mb-2" style={{ color: colors.slateBlue }}>Identified Skill Gaps & Priorities</h3>
+                                      {skillGapAnalysis.skills.map((skill, index) => {
+                                          const capabilityBar = generateCapabilityBar(skill.currentCapabilityRating);
+                                          let priorityTag = 'Low Priority';
+                                          const gap = skill.importanceRating - skill.currentCapabilityRating;
 
-                  <div className="section mt-8 w-full">
-                      <h2 className="text-xl font-semibold mb-4 text-slate-blue text-center">We'd Love Your Feedback!</h2>
-                      <p className="text-center text-gray-700 mb-6">Help us improve this assessment by sharing your thoughts. Your insights could even become a testimonial!</p>
-                      <div style={{ position: 'relative', width: '100%', paddingTop: '150%' }}>
-                          <iframe
-                              src="https://docs.google.com/forms/d/e/1FAIpQLSddjSYI034-DNEk8xgSGphL2IPsM164xFUTAZ8jDDyptTt5iQ/viewform?embedded=true"
-                              title="Assessment Feedback Form"
-                              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
-                              marginHeight="0"
-                              marginWidth="0"
-                              loading="lazy"
-                          >
-                              Loading…
-                          </iframe>
-                      </div>
-                  </div>
-                </>
-              )}
+                                          if (skill.importanceRating >= 4 && skill.currentCapabilityRating <= 2) {
+                                              priorityTag = 'Immediate Focus';
+                                          } else if (skill.importanceRating >= 3 && gap >= 1) {
+                                              priorityTag = 'Emerging Priority';
+                                          }
+
+                                          return (
+                                              <div key={index} className="mb-4 p-3 rounded-lg border" style={{ borderColor: colors.lightGrey, background: '#fdfdfd' }}>
+                                                  <p className="font-bold mb-1" style={{ color: colors.deepBlack }}>{skill.skillName}</p>
+                                                  <div className="flex items-center text-sm mb-1">
+                                                      <span style={{ color: colors.slateBlue }}>Importance: {skill.importanceRating}/5</span>
+                                                      <span className="mx-2 text-gray-400">|</span>
+                                                      <span style={{ color: colors.slateBlue }}>Capability: {skill.currentCapabilityRating}/5</span>
+                                                      <span className="mx-2 text-gray-400">|</span>
+                                                      <span className="font-bold" style={{ color: priorityTag === 'Immediate Focus' ? '#ef4444' : (priorityTag === 'Emerging Priority' ? '#f59e0b' : colors.slateBlue)}}>{priorityTag}</span>
+                                                  </div>
+                                                  <p className="text-sm" style={{ color: colors.deepBlack }}>{capabilityBar} {skill.description}</p>
+                                              </div>
+                                          );
+                                      })}
+                                      {skillGapAnalysis.summary && (
+                                          <>
+                                              <h3 className="text-xl font-semibold mt-5 mb-2" style={{ color: colors.slateBlue }}>Skill Focus</h3>
+                                              <div dangerouslySetInnerHTML={{ __html: markdownToHtml(skillGapAnalysis.summary, colors) }} />
+                                          </>
+                                      )}
+                                  </div>
+                              )}
+                              <div style={{ textAlign: 'center', marginTop: '40px', padding: '20px', background: colors.lightGrey, borderRadius: '8px', width: '100%' }}>
+                                  <p style={{ margin: '0', color: colors.slateBlue, fontSize: '0.9rem' }}>
+                                      Created by <a href="https://thehumanco.co" target="_blank" rel="noopener noreferrer" style={{ color: colors.accentPink, textDecoration: 'underline' }}>The Human Co.</a>
+                                  </p>
+                              </div>
+                          </>
+                      )}
             </div>
           </div>
         );
