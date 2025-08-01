@@ -96,7 +96,7 @@ const markdownToHtml = (markdown, colors) => {
 };
 
 // Function to generate the full HTML report for download (standalone)
-const generateHtmlReport = (reportData, userProfile, colors) => { // Removed logoUrl parameter
+const generateHtmlReport = (reportData, userProfile, colors) => {
   const date = new Date().toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' });
 
   const aiImpactHtml = reportData.aiReport?.aiImpactAnalysis ? markdownToHtml(reportData.aiReport.aiImpactAnalysis, colors) : '';
@@ -468,7 +468,7 @@ const MarkdownRenderer = ({ reportData }) => {
           </div>
           <div className="action-plan-column" style={{ backgroundColor: colors.lightGrey }}>
             <h3>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={colors.primaryPink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-calendar-range"><path d="M21 10H3"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M16 14H8"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={colors.primaryPink} strokeWidth="2" strokeLinecap="round" stroke-linejoin="round" className="lucide lucide-calendar-range"><path d="M21 10H3"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M16 14H8"/></svg>
               90-Day Plan
             </h3>
             <div dangerouslySetInnerHTML={{ __html: markdownToHtml(actionPlan.day90, colors) }} />
@@ -520,7 +520,6 @@ const App = () => {
 
   const [isGeneratingSkillGap, setIsGeneratingSkillGap] = useState(false);
 
-  // Google Form Embed URL - IMPORTANT: Replace this with your actual Google Form embed URL
   const googleFormEmbedUrl = "https://docs.google.com/forms/d/e/1FAIpQLSddjSYI034-DNEk8xgSGphL2IPsM164xFUTAZ8jDDyptTt5iQ/viewform?embedded=true"; // Your Google Form embed URL
 
   // Define JSON schemas for structured AI responses
@@ -751,6 +750,7 @@ const App = () => {
       link.href = URL.createObjectURL(blob);
       link.download = `Career_Readiness_Report_${userProfile.role.replace(/\s/g, '_')}.html`;
       document.body.appendChild(link);
+      link.click();
       document.body.removeChild(link);
       setShowReportModal(false); // Close modal after download
     }
@@ -880,7 +880,7 @@ const App = () => {
                       {isGeneratingSkillGap ? 'Analyzing Skills...' : 'Generate Skill Gap Analysis ✨'}
                     </button>
                     <button
-                      onClick={() => setShowReportModal(true)} // Show download modal
+                      onClick={() => setShowReportModal(true)}
                       className="font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
                       style={{ backgroundColor: downloadReportBtnColor, color: 'white' }}
                     >
@@ -892,7 +892,7 @@ const App = () => {
                   <div className="section mt-8 w-full">
                       <h2 className="text-xl font-semibold mb-4 text-slate-blue text-center">We'd Love Your Feedback!</h2>
                       <p className="text-center text-gray-700 mb-6">Help us improve this assessment by sharing your thoughts. Your insights could even become a testimonial!</p>
-                      <div style={{ position: 'relative', width: '100%', paddingTop: '150%' }}> {/* Aspect ratio container */}
+                      <div style={{ position: 'relative', width: '100%', paddingTop: '150%' }}>
                           <iframe
                               src={googleFormEmbedUrl}
                               title="Assessment Feedback Form"
