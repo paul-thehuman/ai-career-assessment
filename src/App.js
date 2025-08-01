@@ -186,7 +186,7 @@ const MarkdownRenderer = ({ reportData }) => {
         {actionPlan.summary && (
           <div dangerouslySetInnerHTML={{ __html: markdownToHtml(actionPlan.summary, colors) }} />
         )}
-      </>
+      </div>
     );
   };
 
@@ -211,6 +211,56 @@ const MarkdownRenderer = ({ reportData }) => {
           </div>
         )}
       </>
+    );
+  };
+  
+  const renderSkillGapAnalysis = () => {
+    const skillGapData = reportData?.skillGapAnalysis;
+    if (!skillGapData?.skills) return null;
+
+    const sortedSkills = [...skillGapData.skills].sort((a, b) => {
+      const gapA = a.importanceRating - a.currentCapabilityRating;
+      const gapB = b.importanceRating - b.currentCapabilityRating;
+      if (gapA !== gapB) return gapB - gapA; // Sort by gap first
+      return b.importanceRating - a.importanceRating; // Then by importance
+    });
+
+    return (
+      <div className="section">
+        <h2 className="text-xl font-semibold mb-4 text-slate-blue">Skill Gap Analysis</h2>
+        <h3 className="text-xl font-semibold mt-5 mb-2" style={{ color: colors.slateBlue }}>Identified Skill Gaps & Priorities</h3>
+        {sortedSkills.map((skill, index) => {
+          const capabilityBar = generateCapabilityBar(skill.currentCapabilityRating);
+          let priorityTag = 'Low Priority';
+          const gap = skill.importanceRating - skill.currentCapabilityRating;
+
+          if (skill.importanceRating >= 4 && skill.currentCapabilityRating <= 2) {
+            priorityTag = 'Immediate Focus';
+          } else if (skill.importanceRating >= 3 && gap >= 1) {
+            priorityTag = 'Emerging Priority';
+          }
+
+          return (
+            <div key={index} className="mb-4 p-3 rounded-lg border" style={{ borderColor: colors.lightGrey, background: '#fdfdfd' }}>
+              <p className="font-bold mb-1" style={{ color: colors.deepBlack }}>{skill.skillName}</p>
+              <div className="flex items-center text-sm mb-1">
+                  <span style={{ color: colors.slateBlue }}>Importance: {skill.importanceRating}/5</span>
+                  <span className="mx-2 text-gray-400">|</span>
+                  <span style={{ color: colors.slateBlue }}>Capability: {skill.currentCapabilityRating}/5</span>
+                  <span className="mx-2 text-gray-400">|</span>
+                  <span className="font-bold" style={{ color: priorityTag === 'Immediate Focus' ? '#ef4444' : (priorityTag === 'Emerging Priority' ? '#f59e0b' : colors.slateBlue)}}>{priorityTag}</span>
+              </div>
+              <p className="text-sm" style={{ color: colors.deepBlack }}>{capabilityBar} {skill.description}</p>
+            </div>
+          );
+        })}
+        {skillGapData.summary && (
+          <>
+            <h3 className="text-xl font-semibold mt-5 mb-2" style={{ color: colors.slateBlue }}>Skill Focus</h3>
+            <div dangerouslySetInnerHTML={{ __html: markdownToHtml(skillGapData.summary, colors) }} />
+          </>
+        )}
+      </div>
     );
   };
   
@@ -398,20 +448,30 @@ const App = () => {
     setAnswers(updatedAnswers);
     setCurrentInput(''); // Clear the textarea input
 
-    if (currentQuestionIndex < initialCoreQuestions.length - 1) {
+    if (currentQuestionIndex < initialCoreQuestions.length) { // Condition to correctly handle adaptive questions after all initial core questions are answered
       const prompt = `Given the user's role as "${userProfile.role}" in the "${userProfile.industry}" industry, and their previous answer to the question "${question}" which was "${answer}", generate a single, concise follow-up question to delve deeper into their career readiness or aspirations. The question should be adaptive and relevant to their specific context.`;
       const newQuestion = await callGeminiAPI(prompt, false, null, setIsLoading);
+
       if (newQuestion && !newQuestion.startsWith("Error:")) {
+        // If AI successfully generates a new question, add it and move to it
         setQuestions(prevQuestions => [...prevQuestions, newQuestion]);
         setCurrentQuestionIndex(prevIndex => prevIndex + 1);
       } else {
-        console.log("Failed to generate a follow-up question. Moving to the next core question.");
-        setCurrentQuestionIndex(prevIndex => prevIndex + 1);
+        // If AI fails or it's the last core question, move to report generation
+        console.log("AI failed to generate a follow-up question or all core questions answered. Proceeding to report generation.");
+        await generateFullReport(updatedAnswers);
       }
-    } else if (currentQuestionIndex === questions.length - 1) {
-      await generateFullReport(updatedAnswers);
     } else {
-      setCurrentQuestionIndex(prevIndex => prevIndex + 1);
+      // This 'else' branch handles moving through *already generated* adaptive questions
+      // or if the initial question count was somehow exceeded without report generation.
+      // After the last core question, it should ideally go to report generation.
+      // If we are already past the initial core questions and a new one was just generated, move to it.
+      if (currentQuestionIndex < questions.length -1) { // Check if there's a next question in the array
+         setCurrentQuestionIndex(prevIndex => prevIndex + 1);
+      } else {
+         // If no more questions in the array (meaning the last one was answered), generate report
+         await generateFullReport(updatedAnswers);
+      }
     }
   };
 
