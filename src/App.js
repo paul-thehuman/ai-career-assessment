@@ -95,302 +95,15 @@ const markdownToHtml = (markdown, colors) => {
   return html;
 };
 
-// Function to generate the full HTML report for download (standalone)
-const generateHtmlReport = (reportData, userProfile, colors) => {
-  const date = new Date().toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' });
-
-  const aiImpactHtml = reportData.aiReport?.aiImpactAnalysis ? markdownToHtml(reportData.aiReport.aiImpactAnalysis, colors) : '';
-  const futureScenariosHtml = reportData.aiReport?.futureScenarios ? markdownToHtml(reportData.aiReport.futureScenarios, colors) : '';
-
-  const actionPlanHtml30 = reportData.aiReport?.actionPlan?.day30 ? markdownToHtml(reportData.aiReport.actionPlan.day30, colors) : markdownToHtml(`
-    1. **Ship the MVP:** Launch a minimal viable product for your core offering. Get it out there.
-    2. **Gather Raw Feedback:** Engage directly with early users. Listen for friction, not just praise.
-    3. **Define Your Edge:** Articulate what makes The Human Co. uniquely rebellious and practical.
-  `, colors);
-  const actionPlanHtml60 = reportData.aiReport?.actionPlan?.day60 ? markdownToHtml(reportData.aiReport.actionPlan.day60, colors) : markdownToHtml(`
-    1. **Iterate Relentlessly:** Based on feedback, refine your offering. Don't cling to perfection.
-    2. **Expand Your Reach:** Identify 1-2 strategic partnerships or speaking opportunities. Get uncomfortable in public.
-    3. **Automate the Mundane:** Implement AI tools for repetitive tasks, freeing up your strategic time.
-  `, colors);
-  const actionPlanHtml90 = reportData.aiReport?.actionPlan?.day90 ? markdownToHtml(reportData.aiReport.actionPlan.day90, colors) : markdownToHtml(`
-    1. **Scale Systems, Not Just Ideas:** Build repeatable processes for content, sales, or delivery. Your ideas scale fast. Your systems must too.
-    2. **Amplify Your Voice:** Publish a thought leadership piece. Position yourself as a co-pilot for future leaders.
-    3. **Re-evaluate & Reset:** Review your 90-day progress. What worked? What's next? Don't coast.
-  `, colors);
-
-  const actionPlanSummaryHtml = reportData.aiReport?.actionPlan?.summary ? markdownToHtml(reportData.aiReport.actionPlan.summary, colors) : '';
-
-  let skillGapContentHtml = '';
-  if (reportData.skillGapAnalysis?.skills) {
-    skillGapContentHtml += `<h3 class="text-xl font-semibold mt-5 mb-2" style="color: ${colors.slateBlue};">Identified Skill Gaps & Priorities</h3>`;
-
-    const sortedSkills = [...reportData.skillGapAnalysis.skills].sort((a, b) => {
-      const gapA = a.importanceRating - a.currentCapabilityRating;
-      const gapB = b.importanceRating - b.currentCapabilityRating;
-      if (gapA !== gapB) return gapB - gapA;
-      return b.importanceRating - a.importanceRating;
-    });
-
-    sortedSkills.forEach(skill => {
-      const capabilityBar = generateCapabilityBar(skill.currentCapabilityRating);
-      let priorityTag = 'Low Priority';
-      const gap = skill.importanceRating - skill.currentCapabilityRating;
-
-      if (skill.importanceRating >= 4 && skill.currentCapabilityRating <= 2) {
-        priorityTag = 'Immediate Focus';
-      } else if (skill.importanceRating >= 3 && gap >= 1) {
-        priorityTag = 'Emerging Priority';
-      }
-
-      skillGapContentHtml += `
-        <div class="mb-4 p-3 rounded-lg border" style="border-color: ${colors.lightGrey}; background: #fdfdfd;">
-            <p class="font-bold mb-1" style="color: ${colors.deepBlack};">${escapeHtmlString(skill.skillName)}</p>
-            <div class="flex items-center text-sm mb-1">
-                <span style="color: ${colors.slateBlue};">Importance: ${skill.importanceRating}/5</span>
-                <span class="mx-2 text-gray-400">|</span>
-                <span style="color: ${colors.slateBlue};">Capability: ${skill.currentCapabilityRating}/5</span>
-                <span class="mx-2 text-gray-400">|</span>
-                <span class="font-bold" style="color: ${priorityTag === 'Immediate Focus' ? '#ef4444' : (priorityTag === 'Emerging Priority' ? '#f59e0b' : colors.slateBlue)};">${priorityTag}</span>
-            </div>
-            <p class="text-sm" style="color: ${colors.deepBlack};">${capabilityBar} ${escapeHtmlString(skill.description)}</p>
-        </div>
-      `;
-    });
-    if (reportData.skillGapAnalysis.summary) {
-      skillGapContentHtml += `<h3 class="text-xl font-semibold mt-5 mb-2" style="color: ${colors.slateBlue};">Skill Focus</h3>`;
-      skillGapContentHtml += markdownToHtml(reportData.skillGapAnalysis.summary, colors);
-    }
-  }
-
-  let htmlContentSections = '';
-  if (reportData.aiReport) {
-    htmlContentSections += `
-    <div class="section" id="ai-impact-analysis">
-        <h2 class="text-xl font-semibold mb-4 text-slate-blue">AI Impact Analysis</h2>
-        <div class="prose">
-            ${aiImpactHtml}
-        </div>
-    </div>
-
-    <div class="section" id="future-scenarios">
-        <h2 class="text-xl font-semibold mb-4 text-slate-blue">Future Scenarios</h2>
-        <div class="prose">
-            ${futureScenariosHtml}
-        </div>
-    </div>
-
-    <div class="section" id="personalized-action-plan">
-        <h2 class="text-xl font-semibold mb-4 text-slate-blue">Personalized Action Plan</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 action-plan-grid">
-            <div class="action-plan-column">
-                <h3>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${colors.primaryPink}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-check"><path d="M8 2v4"/><path d="M16 2v4"/><path d="M21 13V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8"/><path d="M21 13a5 5 0 1 1-5 5h5v-5Z"/><path d="M16 18h2l4 4"/></svg>
-                    30-Day Plan
-                </h3>
-                <div class="prose">
-                    ${actionPlanHtml30}
-                </div>
-            </div>
-            <div class="action-plan-column">
-                <h3>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${colors.primaryPink}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-plus"><path d="M21 12V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="M18 21v-6"/><path d="M15 18h6"/></svg>
-                    60-Day Plan
-                </h3>
-                <div class="prose">
-                    ${actionPlanHtml60}
-                </div>
-            </div>
-            <div class="action-plan-column">
-                <h3>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${colors.primaryPink}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-range"><path d="M21 10H3"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M16 14H8"/></svg>
-                    90-Day Plan
-                </h3>
-                <div class="prose">
-                    ${actionPlanHtml90}
-                </div>
-            </div>
-        </div>
-        ${actionPlanSummaryHtml}
-    </div>
-    `;
-  }
-
-  if (reportData.skillGapAnalysis) {
-    htmlContentSections += `
-    <div class="section" id="skill-gap-analysis">
-        <h2 class="text-xl font-semibold mb-4 text-slate-blue">Skill Gap Analysis</h2>
-        <div class="prose">
-            ${skillGapContentHtml}
-        </div>
-    </div>
-    `;
-  }
-
-  let finalHtml = `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Career Readiness Report for ${escapeHtmlString(userProfile.role)}</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            line-height: 1.6;
-            color: #101216; /* Deep Black */
-            background-color: #eaeaea; /* Light Grey */
-        }
-        .header {
-            background: linear-gradient(135deg, #ff2e63 0%, #ff6189 100%); /* Primary Pink to Accent Pink */
-            color: white;
-            padding: 30px;
-            border-radius: 10px;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .section {
-            margin-bottom: 40px;
-            padding: 20px;
-            border: 1px solid #eaeaea; /* Light Grey */
-            border-radius: 8px;
-            background: #ffffff;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        }
-        .prose h1, .prose h2, .prose h3 {
-            color: #3a4252; /* Slate Blue */
-        }
-        .list-disc, .list-decimal {
-            margin-left: 1.5rem;
-        }
-        .list-disc li, .list-decimal li {
-            margin-bottom: 0.5rem;
-            color: #101216; /* Deep Black */
-        }
-        a {
-            color: #ff6189; /* Accent Pink */
-        }
-        strong {
-            color: #3a4252; /* Slate Blue */
-            font-weight: 600;
-        }
-        .callout-box {
-            margin-top: 20px;
-            padding: 15px;
-            background: #eaeaea; /* Light Grey */
-            border-left: 4px solid #ff2e63; /* Primary Pink */
-            border-radius: 4px;
-            color: #101216; /* Deep Black */
-        }
-        .callout-box p {
-            margin-bottom: 5px;
-        }
-        .horizontal-rule {
-            border: 0;
-            height: 1px;
-            background-color: #eaeaea; /* Light Grey */
-            margin: 20px 0;
-        }
-        .toc-link {
-            display: block;
-            padding: 8px 12px;
-            margin-bottom: 5px;
-            background-color: #eaeaea; /* Light Grey */
-            border-radius: 5px;
-            color: #3a4252; /* Slate Blue */
-            text-decoration: none;
-            transition: background-color 0.2s ease-in-out;
-        }
-        .toc-link:hover {
-            background-color: #ff2e63; /* Primary Pink */
-            color: white;
-        }
-        .action-plan-column {
-            background-color: #eaeaea; /* Light Grey */
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            height: 100%; /* Ensure columns are same height */
-        }
-        .action-plan-column h3 {
-            color: #ff2e63; /* Primary Pink */
-            margin-top: 0;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-        }
-        .action-plan-column h3 svg {
-            margin-right: 8px;
-        }
-
-        @media print {
-            .section {
-                break-inside: avoid;
-            }
-        }
-        @media (max-width: 768px) {
-            .action-plan-grid {
-                grid-template-columns: 1fr; /* Stack columns on mobile */
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1 class="text-3xl font-bold mb-2">AI-Powered Career Readiness Report</h1>
-        <p class="text-lg">Here’s your personalised report based on your role as Creative Director & Founder of The Human Co. You’re not just watching the future of work unfold — you’re helping shape it. Let’s get to work.</p>
-        <p class="text-sm opacity-90">Generated on ${date}</p>
-    </div>
-
-    <div class="section">
-        <h2 class="text-xl font-semibold mb-4 text-slate-blue">Table of Contents</h2>
-        <nav>
-            <a href="#ai-impact-analysis" class="toc-link">AI Impact Analysis</a>
-            <a href="#future-scenarios" class="toc-link">Future Scenarios</a>
-            <a href="#personalized-action-plan" class="toc-link">Personalized Action Plan</a>
-            <a href="#skill-gap-analysis" class="toc-link">Skill Gap Analysis</a>
-            <a href="#next-steps" class="toc-link">Next Steps</a>
-        </nav>
-    </div>
-
-    <div class="section">
-        <h2 class="text-xl font-semibold mb-4 text-slate-blue">Assessment Summary</h2>
-        <p>This report provides a comprehensive analysis of your career readiness, including AI impact analysis, future scenarios, and a personalized action plan, based on your responses.</p>
-    </div>` + htmlContentSections + `
-    <div class="section" id="next-steps">
-        <h2 class="text-xl font-semibold mb-4 text-slate-blue">Next Steps</h2>
-        <p>Your career development journey continues beyond this assessment. Consider:</p>
-        <ul class="list-disc pl-6 mb-4">
-            <li>Reviewing your development plan monthly</li>
-            <li>Tracking progress on priority skills</li>
-            <li>Exploring recommended resources and tools</li>
-            <li>Reflecting on career scenarios as opportunities arise</li>
-            <li>Retaking this assessment quarterly to track growth</li>
-        </ul>
-        <p class="callout-box" style="background: #eaeaea; border-left: 4px solid #ff2e63; color: #101216;">
-            <strong>Remember:</strong> Your career isn't a straight line—and neither is the future. The goal isn't to predict the future perfectly, but to build the adaptability and curiosity to thrive in whatever comes next.
-        </p>
-    </div>
-
-    <div style="text-align: center; margin-top: 40px; padding: 20px; background: #eaeaea; border-radius: 8px;">
-        <p style="margin: 0; color: #3a4252; font-size: 0.9rem;">
-            Learn more about future-ready career strategies at
-            <a href="https://thehumanco.co" style="color: #ff6189;">thehumanco.co</a>
-        </p>
-    </div>
-</body>
-</html>`;
-
-  return finalHtml.replace(/&#96;/g, '`');
-};
-
 // Component to render Markdown content (for display within the app)
 const MarkdownRenderer = ({ reportData }) => {
-  if (!reportData || (!reportData.aiReport && !reportData.skillGapAnalysis)) {
-    return null;
+  // FIX: Added robust checks to prevent crashes if reportData or its properties are undefined
+  if (!reportData || (!reportData.aiReport?.aiImpactAnalysis && !reportData.aiReport?.futureScenarios && !reportData.aiReport?.actionPlan && !reportData.skillGapAnalysis)) {
+    return (
+      <div className="p-4 text-center">
+        <p className="text-gray-700">The report could not be generated. Please ensure your API key is correctly set up.</p>
+      </div>
+    );
   }
 
   // Render Skill Gap Analysis visually in-app
@@ -445,9 +158,10 @@ const MarkdownRenderer = ({ reportData }) => {
 
   // Render Action Plan visually in-app
   const renderActionPlan = () => {
+    // FIX: Added conditional rendering check here to prevent crash
     if (!reportData.aiReport?.actionPlan) return null;
 
-    const actionPlan = reportData.aiReport.action;
+    const actionPlan = reportData.aiReport.actionPlan;
     return (
       <>
         <h2 className="text-2xl font-semibold mt-6 mb-3" style={{ color: colors.slateBlue }}>Personalized Action Plan</h2>
@@ -468,7 +182,7 @@ const MarkdownRenderer = ({ reportData }) => {
           </div>
           <div className="action-plan-column" style={{ backgroundColor: colors.lightGrey }}>
             <h3>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={colors.primaryPink} strokeWidth="2" strokeLinecap="round" stroke-linejoin="round" className="lucide lucide-calendar-range"><path d="M21 10H3"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M16 14H8"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={colors.primaryPink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-calendar-range"><path d="M21 10H3"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M16 14H8"/></svg>
               90-Day Plan
             </h3>
             <div dangerouslySetInnerHTML={{ __html: markdownToHtml(actionPlan.day90, colors) }} />
@@ -480,24 +194,191 @@ const MarkdownRenderer = ({ reportData }) => {
       </>
     );
   };
+  
+  // Conditionally render the AI report sections
+  const renderAiReport = () => {
+    // FIX: Simplified rendering logic to use optional chaining
+    const aiReportData = reportData?.aiReport;
+    if (!aiReportData) return null;
 
-  return (
-    <div className="markdown-body">
-      {reportData.aiReport && (
-        <>
-          <h2 className="text-2xl font-semibold mt-6 mb-3" style={{ color: colors.slateBlue }}>AI Impact Analysis</h2>
-          <div dangerouslySetInnerHTML={{ __html: markdownToHtml(reportData.aiReport.aiImpactAnalysis, colors) }} />
+    return (
+      <>
+        <div className="section">
+          <h2 className="text-xl font-semibold mb-4 text-slate-blue">AI Impact Analysis</h2>
+          <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReportData.aiImpactAnalysis, colors) }} />
+        </div>
 
-          <h2 className="text-2xl font-semibold mt-6 mb-3" style={{ color: colors.slateBlue }}>Future Scenarios</h2>
-          <div dangerouslySetInnerHTML={{ __html: markdownToHtml(reportData.aiReport.futureScenarios, colors) }} />
+        <div className="section">
+          <h2 className="text-xl font-semibold mb-4 text-slate-blue">Future Scenarios</h2>
+          <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReportData.futureScenarios, colors) }} />
+        </div>
 
-          {renderActionPlan()}
-        </>
-      )}
+        {aiReportData.actionPlan && (
+          <div className="section">
+            {renderActionPlan()}
+          </div>
+        )}
+      </>
+    );
+  };
+  
+  // Conditionally render the skill gap analysis section
+  const renderSkillGapAnalysis = () => {
+    const skillGapData = reportData?.skillGapAnalysis;
+    if (!skillGapData?.skills) return null;
 
-      {renderSkillGapAnalysis()}
-    </div>
-  );
+    const sortedSkills = [...skillGapData.skills].sort((a, b) => {
+      const gapA = a.importanceRating - a.currentCapabilityRating;
+      const gapB = b.importanceRating - b.currentCapabilityRating;
+      if (gapA !== gapB) return gapB - gapA; // Sort by gap first
+      return b.importanceRating - a.importanceRating; // Then by importance
+    });
+
+    return (
+      <div className="section">
+        <h2 className="text-xl font-semibold mb-4 text-slate-blue">Skill Gap Analysis</h2>
+        <h3 className="text-xl font-semibold mt-5 mb-2" style={{ color: colors.slateBlue }}>Identified Skill Gaps & Priorities</h3>
+        {sortedSkills.map((skill, index) => {
+          const capabilityBar = generateCapabilityBar(skill.currentCapabilityRating);
+          let priorityTag = 'Low Priority';
+          const gap = skill.importanceRating - skill.currentCapabilityRating;
+
+          if (skill.importanceRating >= 4 && skill.currentCapabilityRating <= 2) {
+            priorityTag = 'Immediate Focus';
+          } else if (skill.importanceRating >= 3 && gap >= 1) {
+            priorityTag = 'Emerging Priority';
+          }
+
+          return (
+            <div key={index} className="mb-4 p-3 rounded-lg border" style={{ borderColor: colors.lightGrey, background: '#fdfdfd' }}>
+              <p className="font-bold mb-1" style={{ color: colors.deepBlack }}>{skill.skillName}</p>
+              <div className="flex items-center text-sm mb-1">
+                  <span style={{ color: colors.slateBlue }}>Importance: {skill.importanceRating}/5</span>
+                  <span className="mx-2 text-gray-400">|</span>
+                  <span style={{ color: colors.slateBlue }}>Capability: {skill.currentCapabilityRating}/5</span>
+                  <span className="mx-2 text-gray-400">|</span>
+                  <span className="font-bold" style={{ color: priorityTag === 'Immediate Focus' ? '#ef4444' : (priorityTag === 'Emerging Priority' ? '#f59e0b' : colors.slateBlue)}}>{priorityTag}</span>
+              </div>
+              <p className="text-sm" style={{ color: colors.deepBlack }}>{capabilityBar} {skill.description}</p>
+            </div>
+          );
+        })}
+        {skillGapData.summary && (
+          <>
+            <h3 className="text-xl font-semibold mt-5 mb-2" style={{ color: colors.slateBlue }}>Skill Focus</h3>
+            <div dangerouslySetInnerHTML={{ __html: markdownToHtml(skillGapData.summary, colors) }} />
+          </>
+        )}
+      </div>
+    );
+  };
+  
+  // Main rendering logic for the report
+  const renderReportContent = () => {
+    // FIX: Simplified rendering logic to use optional chaining
+    const aiReportData = reportData?.aiReport;
+    const skillGapData = reportData?.skillGapAnalysis;
+
+    if (!aiReportData && !skillGapData) {
+      return (
+        <div className="p-4 text-center">
+          <p className="text-gray-700">The report could not be generated. Please ensure your API key is correctly set up.</p>
+        </div>
+      );
+    }
+
+    return (
+      <>
+        {aiReportData && (
+            <>
+                <div className="section">
+                    <h2 className="text-xl font-semibold mb-4 text-slate-blue">AI Impact Analysis</h2>
+                    <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReportData.aiImpactAnalysis, colors) }} />
+                </div>
+                <div className="section">
+                    <h2 className="text-xl font-semibold mb-4 text-slate-blue">Future Scenarios</h2>
+                    <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReportData.futureScenarios, colors) }} />
+                </div>
+                {aiReportData.actionPlan && (
+                    <div className="section">
+                        <h2 className="text-xl font-semibold mb-4 text-slate-blue">Personalized Action Plan</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="action-plan-column" style={{ backgroundColor: colors.lightGrey }}>
+                                <h3>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={colors.primaryPink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-calendar-check"><path d="M8 2v4"/><path d="M16 2v4"/><path d="M21 13V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8"/><path d="M21 13a5 5 0 1 1-5 5h5v-5Z"/><path d="M16 18h2l4 4"/></svg>
+                                    30-Day Plan
+                                </h3>
+                                <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReportData.actionPlan.day30, colors) }} />
+                            </div>
+                            <div className="action-plan-column" style={{ backgroundColor: colors.lightGrey }}>
+                                <h3>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={colors.primaryPink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-calendar-plus"><path d="M21 12V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="M18 21v-6"/><path d="M15 18h6"/></svg>
+                                    60-Day Plan
+                                </h3>
+                                <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReportData.actionPlan.day60, colors) }} />
+                            </div>
+                            <div className="action-plan-column" style={{ backgroundColor: colors.lightGrey }}>
+                                <h3>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={colors.primaryPink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-calendar-range"><path d="M21 10H3"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M16 14H8"/></svg>
+                                    90-Day Plan
+                                </h3>
+                                <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReportData.actionPlan.day90, colors) }} />
+                            </div>
+                        </div>
+                        {aiReportData.actionPlan.summary && (
+                            <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReportData.actionPlan.summary, colors) }} />
+                        )}
+                    </div>
+                )}
+            </>
+        )}
+        {skillGapData && (
+            <div className="section">
+                <h2 className="text-xl font-semibold mb-4 text-slate-blue">Skill Gap Analysis</h2>
+                <h3 className="text-xl font-semibold mt-5 mb-2" style={{ color: colors.slateBlue }}>Identified Skill Gaps & Priorities</h3>
+                {skillGapData.skills.map((skill, index) => {
+                    const capabilityBar = generateCapabilityBar(skill.currentCapabilityRating);
+                    let priorityTag = 'Low Priority';
+                    const gap = skill.importanceRating - skill.currentCapabilityRating;
+                    
+                    if (skill.importanceRating >= 4 && skill.currentCapabilityRating <= 2) {
+                        priorityTag = 'Immediate Focus';
+                    } else if (skill.importanceRating >= 3 && gap >= 1) {
+                        priorityTag = 'Emerging Priority';
+                    }
+                    
+                    return (
+                        <div key={index} className="mb-4 p-3 rounded-lg border" style={{ borderColor: colors.lightGrey, background: '#fdfdfd' }}>
+                            <p className="font-bold mb-1" style={{ color: colors.deepBlack }}>{skill.skillName}</p>
+                            <div className="flex items-center text-sm mb-1">
+                                <span style={{ color: colors.slateBlue }}>Importance: {skill.importanceRating}/5</span>
+                                <span className="mx-2 text-gray-400">|</span>
+                                <span style={{ color: colors.slateBlue }}>Capability: {skill.currentCapabilityRating}/5</span>
+                                <span className="mx-2 text-gray-400">|</span>
+                                <span className="font-bold" style={{ color: priorityTag === 'Immediate Focus' ? '#ef4444' : (priorityTag === 'Emerging Priority' ? '#f59e0b' : colors.slateBlue)}}>{priorityTag}</span>
+                            </div>
+                            <p className="text-sm" style={{ color: colors.deepBlack }}>{capabilityBar} {skill.description}</p>
+                        </div>
+                    );
+                })}
+                {skillGapData.summary && (
+                    <>
+                        <h3 className="text-xl font-semibold mt-5 mb-2" style={{ color: colors.slateBlue }}>Skill Focus</h3>
+                        <div dangerouslySetInnerHTML={{ __html: markdownToHtml(skillGapData.summary, colors) }} />
+                    </>
+                )}
+            </div>
+        )}
+        <div style={{ textAlign: 'center', marginTop: '40px', padding: '20px', background: colors.lightGrey, borderRadius: '8px', width: '100%' }}>
+            <p style={{ margin: '0', color: colors.slateBlue, fontSize: '0.9rem' }}>
+                Created by <a href={websiteUrl} target="_blank" rel="noopener noreferrer" style={{ color: colors.accentPink, textDecoration: 'underline' }}>The Human Co.</a>
+            </p>
+        </div>
+      </>
+    );
+  };
+
+  return renderReportContent();
 };
 
 
@@ -519,8 +400,6 @@ const App = () => {
   const [currentInput, setCurrentInput] = useState(''); // State to manage current textarea input
 
   const [isGeneratingSkillGap, setIsGeneratingSkillGap] = useState(false);
-
-  const googleFormEmbedUrl = "https://docs.google.com/forms/d/e/1FAIpQLSddjSYI034-DNEk8xgSGphL2IPsM164xFUTAZ8jDDyptTt5iQ/viewform?embedded=true"; // Your Google Form embed URL
 
   // Define JSON schemas for structured AI responses
   const reportSchema = {
@@ -727,8 +606,8 @@ const App = () => {
     prompt += `Each skill object in the "skills" array should have "skillName" (string), "importanceRating" (number 1-5, how critical is this skill for their goals?), "currentCapabilityRating" (number 1-5, their current proficiency), and "description" (string, concise paragraph).\n`;
     prompt += `**Order the skills from most critical to least critical**, where criticality is determined by a high importance rating and a low current capability rating (i.e., the biggest gaps first). For each skill, also indicate its priority: "Immediate Focus" (big gap, high importance), "Emerging Priority" (moderate gap/importance), or "Low Priority" (small gap/low importance).\n`;
     prompt += `**Sharpen the language:** Avoid vague or polite language. Make the **cost of not closing the gap explicit**. Where relevant, **contrast ambition with infrastructure** (e.g., "Your ideas scale fast. Your systems don’t."). Keep paragraphs concise (max 3-4 lines). Use bolding for key terms.\n`;
-    prompt += `The "summary" key should contain Markdown text for a "Skill Focus" summary box, formatted as a Markdown blockquote (> Skill Focus: Your summary here.).\n`;
-    prompt += `Maintain a confident, future-focused, human-first, strategic, and jargon-free tone, reflecting 'The Human Co.' ethos of being rebellious but practical. Prioritise clarity, movement and momentum. The tone should feel like a trusted advisor who knows the game and won’t let you coast.`;
+    fullPrompt += `The "summary" key should contain Markdown text for a "Skill Focus" summary box, formatted as a Markdown blockquote (> Skill Focus: Your summary here.).\n`;
+    fullPrompt += `Maintain a confident, future-focused, human-first, strategic, and jargon-free tone, reflecting 'The Human Co.' ethos of being rebellious but practical. Prioritise clarity, movement and momentum. The tone should feel like a trusted advisor who knows the game and won’t let you coast.`;
 
     const analysis = await callGeminiAPI(prompt, true, skillGapSchema, setIsGeneratingSkillGap);
     setSkillGapAnalysis(analysis);
@@ -767,19 +646,19 @@ const App = () => {
         return (
           <div className="flex flex-col items-center justify-center min-h-screen p-4" style={{ backgroundColor: colors.deepBlack, color: colors.lightGrey }}>
             <div className="p-8 rounded-xl shadow-2xl max-w-2xl text-center" style={{ backgroundColor: colors.lightGrey, color: colors.deepBlack }}>
-              <h1 className="text-4xl font-extrabold mb-6" style={{ color: colors.primaryPink }}>CTRL+ALT+CAREER</h1> {/* Updated title */}
+              <h1 className="text-4xl font-extrabold mb-6" style={{ color: colors.primaryPink }}>CTRL+ALT+CAREER</h1>
               <img
                 src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExZnY4azR0MW51d2ticHBzdTNxazU3cWp3NXhhcWlsbGp1N3Y2ZTdvMyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/10lBhcF4eTJZWU/giphy.gif"
                 alt="Abstract AI animation"
                 className="mx-auto mb-4 rounded-lg"
-                style={{ maxWidth: '100%', height: 'auto', maxHeight: '200px' }} // Adjusted styling for GIF
-                onError={(e) => e.target.style.display='none'} // Hide if GIF fails to load
+                style={{ maxWidth: '100%', height: 'auto', maxHeight: '200px' }}
+                onError={(e) => e.target.style.display='none'}
               />
               <p className="text-lg mb-4 leading-relaxed">
-                Stuck in autopilot? It’s time for a system check. This AI-powered reboot adapts to you in real time — think less personality quiz, more upgrade path. {/* Updated text */}
+                Stuck in autopilot? It’s time for a system check. This AI-powered reboot adapts to you in real time — think less personality quiz, more upgrade path.
               </p>
               <p className="text-lg mb-8 leading-relaxed">
-                You’ll get a personalised report with future-of-work forecasts, automation risks, and a no-nonsense plan to keep your career one step ahead of the bots. {/* Updated text */}
+                You’ll get a personalised report with future-of-work forecasts, automation risks, and a no-nonsense plan to keep your career one step ahead of the bots.
               </p>
               <button
                 onClick={handleStartAssessment}
@@ -795,18 +674,13 @@ const App = () => {
       case 'assessment':
         const currentQuestion = questions[currentQuestionIndex];
         const isAnswerEmpty = !currentInput.trim();
-        const progressPercentage = ((currentQuestionIndex + 1) / initialCoreQuestions.length) * 100; // Calculate progress
 
         return (
           <div className="flex flex-col items-center justify-center min-h-screen p-4" style={{ backgroundColor: colors.deepBlack, color: colors.lightGrey }}>
             <div className="p-8 rounded-xl shadow-2xl max-w-2xl w-full" style={{ backgroundColor: colors.lightGrey, color: colors.deepBlack }}>
               <h2 className="text-3xl font-bold mb-6 text-center" style={{ color: colors.primaryPink }}>
-                Assessment: Question {currentQuestionIndex + 1}
+                Assessment: Question {currentQuestionIndex + 1} of {questions.length}
               </h2>
-              {/* Progress Bar */}
-              <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-                <div className="h-2.5 rounded-full" style={{ width: `${progressPercentage}%`, backgroundColor: colors.primaryPink }}></div>
-              </div>
               <div className="mb-6">
                 <label htmlFor="question" className="block text-lg font-medium mb-2" style={{ color: colors.slateBlue }}>
                   {currentQuestion}
@@ -852,10 +726,6 @@ const App = () => {
         );
 
       case 'results':
-        // Determine button colors based on skillGapAnalysis presence
-        const generateSkillGapBtnColor = colors.slateBlue;
-        const downloadReportBtnColor = skillGapAnalysis ? colors.primaryPink : colors.slateBlue; // Highlight if skillGapAnalysis is available
-
         return (
           <div className="flex flex-col items-center justify-center min-h-screen p-4" style={{ backgroundColor: colors.deepBlack, color: colors.lightGrey }}>
             <div className="p-8 rounded-xl shadow-2xl max-w-3xl w-full" style={{ backgroundColor: colors.lightGrey, color: colors.deepBlack }}>
@@ -869,26 +739,24 @@ const App = () => {
                   <div className="prose max-w-none leading-relaxed mb-8 p-2" style={{ borderColor: colors.slateBlue, color: colors.deepBlack }}>
                     <MarkdownRenderer reportData={{ aiReport, skillGapAnalysis }} />
                   </div>
-                  {/* Main Action Buttons - Centered Column */}
                   <div className="flex flex-col items-center gap-4 mt-6">
                     <button
                       onClick={handleGenerateSkillGapAnalysis}
                       disabled={isGeneratingSkillGap}
                       className="font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-                      style={{ backgroundColor: generateSkillGapBtnColor, color: 'white' }}
+                      style={{ backgroundColor: colors.slateBlue, color: 'white' }}
                     >
                       {isGeneratingSkillGap ? 'Analyzing Skills...' : 'Generate Skill Gap Analysis ✨'}
                     </button>
                     <button
                       onClick={() => setShowReportModal(true)}
                       className="font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
-                      style={{ backgroundColor: downloadReportBtnColor, color: 'white' }}
+                      style={{ backgroundColor: colors.primaryPink, color: 'white' }}
                     >
                       Download Full Report
                     </button>
                   </div>
 
-                  {/* Google Forms Feedback Section */}
                   <div className="section mt-8 w-full">
                       <h2 className="text-xl font-semibold mb-4 text-slate-blue text-center">We'd Love Your Feedback!</h2>
                       <p className="text-center text-gray-700 mb-6">Help us improve this assessment by sharing your thoughts. Your insights could even become a testimonial!</p>
@@ -904,12 +772,6 @@ const App = () => {
                               Loading…
                           </iframe>
                       </div>
-                  </div>
-                  {/* Footer with website link */}
-                  <div style={{ textAlign: 'center', marginTop: '40px', padding: '20px', background: colors.lightGrey, borderRadius: '8px', width: '100%' }}>
-                      <p style={{ margin: '0', color: colors.slateBlue, fontSize: '0.9rem' }}>
-                          Created by <a href="https://thehumanco.co" target="_blank" rel="noopener noreferrer" style={{ color: colors.accentPink, textDecoration: 'underline' }}>The Human Co.</a>
-                      </p>
                   </div>
                 </>
               )}
