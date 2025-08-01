@@ -104,8 +104,8 @@ const MarkdownRenderer = ({ reportData }) => {
     const sortedSkills = [...skillGapData.skills].sort((a, b) => {
       const gapA = a.importanceRating - a.currentCapabilityRating;
       const gapB = b.importanceRating - b.currentCapabilityRating;
-      if (gapA !== gapB) return gapB - gapA;
-      return b.importanceRating - a.importanceRating;
+      if (gapA !== gapB) return gapB - gapA; // Sort by gap first
+      return b.importanceRating - a.importanceRating; // Then by importance
     });
 
     return (
@@ -185,7 +185,31 @@ const MarkdownRenderer = ({ reportData }) => {
     );
   };
 
-  const renderReportContent = (reportData) => {
+  const renderAiReport = () => {
+    const aiReportData = reportData?.aiReport;
+    if (!aiReportData) return null;
+    return (
+      <>
+        <div className="section">
+          <h2 className="text-xl font-semibold mb-4 text-slate-blue">AI Impact Analysis</h2>
+          <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReportData.aiImpactAnalysis, colors) }} />
+        </div>
+
+        <div className="section">
+          <h2 className="text-xl font-semibold mb-4 text-slate-blue">Future Scenarios</h2>
+          <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReportData.futureScenarios, colors) }} />
+        </div>
+
+        {aiReportData.actionPlan && (
+          <div className="section">
+            {renderActionPlan()}
+          </div>
+        )}
+      </>
+    );
+  };
+  
+  const MarkdownRenderer = ({ reportData }) => {
     const aiReportData = reportData?.aiReport;
     const skillGapData = reportData?.skillGapAnalysis;
 
@@ -198,29 +222,24 @@ const MarkdownRenderer = ({ reportData }) => {
     }
 
     return (
-      <>
+      <div className="prose max-w-none leading-relaxed mb-8 p-2" style={{ borderColor: colors.slateBlue, color: colors.deepBlack }}>
         {aiReportData && (
           <>
-            <div className="section">
-              <h2 className="text-xl font-semibold mb-4 text-slate-blue">AI Impact Analysis</h2>
-              <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReportData.aiImpactAnalysis, colors) }} />
-            </div>
-            <div className="section">
-              <h2 className="text-xl font-semibold mb-4 text-slate-blue">Future Scenarios</h2>
-              <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReportData.futureScenarios, colors) }} />
-            </div>
-            {aiReportData.actionPlan && renderActionPlan()}
+            {renderAiReport()}
           </>
         )}
-        {renderSkillGapAnalysis()}
-      </>
-    );
-  };
-  
-  const MarkdownRenderer = ({ reportData }) => {
-    return (
-      <div className="prose max-w-none leading-relaxed mb-8 p-2" style={{ borderColor: colors.slateBlue, color: colors.deepBlack }}>
-        {renderReportContent(reportData)}
+        {skillGapData && (
+          <>
+            <div className="section">
+              {renderSkillGapAnalysis()}
+            </div>
+            <div style={{ textAlign: 'center', marginTop: '40px', padding: '20px', background: colors.lightGrey, borderRadius: '8px', width: '100%' }}>
+              <p style={{ margin: '0', color: colors.slateBlue, fontSize: '0.9rem' }}>
+                  Created by <a href="https://thehumanco.co" target="_blank" rel="noopener noreferrer" style={{ color: colors.accentPink, textDecoration: 'underline' }}>The Human Co.</a>
+              </p>
+            </div>
+          </>
+        )}
       </div>
     );
   };
@@ -247,7 +266,6 @@ const App = () => {
 
   const googleFormEmbedUrl = "https://docs.google.com/forms/d/e/1FAIpQLSddjSYI034-DNEk8xgSGphL2IPsM164xFUTAZ8jDDyptTt5iQ/viewform?embedded=true"; // Your Google Form embed URL
 
-  // Define JSON schemas for structured AI responses
   const reportSchema = {
     type: "OBJECT",
     properties: {
@@ -561,7 +579,7 @@ const App = () => {
                 </div>
               ) : (
                 <>
-                  <div className="prose max-w-none leading-relaxed mb-8 p-2" style={{ borderColor: colors.slateBlue, color: colors.deepBlack }}>
+                  <div className="prose max-w-none leading-relaxed mb-8 overflow-y-auto max-h-[60vh] p-2 border rounded-lg" style={{ borderColor: colors.slateBlue, color: colors.deepBlack }}>
                     <MarkdownRenderer reportData={{ aiReport, skillGapAnalysis }} />
                   </div>
                   <div className="flex flex-col items-center gap-4 mt-6">
@@ -573,7 +591,7 @@ const App = () => {
                     >
                       {isGeneratingSkillGap ? 'Analyzing Skills...' : 'Generate Skill Gap Analysis ✨'}
                     </button>
-                    {skillGapAnalysis && ( // Only show download button if skill gap analysis is present
+                    {skillGapAnalysis && (
                         <button
                           onClick={() => setShowReportModal(true)}
                           className="font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
