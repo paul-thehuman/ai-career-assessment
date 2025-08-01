@@ -97,13 +97,11 @@ const markdownToHtml = (markdown, colors) => {
 
 // Component to render Markdown content (for display within the app)
 const MarkdownRenderer = ({ reportData }) => {
-  if (!reportData || (!reportData.aiReport && !reportData.skillGapAnalysis)) {
-    return null;
-  }
+  const renderSkillGapAnalysis = () => {
+    const skillGapData = reportData?.skillGapAnalysis;
+    if (!skillGapData?.skills) return null;
 
-    if (!reportData.skillGapAnalysis?.skills) return null;
-
-    const sortedSkills = [...reportData.skillGapAnalysis.skills].sort((a, b) => {
+    const sortedSkills = [...skillGapData.skills].sort((a, b) => {
       const gapA = a.importanceRating - a.currentCapabilityRating;
       const gapB = b.importanceRating - b.currentCapabilityRating;
       if (gapA !== gapB) return gapB - gapA;
@@ -186,81 +184,8 @@ const MarkdownRenderer = ({ reportData }) => {
       </div>
     );
   };
-  
-  const renderAiReport = () => {
-    const aiReportData = reportData?.aiReport;
-    if (!aiReportData) return null;
-    return (
-      <>
-        <div className="section">
-          <h2 className="text-xl font-semibold mb-4 text-slate-blue">AI Impact Analysis</h2>
-          <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReportData.aiImpactAnalysis, colors) }} />
-        </div>
 
-        <div className="section">
-          <h2 className="text-xl font-semibold mb-4 text-slate-blue">Future Scenarios</h2>
-          <div dangerouslySetInnerHTML={{ __html: markdownToHtml(aiReportData.futureScenarios, colors) }} />
-        </div>
-
-        {aiReportData.actionPlan && (
-          <div className="section">
-            {renderActionPlan()}
-          </div>
-        )}
-      </>
-    );
-  };
-  
-  const renderSkillGapAnalysis = () => {
-    const skillGapData = reportData?.skillGapAnalysis;
-    if (!skillGapData?.skills) return null;
-
-    const sortedSkills = [...skillGapData.skills].sort((a, b) => {
-      const gapA = a.importanceRating - a.currentCapabilityRating;
-      const gapB = b.importanceRating - b.currentCapabilityRating;
-      if (gapA !== gapB) return gapB - gapA; // Sort by gap first
-      return b.importanceRating - a.importanceRating; // Then by importance
-    });
-
-    return (
-      <div className="section">
-        <h2 className="text-xl font-semibold mb-4 text-slate-blue">Skill Gap Analysis</h2>
-        <h3 className="text-xl font-semibold mt-5 mb-2" style={{ color: colors.slateBlue }}>Identified Skill Gaps & Priorities</h3>
-        {sortedSkills.map((skill, index) => {
-          const capabilityBar = generateCapabilityBar(skill.currentCapabilityRating);
-          let priorityTag = 'Low Priority';
-          const gap = skill.importanceRating - skill.currentCapabilityRating;
-
-          if (skill.importanceRating >= 4 && skill.currentCapabilityRating <= 2) {
-            priorityTag = 'Immediate Focus';
-          } else if (skill.importanceRating >= 3 && gap >= 1) {
-            priorityTag = 'Emerging Priority';
-          }
-
-          return (
-            <div key={index} className="mb-4 p-3 rounded-lg border" style={{ borderColor: colors.lightGrey, background: '#fdfdfd' }}>
-              <p className="font-bold mb-1" style={{ color: colors.deepBlack }}>{skill.skillName}</p>
-              <div className="flex items-center text-sm mb-1">
-                  <span style={{ color: colors.slateBlue }}>Importance: {skill.importanceRating}/5</span>
-                  <span className="mx-2 text-gray-400">|</span>
-                  <span style={{ color: colors.slateBlue }}>Capability: {skill.currentCapabilityRating}/5</span>
-                  <span className="mx-2 text-gray-400">|</span>
-                  <span className="font-bold" style={{ color: priorityTag === 'Immediate Focus' ? '#ef4444' : (priorityTag === 'Emerging Priority' ? '#f59e0b' : colors.slateBlue)}}>{priorityTag}</span>
-              </div>
-              <p className="text-sm" style={{ color: colors.deepBlack }}>{capabilityBar} {skill.description}</p>
-            </div>
-          );
-        })}
-        {skillGapData.summary && (
-          <>
-            <h3 className="text-xl font-semibold mt-5 mb-2" style={{ color: colors.slateBlue }}>Skill Focus</h3>
-            <div dangerouslySetInnerHTML={{ __html: markdownToHtml(skillGapData.summary, colors) }} />
-          </>
-        )}
-      </div>
-    );
-  };
-  
+  const renderReportContent = (reportData) => {
     const aiReportData = reportData?.aiReport;
     const skillGapData = reportData?.skillGapAnalysis;
 
@@ -273,7 +198,7 @@ const MarkdownRenderer = ({ reportData }) => {
     }
 
     return (
-      <div className="prose max-w-none leading-relaxed mb-8 p-2" style={{ borderColor: colors.slateBlue, color: colors.deepBlack }}>
+      <>
         {aiReportData && (
           <>
             <div className="section">
@@ -288,9 +213,18 @@ const MarkdownRenderer = ({ reportData }) => {
           </>
         )}
         {renderSkillGapAnalysis()}
+      </>
+    );
+  };
+  
+  const MarkdownRenderer = ({ reportData }) => {
+    return (
+      <div className="prose max-w-none leading-relaxed mb-8 p-2" style={{ borderColor: colors.slateBlue, color: colors.deepBlack }}>
+        {renderReportContent(reportData)}
       </div>
     );
   };
+
 
 // Main App Component
 const App = () => {
@@ -310,6 +244,8 @@ const App = () => {
   const [currentInput, setCurrentInput] = useState(''); // State to manage current textarea input
 
   const [isGeneratingSkillGap, setIsGeneratingSkillGap] = useState(false);
+
+  const googleFormEmbedUrl = "https://docs.google.com/forms/d/e/1FAIpQLSddjSYI034-DNEk8xgSGphL2IPsM164xFUTAZ8jDDyptTt5iQ/viewform?embedded=true"; // Your Google Form embed URL
 
   // Define JSON schemas for structured AI responses
   const reportSchema = {
@@ -353,7 +289,6 @@ const App = () => {
   };
 
 
-  // Initial core questions
   const initialCoreQuestions = useMemo(() => [
     "Describe your current professional role and primary responsibilities.",
     "What are your top 3 career aspirations for the next 5 years?",
