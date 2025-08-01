@@ -118,9 +118,9 @@ const MarkdownRenderer = ({ reportData }) => {
     });
 
     return (
-      <>
-        <h2 className="text-2xl font-semibold mt-6 mb-3" style={{ color: colors.slateBlue }}>Skill Gap Analysis</h2>
-        <h3 class="text-xl font-semibold mt-5 mb-2" style={{ color: colors.slateBlue }}>Identified Skill Gaps & Priorities</h3>
+      <div className="section">
+        <h2 className="text-xl font-semibold mb-4 text-slate-blue">Skill Gap Analysis</h2>
+        <h3 className="text-xl font-semibold mt-5 mb-2" style={{ color: colors.slateBlue }}>Identified Skill Gaps & Priorities</h3>
         {sortedSkills.map((skill, index) => {
           const capabilityBar = generateCapabilityBar(skill.currentCapabilityRating);
           let priorityTag = 'Low Priority';
@@ -146,19 +146,18 @@ const MarkdownRenderer = ({ reportData }) => {
             </div>
           );
         })}
-        {reportData.skillGapAnalysis.summary && (
+        {skillGapData.summary && (
           <>
             <h3 className="text-xl font-semibold mt-5 mb-2" style={{ color: colors.slateBlue }}>Skill Focus</h3>
-            <div dangerouslySetInnerHTML={{ __html: markdownToHtml(reportData.skillGapAnalysis.summary, colors) }} />
+            <div dangerouslySetInnerHTML={{ __html: markdownToHtml(skillGapData.summary, colors) }} />
           </>
         )}
-      </>
+      </div>
     );
   };
 
   // Render Action Plan visually in-app
   const renderActionPlan = () => {
-    // FIX: Added conditional rendering check here to prevent crash
     if (!reportData.aiReport?.actionPlan) return null;
 
     const actionPlan = reportData.aiReport.actionPlan;
@@ -269,7 +268,7 @@ const MarkdownRenderer = ({ reportData }) => {
             <div dangerouslySetInnerHTML={{ __html: markdownToHtml(skillGapData.summary, colors) }} />
           </>
         )}
-      </div>
+      </>
     );
   };
   
@@ -606,8 +605,8 @@ const App = () => {
     prompt += `Each skill object in the "skills" array should have "skillName" (string), "importanceRating" (number 1-5, how critical is this skill for their goals?), "currentCapabilityRating" (number 1-5, their current proficiency), and "description" (string, concise paragraph).\n`;
     prompt += `**Order the skills from most critical to least critical**, where criticality is determined by a high importance rating and a low current capability rating (i.e., the biggest gaps first). For each skill, also indicate its priority: "Immediate Focus" (big gap, high importance), "Emerging Priority" (moderate gap/importance), or "Low Priority" (small gap/low importance).\n`;
     prompt += `**Sharpen the language:** Avoid vague or polite language. Make the **cost of not closing the gap explicit**. Where relevant, **contrast ambition with infrastructure** (e.g., "Your ideas scale fast. Your systems don’t."). Keep paragraphs concise (max 3-4 lines). Use bolding for key terms.\n`;
-    fullPrompt += `The "summary" key should contain Markdown text for a "Skill Focus" summary box, formatted as a Markdown blockquote (> Skill Focus: Your summary here.).\n`;
-    fullPrompt += `Maintain a confident, future-focused, human-first, strategic, and jargon-free tone, reflecting 'The Human Co.' ethos of being rebellious but practical. Prioritise clarity, movement and momentum. The tone should feel like a trusted advisor who knows the game and won’t let you coast.`;
+    prompt += `The "summary" key should contain Markdown text for a "Skill Focus" summary box, formatted as a Markdown blockquote (> Skill Focus: Your summary here.).\n`;
+    prompt += `Maintain a confident, future-focused, human-first, strategic, and jargon-free tone, reflecting 'The Human Co.' ethos of being rebellious but practical. Prioritise clarity, movement and momentum. The tone should feel like a trusted advisor who knows the game and won’t let you coast.`;
 
     const analysis = await callGeminiAPI(prompt, true, skillGapSchema, setIsGeneratingSkillGap);
     setSkillGapAnalysis(analysis);
@@ -726,6 +725,10 @@ const App = () => {
         );
 
       case 'results':
+        // Determine button colors based on skillGapAnalysis presence
+        const generateSkillGapBtnColor = colors.primaryPink; // Prominent
+        const downloadReportBtnColor = colors.slateBlue; // Secondary
+
         return (
           <div className="flex flex-col items-center justify-center min-h-screen p-4" style={{ backgroundColor: colors.deepBlack, color: colors.lightGrey }}>
             <div className="p-8 rounded-xl shadow-2xl max-w-3xl w-full" style={{ backgroundColor: colors.lightGrey, color: colors.deepBlack }}>
@@ -744,14 +747,14 @@ const App = () => {
                       onClick={handleGenerateSkillGapAnalysis}
                       disabled={isGeneratingSkillGap}
                       className="font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-                      style={{ backgroundColor: colors.slateBlue, color: 'white' }}
+                      style={{ backgroundColor: generateSkillGapBtnColor, color: 'white' }}
                     >
                       {isGeneratingSkillGap ? 'Analyzing Skills...' : 'Generate Skill Gap Analysis ✨'}
                     </button>
                     <button
                       onClick={() => setShowReportModal(true)}
                       className="font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
-                      style={{ backgroundColor: colors.primaryPink, color: 'white' }}
+                      style={{ backgroundColor: downloadReportBtnColor, color: 'white' }}
                     >
                       Download Full Report
                     </button>
