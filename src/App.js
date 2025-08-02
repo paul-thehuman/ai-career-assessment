@@ -653,7 +653,7 @@ const App = () => {
 
             <div class="footer">
               <p>Created by <a href="https://www.thehumanco.org/" target="_blank" style="color: ${colors.accentPink}; text-decoration: underline;">The Human Co.</a></p>
-              <p style="margin: 5px 0 0 0; font-size: 0.85em;">© ${new Date().getFullYear()} The Human Co. All rights reserved.</p>
+              <p style="margin: 5px 0 0 0; font-size: 0.85em;">© ${new Date().getFullYear()} The Human Collab Ltd. All rights reserved.</p>
             </div>
           </div>
         </body>
@@ -707,7 +707,7 @@ const App = () => {
                 Created by <a href="https://www.thehumanco.org/" target="_blank" rel="noopener noreferrer" style={{ color: colors.accentPink, textDecoration: 'underline' }}>The Human Co.</a>
               </p>
               <p style={{ margin: '0', color: colors.lightGrey, fontSize: '0.8rem' }}>
-                © {new Date().getFullYear()} The Human Co. All rights reserved.
+                © {new Date().getFullYear()} The Human Collab Ltd. All rights reserved.
               </p>
             </div>
           </div>
@@ -769,7 +769,7 @@ const App = () => {
                 Created by <a href="https://www.thehumanco.org/" target="_blank" rel="noopener noreferrer" style={{ color: colors.accentPink, textDecoration: 'underline' }}>The Human Co.</a>
               </p>
               <p style={{ margin: '0', color: colors.lightGrey, fontSize: '0.8rem' }}>
-                © {new Date().getFullYear()} The Human Co. All rights reserved.
+                © {new Date().getFullYear()} The Human Collab Ltd. All rights reserved.
               </p>
             </div>
           </div>
@@ -816,7 +816,7 @@ const App = () => {
                 Created by <a href="https://www.thehumanco.org/" target="_blank" rel="noopener noreferrer" style={{ color: colors.accentPink, textDecoration: 'underline' }}>The Human Co.</a>
               </p>
               <p style={{ margin: '0', color: colors.lightGrey, fontSize: '0.8rem' }}>
-                © {new Date().getFullYear()} The Human Co. All rights reserved.
+                © {new Date().getFullYear()} The Human Collab Ltd. All rights reserved.
               </p>
             </div>
           </div>
