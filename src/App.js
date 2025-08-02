@@ -473,23 +473,188 @@ const App = () => {
 
   // Download the report
   const handleDownloadReport = () => {
-    // Simple HTML download without the generateHtmlReport function
+    // Create comprehensive HTML with all report content
+    const renderReportSection = (title, content) => {
+      if (!content) return '';
+      return `
+        <div class="section">
+          <h2>${title}</h2>
+          ${markdownToHtml(content, colors)}
+        </div>
+      `;
+    };
+
+    const renderSkillGapHtml = () => {
+      if (!skillGapAnalysis?.skills) return '';
+      
+      let skillsHtml = '<h3>Identified Skill Gaps & Priorities</h3>';
+      
+      const sortedSkills = [...skillGapAnalysis.skills].sort((a, b) => {
+        const gapA = a.importanceRating - a.currentCapabilityRating;
+        const gapB = b.importanceRating - b.currentCapabilityRating;
+        if (gapA !== gapB) return gapB - gapA;
+        return b.importanceRating - a.importanceRating;
+      });
+
+      sortedSkills.forEach(skill => {
+        const capabilityBar = generateCapabilityBar(skill.currentCapabilityRating);
+        let priorityTag = 'Low Priority';
+        const gap = skill.importanceRating - skill.currentCapabilityRating;
+
+        if (skill.importanceRating >= 4 && skill.currentCapabilityRating <= 2) {
+          priorityTag = 'Immediate Focus';
+        } else if (skill.importanceRating >= 3 && gap >= 1) {
+          priorityTag = 'Emerging Priority';
+        }
+
+        const priorityColor = priorityTag === 'Immediate Focus' ? '#ef4444' : 
+                             (priorityTag === 'Emerging Priority' ? '#f59e0b' : colors.slateBlue);
+
+        skillsHtml += `
+          <div style="margin-bottom: 20px; padding: 15px; border: 1px solid ${colors.lightGrey}; border-radius: 8px; background: #fdfdfd;">
+            <p style="font-weight: bold; margin-bottom: 5px; color: ${colors.deepBlack};">${skill.skillName}</p>
+            <div style="font-size: 14px; margin-bottom: 5px;">
+              <span style="color: ${colors.slateBlue};">Importance: ${skill.importanceRating}/5</span>
+              <span style="margin: 0 8px; color: #9ca3af;">|</span>
+              <span style="color: ${colors.slateBlue};">Capability: ${skill.currentCapabilityRating}/5</span>
+              <span style="margin: 0 8px; color: #9ca3af;">|</span>
+              <span style="font-weight: bold; color: ${priorityColor};">${priorityTag}</span>
+            </div>
+            <p style="font-size: 14px; color: ${colors.deepBlack};">${capabilityBar} ${skill.description}</p>
+          </div>
+        `;
+      });
+
+      if (skillGapAnalysis.summary) {
+        skillsHtml += `<h3>Skill Focus</h3>${markdownToHtml(skillGapAnalysis.summary, colors)}`;
+      }
+
+      return skillsHtml;
+    };
+
+    const renderActionPlanHtml = () => {
+      if (!aiReport?.actionPlan) return '';
+      
+      const actionPlan = aiReport.actionPlan;
+      if (!actionPlan.day30 || !actionPlan.day60 || !actionPlan.day90) return '';
+
+      return `
+        <h2>Personalized Action Plan</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 20px;">
+          <div style="background: ${colors.lightGrey}; padding: 20px; border-radius: 8px;">
+            <h3 style="color: ${colors.primaryPink}; display: flex; align-items: center; gap: 10px;">
+              📅 30-Day Plan
+            </h3>
+            ${markdownToHtml(actionPlan.day30, colors)}
+          </div>
+          <div style="background: ${colors.lightGrey}; padding: 20px; border-radius: 8px;">
+            <h3 style="color: ${colors.primaryPink}; display: flex; align-items: center; gap: 10px;">
+              📅 60-Day Plan
+            </h3>
+            ${markdownToHtml(actionPlan.day60, colors)}
+          </div>
+          <div style="background: ${colors.lightGrey}; padding: 20px; border-radius: 8px;">
+            <h3 style="color: ${colors.primaryPink}; display: flex; align-items: center; gap: 10px;">
+              📅 90-Day Plan
+            </h3>
+            ${markdownToHtml(actionPlan.day90, colors)}
+          </div>
+        </div>
+        ${actionPlan.summary ? markdownToHtml(actionPlan.summary, colors) : ''}
+      `;
+    };
+
     const htmlContent = `
       <!DOCTYPE html>
-      <html>
+      <html lang="en">
         <head>
-          <title>Career Readiness Report</title>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Career Readiness Report - ${userProfile.role}</title>
           <style>
-            body { font-family: Arial, sans-serif; margin: 20px; }
-            h1 { color: #ff2e63; }
-            h2 { color: #3a4252; }
+            body { 
+              font-family: 'Arial', sans-serif; 
+              line-height: 1.6; 
+              margin: 0; 
+              padding: 20px; 
+              background-color: #f9f9f9;
+              color: ${colors.deepBlack};
+            }
+            .container {
+              max-width: 1000px;
+              margin: 0 auto;
+              background: white;
+              padding: 40px;
+              border-radius: 10px;
+              box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            }
+            h1 { 
+              color: ${colors.primaryPink}; 
+              text-align: center;
+              margin-bottom: 30px;
+              font-size: 2.5em;
+            }
+            h2 { 
+              color: ${colors.slateBlue}; 
+              border-bottom: 2px solid ${colors.lightGrey};
+              padding-bottom: 10px;
+              margin-top: 40px;
+            }
+            h3 { 
+              color: ${colors.slateBlue}; 
+              margin-top: 25px;
+            }
+            .profile-info {
+              background: ${colors.lightGrey};
+              padding: 20px;
+              border-radius: 8px;
+              margin-bottom: 30px;
+              text-align: center;
+            }
+            .section {
+              margin-bottom: 30px;
+            }
+            .callout-box {
+              background: ${colors.lightGrey};
+              border-left: 4px solid ${colors.primaryPink};
+              padding: 15px;
+              margin: 20px 0;
+              border-radius: 0 8px 8px 0;
+            }
+            .footer {
+              text-align: center;
+              margin-top: 40px;
+              padding: 20px;
+              background: ${colors.lightGrey};
+              border-radius: 8px;
+              font-size: 0.9em;
+              color: ${colors.slateBlue};
+            }
+            @media (max-width: 768px) {
+              .container { padding: 20px; }
+              h1 { font-size: 2em; }
+            }
           </style>
         </head>
         <body>
-          <h1>Career Readiness Report</h1>
-          <h2>Role: ${userProfile.role}</h2>
-          <h2>Industry: ${userProfile.industry}</h2>
-          <p>Report data available in the application interface.</p>
+          <div class="container">
+            <h1>CTRL+ALT+CAREER</h1>
+            <div class="profile-info">
+              <h2 style="margin: 0; border: none;">Career Readiness Report</h2>
+              <p><strong>Role:</strong> ${userProfile.role}</p>
+              <p><strong>Industry:</strong> ${userProfile.industry}</p>
+            </div>
+
+            ${aiReport ? renderReportSection('AI Impact Analysis', aiReport.aiImpactAnalysis) : ''}
+            ${aiReport ? renderReportSection('Future Scenarios', aiReport.futureScenarios) : ''}
+            ${aiReport?.actionPlan ? renderActionPlanHtml() : ''}
+            
+            ${skillGapAnalysis ? `<div class="section"><h2>Skill Gap Analysis</h2>${renderSkillGapHtml()}</div>` : ''}
+
+            <div class="footer">
+              <p>Created by <a href="https://thehumanco.co" target="_blank" style="color: ${colors.accentPink}; text-decoration: underline;">The Human Co.</a></p>
+            </div>
+          </div>
         </body>
       </html>
     `;
@@ -501,7 +666,7 @@ const App = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    setShowReportModal(false); // Close modal after download
+    setShowReportModal(false);
   };
 
   // Common styles for modals
