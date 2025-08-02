@@ -28,7 +28,6 @@ const escapeHtmlString = (str) => {
     .replace(/"/g, '&quot;'); // HTML entity for double quote
 };
 
-
 // Helper function to render Markdown to HTML
 const markdownToHtml = (markdown, colors) => {
   if (!markdown) return '';
@@ -148,21 +147,21 @@ const MarkdownRenderer = ({ reportData }) => {
   };
 
   const renderActionPlan = () => {
-  const aiReportData = reportData?.aiReport;
-  if (!aiReportData?.actionPlan) return null;
+    const aiReportData = reportData?.aiReport;
+    if (!aiReportData?.actionPlan) return null;
 
-  const actionPlan = aiReportData.actionPlan;
-  
-  // Safety check - if actionPlan doesn't have the data we expect, don't render
-  if (!actionPlan.day30 || !actionPlan.day60 || !actionPlan.day90) {
-    return (
-      <div className="section">
-        <h2 className="text-xl font-semibold mb-4 text-slate-blue">Personalized Action Plan</h2>
-        <p>Action plan is being generated...</p>
-      </div>
-    );
-  }
+    const actionPlan = aiReportData.actionPlan;
     
+    // Safety check - if actionPlan doesn't have the data we expect, don't render
+    if (!actionPlan.day30 || !actionPlan.day60 || !actionPlan.day90) {
+      return (
+        <div className="section">
+          <h2 className="text-xl font-semibold mb-4 text-slate-blue">Personalized Action Plan</h2>
+          <p>Action plan is being generated...</p>
+        </div>
+      );
+    }
+      
     return (
       <div className="section">
         <h2 className="text-xl font-semibold mb-4 text-slate-blue">Personalized Action Plan</h2>
@@ -219,42 +218,40 @@ const MarkdownRenderer = ({ reportData }) => {
       </>
     );
   };
-  
-  const MarkdownRenderer = ({ reportData }) => {
-    const aiReportData = reportData?.aiReport;
-    const skillGapData = reportData?.skillGapAnalysis;
 
-    if (!aiReportData && !skillGapData) {
-      return (
-        <div className="p-4 text-center">
-          <p className="text-gray-700">The report could not be generated. Please ensure your API key is correctly set up.</p>
-        </div>
-      );
-    }
+  const aiReportData = reportData?.aiReport;
+  const skillGapData = reportData?.skillGapAnalysis;
 
+  if (!aiReportData && !skillGapData) {
     return (
-      <div className="prose max-w-none leading-relaxed mb-8 p-2" style={{ borderColor: colors.slateBlue, color: colors.deepBlack }}>
-        {aiReportData && (
-          <>
-            {renderAiReport()}
-          </>
-        )}
-        {skillGapData && (
-          <>
-            <div className="section">
-              {renderSkillGapAnalysis()}
-            </div>
-            <div style={{ textAlign: 'center', marginTop: '40px', padding: '20px', background: colors.lightGrey, borderRadius: '8px', width: '100%' }}>
-              <p style={{ margin: '0', color: colors.slateBlue, fontSize: '0.9rem' }}>
-                  Created by <a href="https://thehumanco.co" target="_blank" rel="noopener noreferrer" style={{ color: colors.accentPink, textDecoration: 'underline' }}>The Human Co.</a>
-              </p>
-            </div>
-          </>
-        )}
+      <div className="p-4 text-center">
+        <p className="text-gray-700">The report could not be generated. Please ensure your API key is correctly set up.</p>
       </div>
     );
-  };
+  }
 
+  return (
+    <div className="prose max-w-none leading-relaxed mb-8 p-2" style={{ borderColor: colors.slateBlue, color: colors.deepBlack }}>
+      {aiReportData && (
+        <>
+          {renderAiReport()}
+        </>
+      )}
+      {skillGapData && (
+        <>
+          <div className="section">
+            {renderSkillGapAnalysis()}
+          </div>
+          <div style={{ textAlign: 'center', marginTop: '40px', padding: '20px', background: colors.lightGrey, borderRadius: '8px', width: '100%' }}>
+            <p style={{ margin: '0', color: colors.slateBlue, fontSize: '0.9rem' }}>
+                Created by <a href="https://thehumanco.co" target="_blank" rel="noopener noreferrer" style={{ color: colors.accentPink, textDecoration: 'underline' }}>The Human Co.</a>
+            </p>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
 
 // Main App Component
 const App = () => {
@@ -316,7 +313,6 @@ const App = () => {
     },
     propertyOrdering: ["skills", "summary"]
   };
-
 
   const initialCoreQuestions = useMemo(() => [
     "Describe your current professional role and primary responsibilities.",
@@ -442,10 +438,10 @@ const App = () => {
     fullPrompt += `For "futureScenarios", generate three distinct future scenarios relevant to their career path, considering industry trends. Each scenario should start with '### Scenario X: [Scenario Title]' and include concise paragraphs and bullet points. For each scenario, describe not just the potential success, but also **what stands in the way right now**, using conditional "this future happens if..." phrasing to drive action. Introduce **operational debt, personal blind spots, or growth risks** that need solving. At the end of this section, include a "What to do next" summary box, formatted as a Markdown blockquote (> What to do next: Your summary here.).\n`;
     fullPrompt += `For "actionPlan", provide a 30/60/90-day roadmap. This should be a JSON object with keys "day30", "day60", "day90", and "summary". Each of "day30", "day60", "day90" should contain Markdown text with concrete, actionable steps tailored to their specific answers, role, and industry. **It is absolutely critical that all three day plans (30, 60, 90) are fully populated with content. If unique ideas are limited, provide general but relevant actions for that timeframe to ensure no section is left blank.** Remove checklist-style phrasing. Make each item a **challenge with a clear call to courage or decisive movement**. Use **active voice** (e.g., "Ship something before it's perfect.", "Get uncomfortable in public."). Use numbered lists for steps. Use bolding for key terms within list items (e.g., **Toolkit MVP**). The "summary" key should contain Markdown text for a "Key Action" summary box, formatted as a Markdown blockquote (> Key Action: Your summary here.).\n`;
     fullPrompt += `Optionally, somewhere in the report (e.g., within AI Impact Analysis or Action Plan), include 1-2 punchy, emotionally intelligent lines as a "Truth You Might Be Avoiding" sidebar, formatted as a Markdown blockquote (> Truth You Might Be Avoiding: Your uncomfortable truth here.).\n`;
-    fullPrompt += `Maintain a confident, future-focused, human-first, strategic, and jargon-free tone, reflecting 'The Human Co.' ethos of being rebellious but practical. Prioritise clarity, movement and momentum. The tone should feel like a trusted advisor who knows the game and won’t let you coast.`;
-
+    fullPrompt += `Maintain a confident, future-focused, human-first, strategic, and jargon-free tone, reflecting 'The Human Co.' ethos of being rebellious but practical. Prioritise clarity, movement and momentum. The tone should feel like a trusted advisor who knows the game and won't let you coast.`;
 
     const reportContent = await callGeminiAPI(fullPrompt, true, reportSchema, setIsLoading);
+    console.log("What we got back from AI:", reportContent);
     setAiReport(reportContent);
   };
 
@@ -461,9 +457,9 @@ const App = () => {
     prompt += `\nAnalyze this information to identify potential skill gaps for their desired career growth. Return a JSON object with two keys: "skills" (an array of skill objects) and "summary" (Markdown text for a summary callout).\n`;
     prompt += `Each skill object in the "skills" array should have "skillName" (string), "importanceRating" (number 1-5, how critical is this skill for their goals?), "currentCapabilityRating" (number 1-5, their current proficiency), and "description" (string, concise paragraph).\n`;
     prompt += `**Order the skills from most critical to least critical**, where criticality is determined by a high importance rating and a low current capability rating (i.e., the biggest gaps first). For each skill, also indicate its priority: "Immediate Focus" (big gap, high importance), "Emerging Priority" (moderate gap/importance), or "Low Priority" (small gap/low importance).\n`;
-    prompt += `**Sharpen the language:** Avoid vague or polite language. Make the **cost of not closing the gap explicit**. Where relevant, **contrast ambition with infrastructure** (e.g., "Your ideas scale fast. Your systems don’t."). Keep paragraphs concise (max 3-4 lines). Use bolding for key terms.\n`;
+    prompt += `**Sharpen the language:** Avoid vague or polite language. Make the **cost of not closing the gap explicit**. Where relevant, **contrast ambition with infrastructure** (e.g., "Your ideas scale fast. Your systems don't."). Keep paragraphs concise (max 3-4 lines). Use bolding for key terms.\n`;
     prompt += `The "summary" key should contain Markdown text for a "Skill Focus" summary box, formatted as a Markdown blockquote (> Skill Focus: Your summary here.).\n`;
-    prompt += `Maintain a confident, future-focused, human-first, strategic, and jargon-free tone, reflecting 'The Human Co.' ethos of being rebellious but practical. Prioritise clarity, movement and momentum. The tone should feel like a trusted advisor who knows the game and won’t let you coast.`;
+    prompt += `Maintain a confident, future-focused, human-first, strategic, and jargon-free tone, reflecting 'The Human Co.' ethos of being rebellious but practical. Prioritise clarity, movement and momentum. The tone should feel like a trusted advisor who knows the game and won't let you coast.`;
 
     const analysis = await callGeminiAPI(prompt, true, skillGapSchema, setIsGeneratingSkillGap);
     setSkillGapAnalysis(analysis);
@@ -472,7 +468,9 @@ const App = () => {
   // Effect to update reportDownloadContent whenever aiReport or skillGapAnalysis changes
   useEffect(() => {
     if (aiReport || skillGapAnalysis) {
-      setReportDownloadContent(generateHtmlReport({ aiReport, skillGapAnalysis }, userProfile, colors));
+      // Note: generateHtmlReport function is not defined in your code, so this line will cause an error
+      // You'll need to either remove this or add the generateHtmlReport function
+      // setReportDownloadContent(generateHtmlReport({ aiReport, skillGapAnalysis }, userProfile, colors));
     }
   }, [aiReport, skillGapAnalysis, userProfile]);
 
@@ -509,10 +507,10 @@ const App = () => {
                 onError={(e) => e.target.style.display='none'}
               />
               <p className="text-lg mb-4 leading-relaxed">
-                Stuck in autopilot? It’s time for a system check. This AI-powered reboot adapts to you in real time — think less personality quiz, more upgrade path.
+                Stuck in autopilot? It's time for a system check. This AI-powered reboot adapts to you in real time — think less personality quiz, more upgrade path.
               </p>
               <p className="text-lg mb-8 leading-relaxed">
-                You’ll get a personalised report with future-of-work forecasts, automation risks, and a no-nonsense plan to keep your career one step ahead of the bots.
+                You'll get a personalised report with future-of-work forecasts, automation risks, and a no-nonsense plan to keep your career one step ahead of the bots.
               </p>
               <button
                 onClick={handleStartAssessment}
