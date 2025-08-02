@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.js": "/ai-career-assessment/static/js/main.eabb9538.js",
+    "main.js": "/ai-career-assessment/static/js/main.b3066d8e.js",
     "index.html": "/ai-career-assessment/index.html",
-    "main.eabb9538.js.map": "/ai-career-assessment/static/js/main.eabb9538.js.map"
+    "main.b3066d8e.js.map": "/ai-career-assessment/static/js/main.b3066d8e.js.map"
   },
   "entrypoints": [
-    "static/js/main.eabb9538.js"
+    "static/js/main.b3066d8e.js"
   ]
 }
