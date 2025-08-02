@@ -652,7 +652,8 @@ const App = () => {
             ${skillGapAnalysis ? `<div class="section"><h2>Skill Gap Analysis</h2>${renderSkillGapHtml()}</div>` : ''}
 
             <div class="footer">
-              <p>Created by <a href="https://thehumanco.co" target="_blank" style="color: ${colors.accentPink}; text-decoration: underline;">The Human Co.</a></p>
+              <p>Created by <a href="https://www.thehumanco.org/" target="_blank" style="color: ${colors.accentPink}; text-decoration: underline;">The Human Co.</a></p>
+              <p style="margin: 5px 0 0 0; font-size: 0.85em;">© ${new Date().getFullYear()} The Human Co. All rights reserved.</p>
             </div>
           </div>
         </body>
