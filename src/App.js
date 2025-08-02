@@ -148,10 +148,21 @@ const MarkdownRenderer = ({ reportData }) => {
   };
 
   const renderActionPlan = () => {
-    const aiReportData = reportData?.aiReport;
-    if (!aiReportData?.actionPlan) return null;
+  const aiReportData = reportData?.aiReport;
+  if (!aiReportData?.actionPlan) return null;
 
-    const actionPlan = aiReportData.actionPlan;
+  const actionPlan = aiReportData.actionPlan;
+  
+  // Safety check - if actionPlan doesn't have the data we expect, don't render
+  if (!actionPlan.day30 || !actionPlan.day60 || !actionPlan.day90) {
+    return (
+      <div className="section">
+        <h2 className="text-xl font-semibold mb-4 text-slate-blue">Personalized Action Plan</h2>
+        <p>Action plan is being generated...</p>
+      </div>
+    );
+  }
+    
     return (
       <div className="section">
         <h2 className="text-xl font-semibold mb-4 text-slate-blue">Personalized Action Plan</h2>
