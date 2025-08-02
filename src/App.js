@@ -702,6 +702,14 @@ const App = () => {
                 Start Assessment
               </button>
             </div>
+            <div style={{ textAlign: 'center', marginTop: '20px', padding: '15px' }}>
+              <p style={{ margin: '0 0 5px 0', color: colors.lightGrey, fontSize: '0.9rem' }}>
+                Created by <a href="https://www.thehumanco.org/" target="_blank" rel="noopener noreferrer" style={{ color: colors.accentPink, textDecoration: 'underline' }}>The Human Co.</a>
+              </p>
+              <p style={{ margin: '0', color: colors.lightGrey, fontSize: '0.8rem' }}>
+                © {new Date().getFullYear()} The Human Co. All rights reserved.
+              </p>
+            </div>
           </div>
         );
 
@@ -756,6 +764,14 @@ const App = () => {
                 </div>
               )}
             </div>
+            <div style={{ textAlign: 'center', marginTop: '20px', padding: '15px' }}>
+              <p style={{ margin: '0 0 5px 0', color: colors.lightGrey, fontSize: '0.9rem' }}>
+                Created by <a href="https://www.thehumanco.org/" target="_blank" rel="noopener noreferrer" style={{ color: colors.accentPink, textDecoration: 'underline' }}>The Human Co.</a>
+              </p>
+              <p style={{ margin: '0', color: colors.lightGrey, fontSize: '0.8rem' }}>
+                © {new Date().getFullYear()} The Human Co. All rights reserved.
+              </p>
+            </div>
           </div>
         );
 
@@ -794,6 +810,14 @@ const App = () => {
                   </div>
                 </>
               )}
+            </div>
+            <div style={{ textAlign: 'center', marginTop: '20px', padding: '15px' }}>
+              <p style={{ margin: '0 0 5px 0', color: colors.lightGrey, fontSize: '0.9rem' }}>
+                Created by <a href="https://www.thehumanco.org/" target="_blank" rel="noopener noreferrer" style={{ color: colors.accentPink, textDecoration: 'underline' }}>The Human Co.</a>
+              </p>
+              <p style={{ margin: '0', color: colors.lightGrey, fontSize: '0.8rem' }}>
+                © {new Date().getFullYear()} The Human Co. All rights reserved.
+              </p>
             </div>
           </div>
         );
