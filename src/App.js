@@ -267,12 +267,9 @@ const App = () => {
 
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
-  const [reportDownloadContent, setReportDownloadContent] = useState('');
   const [currentInput, setCurrentInput] = useState(''); // State to manage current textarea input
 
   const [isGeneratingSkillGap, setIsGeneratingSkillGap] = useState(false);
-
-  const googleFormEmbedUrl = "https://docs.google.com/forms/d/e/1FAIpQLSddjSYI034-DNEk8xgSGphL2IPsM164xFUTAZ8jDDyptTt5iQ/viewform?embedded=true"; // Your Google Form embed URL
 
   const reportSchema = {
     type: "OBJECT",
@@ -476,16 +473,35 @@ const App = () => {
 
   // Download the report
   const handleDownloadReport = () => {
-    if (reportDownloadContent) {
-      const blob = new Blob([reportDownloadContent], { type: 'text/html;charset=utf-8' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = `Career_Readiness_Report_${userProfile.role.replace(/\s/g, '_')}.html`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      setShowReportModal(false); // Close modal after download
-    }
+    // Simple HTML download without the generateHtmlReport function
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Career Readiness Report</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            h1 { color: #ff2e63; }
+            h2 { color: #3a4252; }
+          </style>
+        </head>
+        <body>
+          <h1>Career Readiness Report</h1>
+          <h2>Role: ${userProfile.role}</h2>
+          <h2>Industry: ${userProfile.industry}</h2>
+          <p>Report data available in the application interface.</p>
+        </body>
+      </html>
+    `;
+    
+    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `Career_Readiness_Report_${userProfile.role.replace(/\s/g, '_')}.html`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setShowReportModal(false); // Close modal after download
   };
 
   // Common styles for modals
