@@ -336,7 +336,7 @@ const App = () => {
       };
     }
 
-    const apiKey = process.env.REACT_APP_GEMINI_API_KEY ;
+    const apiKey = 'AIzaSyDuEZHbkbKCONWxtKyTDDf5CoJMd9JToQI' ;
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
     console.log("API Key being used (first few chars):", apiKey ? apiKey.substring(0, 5) + "..." : "Not set");
