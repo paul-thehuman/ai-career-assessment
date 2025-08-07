@@ -244,7 +244,7 @@ const MarkdownRenderer = ({ reportData }) => {
           </div>
           <div style={{ textAlign: 'center', marginTop: '40px', padding: '20px', background: colors.lightGrey, borderRadius: '8px', width: '100%' }}>
             <p style={{ margin: '0', color: colors.slateBlue, fontSize: '0.9rem' }}>
-                Created by <a href="https://thehumanco.co" target="_blank" rel="noopener noreferrer" style={{ color: colors.accentPink, textDecoration: 'underline' }}>The Human Co.</a>
+                Created by <a href="https://thehumanco.org" target="_blank" rel="noopener noreferrer" style={{ color: colors.accentPink, textDecoration: 'underline' }}>The Human Co.</a>
             </p>
           </div>
         </>
@@ -323,13 +323,10 @@ const App = () => {
     setQuestions(initialCoreQuestions);
   }, [initialCoreQuestions]);
 
-// API call function - this was missing the proper function declaration
+  // API call function - calls your serverless function instead of Google directly
   const callGeminiAPI = async (prompt, isStructured = false, schema = null, setLoadingState = null) => {
     if (setLoadingState) setLoadingState(true);
-    
-    const apiKey = process.env.MY_SECRET_API_KEY; // No REACT_APP_ prefix for backend
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-    
+
     const payload = {
       contents: [{
         parts: [{ text: prompt }]
@@ -341,19 +338,20 @@ const App = () => {
     };
 
     try {
-      const response = await fetch(apiUrl, {
+      const response = await fetch('/api/generateReport', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
+      
       const result = await response.json();
-      console.log("Gemini API raw response:", result);
+      console.log("API raw response:", result);
 
       if (result.candidates && result.candidates.length > 0 &&
           result.candidates[0].content && result.candidates[0].content.parts &&
           result.candidates[0].content.parts.length > 0) {
         let text = result.candidates[0].content.parts[0].text;
-        console.log("Gemini API response text:", text);
+        console.log("API response text:", text);
         if (isStructured) {
           try {
             return JSON.parse(text);
@@ -368,7 +366,7 @@ const App = () => {
         return "Error: Could not generate content. Please try again.";
       }
     } catch (error) {
-      console.error("Error calling Gemini API:", error);
+      console.error("Error calling API:", error);
       return "Error: Failed to connect to AI. Please check your network.";
     } finally {
       if (setLoadingState) setLoadingState(false);

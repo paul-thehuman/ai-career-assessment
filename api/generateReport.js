@@ -1,48 +1,43 @@
-const callGeminiAPI = async (prompt, isStructured = false, schema = null, setLoadingState = null) => {
-  if (setLoadingState) setLoadingState(true);
+// This is the CORRECT code for your serverless function: api/generateReport.js
 
-  const payload = {
-    contents: [{
-      parts: [{ text: prompt }]
-    }],
-    generationConfig: isStructured && schema ? {
-      responseMimeType: "application/json",
-      responseSchema: schema
-    } : {}
-  };
+export default async function handler(request, response) {
+  // Allow your website to call this function (CORS)
+  response.setHeader('Access-Control-Allow-Origin', '*');
 
+  if (request.method !== 'POST') {
+    return response.status(405).json({ message: 'Method Not Allowed' });
+  }
+
+  // Get the secret Google API key from Vercel's environment variables
+  const secretApiKey = process.env.MY_SECRET_API_KEY;
+
+  if (!secretApiKey) {
+    return response.status(500).json({ message: 'API key not configured on the server' });
+  }
+
+  // --- Call the Google Gemini API ---
+  // This section is now tailored to your exact setup.
   try {
-    const response = await fetch('/api/generateReport', {
+    // 1. Re-create the correct Google API URL, adding the secret key safely on the server
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${secretApiKey}`;
+
+    // 2. Use the data your website sent as the payload
+    const payload = request.body;
+
+    // 3. Call the Google API
+    const aiResponse = await fetch(apiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-    
-    const result = await response.json();
-    console.log("API raw response:", result);
 
-    if (result.candidates && result.candidates.length > 0 &&
-        result.candidates[0].content && result.candidates[0].content.parts &&
-        result.candidates[0].content.parts.length > 0) {
-      let text = result.candidates[0].content.parts[0].text;
-      console.log("API response text:", text);
-      if (isStructured) {
-        try {
-          return JSON.parse(text);
-        } catch (e) {
-          console.error("Failed to parse JSON response:", e, text);
-          return null;
-        }
-      }
-      return text;
-    } else {
-      console.error("Unexpected API response structure:", result);
-      return "Error: Could not generate content. Please try again.";
-    }
+    const aiData = await aiResponse.json();
+
+    // 4. Send the final response back to your website
+    response.status(200).json(aiData);
+
   } catch (error) {
-    console.error("Error calling API:", error);
-    return "Error: Failed to connect to AI. Please check your network.";
-  } finally {
-    if (setLoadingState) setLoadingState(false);
+    console.error("Error communicating with Google API:", error);
+    response.status(500).json({ message: 'Error communicating with Google API' });
   }
-};
+}
