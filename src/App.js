@@ -327,8 +327,8 @@ const App = () => {
   const callGeminiAPI = async (prompt, isStructured = false, schema = null, setLoadingState = null) => {
     if (setLoadingState) setLoadingState(true);
     
-    const apiKey = 'AIzaSyDqAp84OCYZV5AavAxAdy5lizxhsSQ4iwM';
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
+    const apiKey = process.env.MY_SECRET_API_KEY; // No REACT_APP_ prefix for backend
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
     
     const payload = {
       contents: [{
