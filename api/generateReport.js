@@ -1,35 +1,44 @@
-export default async function handler(request, response) {
-  // Allow CORS
-  response.setHeader('Access-Control-Allow-Origin', '*');
-  response.setHeader('Access-Control-Allow-Methods', 'POST');
-  response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+export default async function handler(req, res) {
+  // Handle CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  if (request.method !== 'POST') {
-    return response.status(405).json({ message: 'Method Not Allowed' });
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
   }
 
-  // Get the secret API key
-  const secretApiKey = process.env.MY_SECRET_API_KEY;
-
-  if (!secretApiKey) {
-    return response.status(500).json({ message: 'API key not configured' });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${secretApiKey}`;
-    const payload = request.body;
+    const apiKey = process.env.MY_SECRET_API_KEY;
+    
+    if (!apiKey) {
+      console.error('API key missing');
+      return res.status(500).json({ error: 'API key not configured' });
+    }
 
-    const aiResponse = await fetch(apiUrl, {
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(req.body)
     });
 
-    const aiData = await aiResponse.json();
-    response.status(200).json(aiData);
+    if (!response.ok) {
+      console.error('Gemini API error:', response.status, response.statusText);
+      return res.status(500).json({ error: 'AI API error' });
+    }
+
+    const data = await response.json();
+    return res.status(200).json(data);
 
   } catch (error) {
-    console.error("Error:", error);
-    response.status(500).json({ message: 'Error communicating with AI' });
+    console.error('Server error:', error);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 }
