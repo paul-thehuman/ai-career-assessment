@@ -327,7 +327,7 @@ const App = () => {
   const callGeminiAPI = async (prompt, isStructured = false, schema = null, setLoadingState = null) => {
     if (setLoadingState) setLoadingState(true);
     
-    const apiKey = process.env.REACT_APP_GEMINI_API_KEY || 'YOUR_API_KEY_HERE';
+    const apiKey = 'AIzaSyDqAp84OCYZV5AavAxAdy5lizxhsSQ4iwM';
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
     
     const payload = {
