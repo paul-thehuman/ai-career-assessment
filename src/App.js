@@ -323,24 +323,14 @@ const App = () => {
     setQuestions(initialCoreQuestions);
   }, [initialCoreQuestions]);
 
-  const callGeminiAPI = async (prompt, isStructured = false, schema = null, setLoadingState = null) => {
-    if (setLoadingState) setLoadingState(true);
-    let chatHistory = [];
-    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-
-    const payload = { contents: chatHistory };
-    if (isStructured && schema) {
-      payload.generationConfig = {
-        responseMimeType: "application/json",
-        responseSchema: schema
-      };
-    }
-
-    const apiKey = 'AIzaSyDuEZHbkbKCONWxtKyTDDf5CoJMd9JToQI' ;
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-    console.log("API Key being used (first few chars):", apiKey ? apiKey.substring(0, 5) + "..." : "Not set");
-    console.log("Calling Gemini API with prompt:", prompt);
+  try {
+  const response = await fetch('/api/generateReport', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload) // We still send the same payload
+  });
+  const result = await response.json();
+  console.log("API raw response:", result); // You can keep your console logs
 
     try {
       const response = await fetch(apiUrl, {
