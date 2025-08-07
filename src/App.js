@@ -323,14 +323,22 @@ const App = () => {
     setQuestions(initialCoreQuestions);
   }, [initialCoreQuestions]);
 
-  try {
-  const response = await fetch('/api/generateReport', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload) // We still send the same payload
-  });
-  const result = await response.json();
-  console.log("API raw response:", result); // You can keep your console logs
+// API call function - this was missing the proper function declaration
+  const callGeminiAPI = async (prompt, isStructured = false, schema = null, setLoadingState = null) => {
+    if (setLoadingState) setLoadingState(true);
+    
+    const apiKey = process.env.REACT_APP_GEMINI_API_KEY || 'YOUR_API_KEY_HERE';
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
+    
+    const payload = {
+      contents: [{
+        parts: [{ text: prompt }]
+      }],
+      generationConfig: isStructured && schema ? {
+        responseMimeType: "application/json",
+        responseSchema: schema
+      } : {}
+    };
 
     try {
       const response = await fetch(apiUrl, {
