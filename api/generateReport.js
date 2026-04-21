@@ -129,10 +129,14 @@ export default async function handler(req, res) {
 
       responseText = JSON.stringify(toolUse.input);
     } else {
-      // Plain text output
+      // Plain text output. The frontend uses this for generating
+      // follow-up questions — it wants just the question, not
+      // "Here's a follow-up question that explores..." preamble.
+      // A terse system prompt keeps Claude from adding commentary.
       const result = await client.messages.create({
         model: MODEL,
         max_tokens: 2048,
+        system: 'Respond with only the content requested. No preamble, no explanation of your reasoning, no meta-commentary. If asked for a question, reply with the question alone.',
         messages: [{ role: 'user', content: prompt }]
       });
 
