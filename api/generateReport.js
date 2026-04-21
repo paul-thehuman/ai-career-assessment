@@ -27,6 +27,54 @@ import Anthropic from '@anthropic-ai/sdk';
 // Bump to 'claude-sonnet-4-6' if skill-gap output feels thin.
 const MODEL = 'claude-haiku-4-5';
 
+// The frontend was originally built for Gemini, which uses uppercase
+// type names ("OBJECT", "STRING", "ARRAY", "NUMBER") and a Gemini-
+// specific `propertyOrdering` field. Anthropic's tool_use input_schema
+// uses standard JSON Schema (lowercase types, no propertyOrdering).
+// We translate the schema recursively so the frontend can stay on
+// its existing Gemini-shaped schema definitions.
+function geminiSchemaToJsonSchema(schema) {
+  if (!schema || typeof schema !== 'object') return schema;
+
+  // Handle arrays (unlikely at top level but possible in items)
+  if (Array.isArray(schema)) {
+    return schema.map(geminiSchemaToJsonSchema);
+  }
+
+  const out = {};
+
+  for (const [key, value] of Object.entries(schema)) {
+    // Drop Gemini-specific fields that Anthropic doesn't understand
+    if (key === 'propertyOrdering') continue;
+
+    // Lowercase type values — critical for tool_use to work
+    if (key === 'type' && typeof value === 'string') {
+      out.type = value.toLowerCase();
+      continue;
+    }
+
+    // Recurse into properties object
+    if (key === 'properties' && typeof value === 'object') {
+      out.properties = {};
+      for (const [propKey, propValue] of Object.entries(value)) {
+        out.properties[propKey] = geminiSchemaToJsonSchema(propValue);
+      }
+      continue;
+    }
+
+    // Recurse into items (for arrays)
+    if (key === 'items') {
+      out.items = geminiSchemaToJsonSchema(value);
+      continue;
+    }
+
+    // Pass-through for everything else (description, enum, etc.)
+    out[key] = value;
+  }
+
+  return out;
+}
+
 export default async function handler(req, res) {
   // CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -57,6 +105,9 @@ export default async function handler(req, res) {
     let responseText;
 
     if (wantsJSON && schema) {
+      // Translate Gemini schema dialect to standard JSON Schema
+      const jsonSchema = geminiSchemaToJsonSchema(schema);
+
       // Structured output via tool_use - guarantees the schema
       const result = await client.messages.create({
         model: MODEL,
@@ -64,7 +115,7 @@ export default async function handler(req, res) {
         tools: [{
           name: 'emit_response',
           description: 'Emit the structured response matching the required schema.',
-          input_schema: schema
+          input_schema: jsonSchema
         }],
         tool_choice: { type: 'tool', name: 'emit_response' },
         messages: [{ role: 'user', content: prompt }]
