@@ -8,6 +8,7 @@ for (const h of wef.headline) index.set(h.id, `WEF 2025: ${h.claim}`);
 for (const d of wef.drivers) index.set(d.id, `WEF 2025 driver: ${d.label}`);
 for (const s of wef.skills) index.set(s.id, `WEF 2025 skill: ${s.label} (${s.trend}${s.core2025Rank ? `, core skill #${s.core2025Rank}` : ""}${s.risingRank ? `, rising #${s.risingRank}` : ""})`);
 for (const t of wef.taskCategories) index.set(t.id, `WEF 2025 task category: ${t.label} (${t.direction}). ${t.note}`);
+for (const f of wef.economies.uk.findings) index.set(f.id, `WEF 2025, United Kingdom: ${f.claim}`);
 for (const c of wef.clusters) index.set(c.id, `WEF 2025 cluster: ${c.label} (${c.direction}). ${c.wefEvidence}`);
 const resourceIndex = new Map(resources.items.map((r) => [r.slug, r]));
 

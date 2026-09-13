@@ -36,6 +36,7 @@ function compactSlice() {
     skills: wef.skills.map(({ id, label, core2025Rank, risingRank, trend }) => ({ id, label, core2025Rank, risingRank, trend })),
     taskCategories: wef.taskCategories.map(({ id, label, direction, note }) => ({ id, label, direction, note })),
     clusters: wef.clusters.map(({ id, label, direction, wefEvidence, typicalTasks }) => ({ id, label, direction, wefEvidence, typicalTasks })),
+    economies: { uk: { label: wef.economies.uk.label, skillsChangeShare: wef.economies.uk.skillsChangeShare, findings: wef.economies.uk.findings.map(({ id, claim }) => ({ id, claim })) } },
     jobs: {
       fastestGrowing: wef.jobs.fastestGrowing,
       fastestDeclining: wef.jobs.fastestDeclining,
@@ -92,7 +93,8 @@ export function buildSystemPrompt() {
     "  can do most of it; augment = the person stays in charge, the tool does the",
     "  heavy lifting; human = judgment, relationships, accountability or physical",
     "  presence make it theirs. Reason in one or two sentences, specific to them.",
-    "- 'exposure': where their cluster and industry sit in the projections.",
+    "- 'exposure': where their cluster and industry sit in the projections. If the",
+    "  person is in the United Kingdom, use the UK findings (economies.uk) as well.",
     "- 'skillGaps': widest gap first. Say plainly what it costs to leave each open.",
     "  Contrast ambition with infrastructure where it fits.",
     "- 'truth': the truth they might be avoiding. One line. Evidenced by two",

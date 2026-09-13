@@ -9,6 +9,7 @@ wef.headline.forEach((h) => seen(h.id, "headline"));
 wef.drivers.forEach((d) => seen(d.id, "drivers"));
 wef.skills.forEach((s) => seen(s.id, "skills"));
 wef.taskCategories.forEach((t) => seen(t.id, "taskCategories"));
+wef.economies.uk.findings.forEach((f) => seen(f.id, "economies.uk"));
 wef.clusters.forEach((c) => { seen(c.id, "clusters"); if (!c.typicalTasks?.length) problems.push(`cluster ${c.id} has no typicalTasks`); });
 const slugs = resources.items.map((r) => r.slug);
 if (new Set(slugs).size !== slugs.length) problems.push("duplicate resource slugs");
@@ -20,8 +21,10 @@ const unverified = [
   ...wef.taskCategories.filter((x) => !x.verified).map((x) => `${x.id}: ${x.label} → ${x.direction} [${x.ref}]`),
   ...wef.clusters.filter((x) => !x.verified).map((x) => `${x.id}: ${x.label} → ${x.direction}; jobs: ${x.wefJobs.join("; ") || "none"}`),
   ...(wef.jobs.verified ? [] : ["jobs: all four job lists"]),
+  ...wef.economies.uk.findings.filter((x) => !x.verified).map((x) => `${x.id}: ${x.claim}`),
 ];
 
+console.log(`Checked on: ${wef.meta.checkedOn ?? "never"}`);
 console.log(`WEF slice: ${wef.headline.length} headline claims, ${wef.drivers.length} drivers, ${wef.skills.length} skills, ${wef.taskCategories.length} task categories, ${wef.clusters.length} clusters, ${Object.values(wef.jobs).filter(Array.isArray).flat().length} job names.`);
 console.log(`Resources: ${resources.items.length} slugs.`);
 console.log(`Problems: ${problems.length}${problems.length ? "\n  - " + problems.join("\n  - ") : ""}`);

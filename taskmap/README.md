@@ -4,7 +4,7 @@ The interview engine and the WEF data slice, run in the terminal. No interface y
 
 ## What's in it
 
-- `data/wef-2025.json`: the slice of the WEF Future of Jobs Report 2025 the interviewer reasons from. **Every entry is flagged `verified: false`** because it was written from recollection of the report, not extracted from it. Run `npm run check-data` for the checklist, then verify each line against the PDF before anyone sees a report.
+- `data/wef-2025.json`: the slice of the WEF Future of Jobs Report 2025 the interviewer reasons from: headline numbers, the nine drivers, all 26 skills with their core-skill share and rising rank, nine task categories, the four job lists, the UK economy findings, and 15 role clusters. Verified line by line against the report PDF on 2026-09-13; each entry names the figure or section it came from. `npm run check-data` re-prints anything still unverified.
 - `content/resources.json`: the only links the report may recommend. All Paul's own articles and free courses.
 - `src/schema.js`: the shapes the model must produce, enforced by the API's structured output mode. A source is a verbatim quote (with turn number) or a WEF id. No claim without one.
 - `src/engine.js`: the interviewer. Opens from the role's cluster, keeps a case file, asks one question to fill the biggest gap, gets one challenge, finishes between 5 and 8 questions, produces the report.
