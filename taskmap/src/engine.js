@@ -7,7 +7,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
-import { Turn } from "./schema.js";
+import { AskTurn, DoneTurn } from "./schema.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 export const ROOT = path.resolve(here, "..");
@@ -158,7 +158,7 @@ export class Interview {
     const forbidFinal = n < MIN_TURNS;
     const turn = await this.#modelTurn({ forceFinal, forbidFinal });
 
-    this.caseFile = turn.caseFile;
+    if (turn.caseFile) this.caseFile = turn.caseFile;
     if (turn.phase === "done" && turn.report) {
       this.report = turn.report;
       this.history.push({ role: "assistant", content: JSON.stringify({ phase: "done", caseFile: turn.caseFile }) });
@@ -171,44 +171,47 @@ export class Interview {
   }
 
   async #modelTurn({ forceFinal, forbidFinal }) {
-    const messages = [...this.history];
-    if (forceFinal) {
-      messages.push({ role: "system", content: `This is the final turn (${MAX_TURNS} questions asked). Do not ask another question. Set phase to 'done' and produce the complete report now.` });
-    } else if (forbidFinal) {
-      messages.push({ role: "system", content: `Fewer than ${MIN_TURNS} questions have been answered. Do not finish. Set phase to 'asking' and ask the single most useful next question.` });
-    }
-    const call = (msgs, effort) => this.client.messages.parse({
+    const call = (msgs, schema, effort) => this.client.messages.parse({
       model: MODEL,
       max_tokens: 16000,
       system: [{ type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } }],
       messages: msgs,
-      output_config: { format: zodOutputFormat(Turn), effort },
+      output_config: { format: zodOutputFormat(schema), effort },
     });
-
-    let res = await call(messages, forceFinal ? "high" : "medium");
-    this.#account(res);
-    if (res.stop_reason === "refusal") throw new Error(`Model refused: ${res.stop_details?.explanation ?? "no explanation"}`);
-    let turn = res.parsed_output;
-
-    const wrongPhase = (t) => !t || (forceFinal && t.phase !== "done") || (forbidFinal && t.phase !== "asking") || (t.phase === "done" && !t.report);
-    if (wrongPhase(turn)) {
-      this.log(`corrective retry (force=${forceFinal} forbid=${forbidFinal} got=${turn?.phase ?? "unparseable"})`);
-      const fix = forceFinal
-        ? "Your last output was not acceptable: this is the final turn and phase must be 'done' with a complete report."
-        : forbidFinal
-          ? "Your last output was not acceptable: you may not finish yet. Set phase to 'asking' with one question."
-          : "Your last output was not acceptable: a 'done' turn must include the full report.";
-      res = await call([...messages, { role: "system", content: fix }], "high");
+    const parsed = async (msgs, schema, effort, label) => {
+      let res = await call(msgs, schema, effort);
       this.#account(res);
-      turn = res.parsed_output;
-      if (wrongPhase(turn)) {
-        if (forbidFinal && turn?.caseFile) {
-          return { ...turn, phase: "asking", report: null, question: turn.question ?? "Before I pull this together, what would you most want it to change first?" };
-        }
-        throw new Error("Model would not produce the required phase after a corrective retry");
-      }
+      if (res.stop_reason === "refusal") throw new Error(`Model refused: ${res.stop_details?.explanation ?? "no explanation"}`);
+      if (res.parsed_output) return res.parsed_output;
+      this.log(`${label}: unparseable output, one corrective retry`);
+      res = await call([...msgs, { role: "system", content: "Your last output did not match the required schema. Respond again, matching it exactly." }], schema, "high");
+      this.#account(res);
+      if (!res.parsed_output) throw new Error(`${label}: output did not match the schema after a corrective retry`);
+      return res.parsed_output;
+    };
+
+    const finish = async (note) => {
+      const msgs = [...this.history, { role: "system", content: note }];
+      const report = await parsed(msgs, DoneTurn, "high", "report");
+      // The case file stays as of the last asking turn; the report itself
+      // carries the final numbers.
+      return { phase: "done", caseFile: this.caseFile, report, rationale: "report" };
+    };
+
+    if (forceFinal) {
+      return finish(`This is the final turn (${MAX_TURNS} questions asked). Do not ask another question. Produce the complete report now.`);
     }
-    return turn;
+
+    const msgs = [...this.history];
+    if (forbidFinal) {
+      msgs.push({ role: "system", content: `Fewer than ${MIN_TURNS} questions have been answered. You may not finish yet. Ask the single most useful next question.` });
+    }
+    const ask = await parsed(msgs, AskTurn, "medium", "question");
+    if (ask.readyToFinish && !forbidFinal) {
+      this.log(`interviewer ready to finish after ${this.questionsAsked} questions`);
+      return finish("You have indicated you have enough. Do not ask another question. Produce the complete report now.");
+    }
+    return { phase: "asking", caseFile: ask.caseFile, question: ask.question, rationale: ask.rationale, report: null };
   }
 
   #account(res) {

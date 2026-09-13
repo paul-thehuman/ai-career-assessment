@@ -13,7 +13,7 @@ for (const c of wef.clusters) index.set(c.id, `WEF 2025 cluster: ${c.label} (${c
 const resourceIndex = new Map(resources.items.map((r) => [r.slug, r]));
 
 export function sourceLine(s) {
-  if (s.type === "quote") return `> "${s.text ?? ""}" (turn ${s.turn ?? "?"})`;
+  if (s.type === "quote") return `> "${s.text ?? ""}" (turn ${s.turn || "?"})`;
   const known = index.get(s.id ?? "");
   return known ? `> ${known} [${s.id}]` : `> UNKNOWN WEF ID: ${s.id}`;
 }
@@ -149,7 +149,7 @@ export function renderMarkdown({ profile, exchanges, caseFile, report, usage, me
   L.push("");
   L.push(`### Help wanted`);
   L.push("");
-  L.push(`${report.helpWanted ?? "(not captured)"} · for: ${report.helpFor ?? "(not captured)"}`);
+  L.push(`${report.helpWanted || "(not captured)"} · for: ${report.helpFor && report.helpFor !== "unknown" ? report.helpFor : "(not captured)"}`);
   L.push("");
   L.push("## Checks");
   L.push("");

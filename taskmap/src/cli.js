@@ -7,14 +7,15 @@ import readline from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { Interview, SYSTEM_PROMPT, ROOT, MODEL, MAX_TURNS, MIN_TURNS } from "./engine.js";
-import { Turn } from "./schema.js";
+import { AskTurn, DoneTurn } from "./schema.js";
 import { renderMarkdown } from "./render.js";
 
 if (process.argv.includes("--dry")) {
   console.log(SYSTEM_PROMPT);
   console.log("\n--- system prompt chars:", SYSTEM_PROMPT.length);
-  console.log("--- output format:");
-  console.log(JSON.stringify(zodOutputFormat(Turn), null, 2).slice(0, 4000) + "\n...");
+  const a = JSON.stringify(zodOutputFormat(AskTurn)), d = JSON.stringify(zodOutputFormat(DoneTurn));
+  console.log(`--- output formats: ask schema ${a.length} chars, done schema ${d.length} chars`);
+  console.log(a.slice(0, 1500) + "\n...");
   process.exit(0);
 }
 
