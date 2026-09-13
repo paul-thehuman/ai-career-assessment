@@ -1,0 +1,16 @@
+{
+  "name": "taskmap-engine",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Task Map stage one: WEF data slice + interview engine, run in the terminal.",
+  "scripts": {
+    "interview": "node src/cli.js",
+    "simulate": "node src/simulate.js",
+    "check-data": "node src/check-data.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.96.0",
+    "zod": "^3.23.8"
+  }
+}

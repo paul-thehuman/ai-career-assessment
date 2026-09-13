@@ -1,0 +1,35 @@
+# Task Map, stage one
+
+The interview engine and the WEF data slice, run in the terminal. No interface yet, on purpose: the quality of the conversation and the report is decided here.
+
+## What's in it
+
+- `data/wef-2025.json`: the slice of the WEF Future of Jobs Report 2025 the interviewer reasons from. **Every entry is flagged `verified: false`** because it was written from recollection of the report, not extracted from it. Run `npm run check-data` for the checklist, then verify each line against the PDF before anyone sees a report.
+- `content/resources.json`: the only links the report may recommend. All Paul's own articles and free courses.
+- `src/schema.js`: the shapes the model must produce, enforced by the API's structured output mode. A source is a verbatim quote (with turn number) or a WEF id. No claim without one.
+- `src/engine.js`: the interviewer. Opens from the role's cluster, keeps a case file, asks one question to fill the biggest gap, gets one challenge, finishes between 5 and 8 questions, produces the report.
+- `src/render.js`: Markdown rendering with every source under its claim, plus three checks: unsourced claims, bad sources (unknown WEF ids, invented resource slugs) and quotes that don't appear verbatim in the answers.
+- `src/cli.js`: sit the interview yourself.
+- `src/simulate.js`: three simulated people, played by a second model, so the interviewer can be judged before a real person uses it. Transcripts land in `transcripts/` and are labeled as simulated.
+
+## Running it
+
+Needs `ANTHROPIC_API_KEY` in the environment (or an `ant auth login` profile).
+
+```
+npm install
+npm run check-data          # data sanity + verification checklist, no API
+node src/cli.js --dry       # prints the system prompt and output schema, no API
+npm run interview           # the real thing, in your terminal
+npm run simulate            # all three personas; or: node src/simulate.js ops-logistics
+```
+
+Model defaults: interviewer `claude-opus-5` (medium effort on questions, high on the report), personas `claude-sonnet-5`. Override with `TASKMAP_MODEL` and `TASKMAP_PERSONA_MODEL`. Turn limits: `TASKMAP_MIN_TURNS` (5) and `TASKMAP_MAX_TURNS` (8).
+
+## What to judge in a transcript
+
+1. Does the opening question use the cluster's task list, or does it ask "describe your role"?
+2. Does each question follow from what was just said, and go after the biggest gap?
+3. Is the one challenge used, and used well?
+4. In the report: are the verdicts specific to this person? Is every quote real (the Checks section counts the ones that aren't)? Do the commitments read as things someone would actually do?
+5. Does it feel like The Human Co., or like any career quiz?

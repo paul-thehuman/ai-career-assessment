@@ -1,0 +1,26 @@
+{
+  "note": "The only resources the report may recommend. All are Paul's own articles and free courses on thehumanco.org. The model picks slugs from this list and never invents a link.",
+  "base": "https://thehumanco.org/ai-resources/",
+  "items": [
+    { "slug": "ai-fluency", "title": "AI Fluency (free course)", "for": "Anyone starting out who wants a framework for working with AI, not a list of tricks." },
+    { "slug": "ai-agents", "title": "AI Agents (free course)", "for": "People ready to go beyond chat and hand AI a whole job." },
+    { "slug": "how-to-use-ai-at-work", "title": "How to use AI at work", "for": "The first handful of jobs to hand to AI on a Monday morning." },
+    { "slug": "ai-for-meeting-notes-and-action-items", "title": "AI for meeting notes and action items", "for": "Anyone who spends hours on minutes and follow-ups." },
+    { "slug": "write-and-rewrite-emails-with-ai", "title": "Write and rewrite emails with AI", "for": "Heavy inbox roles." },
+    { "slug": "ai-for-spreadsheets-formulas-and-data", "title": "AI for spreadsheets, formulas and data", "for": "Reporting, reconciliation and anyone who lives in Excel." },
+    { "slug": "summarise-long-documents-and-meetings-with-ai", "title": "Summarise long documents and meetings with AI", "for": "Roles buried in reading." },
+    { "slug": "draft-customer-replies-with-ai", "title": "Draft customer replies with AI", "for": "Customer service and account management." },
+    { "slug": "turn-messy-notes-into-sops-with-ai", "title": "Turn messy notes into SOPs with AI", "for": "Operations people who own processes nobody has written down." },
+    { "slug": "how-to-set-up-an-ai-agent-at-work", "title": "How to set up an AI agent at work", "for": "People ready to automate a repeatable task end to end." },
+    { "slug": "get-up-to-speed-on-any-topic-with-ai", "title": "Get up to speed on any topic with AI", "for": "Learning a new area fast." },
+    { "slug": "use-ai-to-pressure-test-your-thinking", "title": "Use AI to pressure-test your thinking", "for": "Decision makers and anyone writing strategy." },
+    { "slug": "personal-development-plan-with-chatgpt", "title": "Build a personal development plan with AI", "for": "Turning a skills gap into a plan." },
+    { "slug": "t-shaped-skills-age-of-ai", "title": "T-shaped skills in the age of AI", "for": "Anyone deciding what to go deep on." },
+    { "slug": "learning-in-the-ai-era", "title": "Learning in the AI era", "for": "People who need to relearn how they learn." },
+    { "slug": "free-ai-training-courses-uk-2026", "title": "Free AI training in 2026 (UK)", "for": "Anyone in the UK who wants verified free courses and the traps to avoid." },
+    { "slug": "free-ai-courses-with-certificate-2026", "title": "Free AI courses with a certificate", "for": "People who want something to show on a CV." },
+    { "slug": "free-ai-training-uk-government", "title": "Free UK government AI training", "for": "Public sector and anyone who wants the Skills England badge." },
+    { "slug": "free-ai-training-for-charities-uk", "title": "Free AI training for UK charities", "for": "Charity and non-profit staff." },
+    { "slug": "manager-prompt-pack", "title": "Manager prompt pack", "for": "People managers who want ready-made prompts for one-to-ones, feedback and planning." }
+  ]
+}

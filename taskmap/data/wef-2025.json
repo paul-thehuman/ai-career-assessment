@@ -1,0 +1,106 @@
+{
+  "meta": {
+    "source": "World Economic Forum, The Future of Jobs Report 2025 (published January 2025). Survey of over 1,000 employers across 22 industry clusters and 55 economies, projecting 2025 to 2030.",
+    "status": "DRAFT SLICE. Written from recollection of the report because the WEF site was unreachable from the build environment. Every entry carries verified:false until checked against the PDF. Do not demo until checked.",
+    "howToVerify": "Open the PDF. For each entry, find the figure or section named in ref, confirm the wording and any number, then set verified:true and checkedOn.",
+    "checkedOn": null,
+    "licensingNote": "Confirm WEF terms of use for citing the report inside a product. Attribution is expected."
+  },
+  "headline": [
+    { "id": "h-jobs-created", "claim": "Employers expect 170 million jobs to be created by 2030.", "ref": "Section 2, Total job growth and loss", "verified": false },
+    { "id": "h-jobs-displaced", "claim": "Employers expect 92 million jobs to be displaced by 2030.", "ref": "Section 2, Total job growth and loss", "verified": false },
+    { "id": "h-net-growth", "claim": "Net growth of 78 million jobs, about 7 percent of current employment.", "ref": "Section 2, Total job growth and loss", "verified": false },
+    { "id": "h-churn", "claim": "Structural labour market churn of about 22 percent of jobs by 2030.", "ref": "Section 2, Total job growth and loss", "verified": false },
+    { "id": "h-skills-change", "claim": "On average, 39 percent of workers' existing skill sets will be transformed or become outdated by 2030.", "ref": "Section 3, Skills outlook", "verified": false },
+    { "id": "h-skills-gap-barrier", "claim": "63 percent of employers identify skills gaps as the biggest barrier to business transformation.", "ref": "Section 4, Workforce strategies", "verified": false },
+    { "id": "h-upskilling", "claim": "85 percent of employers plan to prioritise upskilling their workforce.", "ref": "Section 4, Workforce strategies", "verified": false },
+    { "id": "h-ai-hiring", "claim": "About 70 percent of employers plan to hire staff with new AI skills; about 40 percent plan to reduce staff where AI can automate tasks.", "ref": "Section 4, AI and workforce strategies", "verified": false },
+    { "id": "h-task-split-2025", "claim": "In 2025 employers estimate tasks are done 47 percent by humans, 22 percent by technology, 30 percent by a combination.", "ref": "Section 3, Automation and augmentation", "verified": false },
+    { "id": "h-task-split-2030", "claim": "By 2030 employers expect roughly a third each: human, technology, and combination.", "ref": "Section 3, Automation and augmentation", "verified": false }
+  ],
+  "drivers": [
+    { "id": "d-digital-access", "label": "Broadening digital access", "share": 0.60, "ref": "Section 1, Drivers of labour market transformation", "verified": false },
+    { "id": "d-cost-of-living", "label": "Rising cost of living and slower growth", "share": 0.50, "ref": "Section 1", "verified": false },
+    { "id": "d-climate-mitigation", "label": "Climate change mitigation", "share": 0.47, "ref": "Section 1", "verified": false },
+    { "id": "d-demographics", "label": "Ageing and declining working-age populations (high-income economies)", "share": 0.40, "ref": "Section 1", "verified": false },
+    { "id": "d-fragmentation", "label": "Geoeconomic fragmentation", "share": 0.34, "ref": "Section 1", "verified": false }
+  ],
+  "skills": [
+    { "id": "sk-analytical", "label": "Analytical thinking", "core2025Rank": 1, "core2025Share": 0.69, "risingRank": 9, "trend": "rising", "ref": "Section 3, Core skills in 2025; Skills on the rise", "verified": false },
+    { "id": "sk-resilience", "label": "Resilience, flexibility and agility", "core2025Rank": 2, "core2025Share": 0.67, "risingRank": 5, "trend": "rising", "ref": "Section 3", "verified": false },
+    { "id": "sk-leadership", "label": "Leadership and social influence", "core2025Rank": 3, "core2025Share": 0.61, "risingRank": 7, "trend": "rising", "ref": "Section 3", "verified": false },
+    { "id": "sk-creative", "label": "Creative thinking", "core2025Rank": 4, "core2025Share": 0.57, "risingRank": 4, "trend": "rising", "ref": "Section 3", "verified": false },
+    { "id": "sk-motivation", "label": "Motivation and self-awareness", "core2025Rank": 5, "core2025Share": 0.52, "risingRank": 12, "trend": "rising", "ref": "Section 3", "verified": false },
+    { "id": "sk-tech-literacy", "label": "Technological literacy", "core2025Rank": 6, "core2025Share": 0.51, "risingRank": 3, "trend": "rising", "ref": "Section 3", "verified": false },
+    { "id": "sk-empathy", "label": "Empathy and active listening", "core2025Rank": 7, "core2025Share": 0.50, "risingRank": 13, "trend": "rising", "ref": "Section 3", "verified": false },
+    { "id": "sk-curiosity", "label": "Curiosity and lifelong learning", "core2025Rank": 8, "core2025Share": 0.50, "risingRank": 6, "trend": "rising", "ref": "Section 3", "verified": false },
+    { "id": "sk-talent", "label": "Talent management", "core2025Rank": 9, "core2025Share": 0.47, "risingRank": 8, "trend": "rising", "ref": "Section 3", "verified": false },
+    { "id": "sk-service", "label": "Service orientation and customer service", "core2025Rank": 10, "core2025Share": 0.47, "risingRank": null, "trend": "stable", "ref": "Section 3", "verified": false },
+    { "id": "sk-ai-data", "label": "AI and big data", "core2025Rank": null, "core2025Share": null, "risingRank": 1, "trend": "rising", "ref": "Section 3, Skills on the rise", "verified": false },
+    { "id": "sk-cyber", "label": "Networks and cybersecurity", "core2025Rank": null, "core2025Share": null, "risingRank": 2, "trend": "rising", "ref": "Section 3, Skills on the rise", "verified": false },
+    { "id": "sk-environment", "label": "Environmental stewardship", "core2025Rank": null, "core2025Share": null, "risingRank": 10, "trend": "rising", "ref": "Section 3, Skills on the rise", "verified": false },
+    { "id": "sk-systems", "label": "Systems thinking", "core2025Rank": null, "core2025Share": null, "risingRank": 11, "trend": "rising", "ref": "Section 3, Skills on the rise", "verified": false },
+    { "id": "sk-manual", "label": "Manual dexterity, endurance and precision", "core2025Rank": null, "core2025Share": null, "risingRank": null, "trend": "declining", "ref": "Section 3, Skills declining in importance", "verified": false },
+    { "id": "sk-reading-maths", "label": "Reading, writing and mathematics", "core2025Rank": null, "core2025Share": null, "risingRank": null, "trend": "declining", "ref": "Section 3, Skills declining in importance", "verified": false }
+  ],
+  "taskCategories": [
+    { "id": "tc-info-processing", "label": "Information and data processing", "direction": "automating", "note": "Reporting, data entry, reconciliation, collation. The category the report and its respondents expect to shift most to technology.", "ref": "Section 3, Automation and augmentation; derived category", "verified": false },
+    { "id": "tc-admin-scheduling", "label": "Routine administration and scheduling", "direction": "automating", "note": "Diary, rota, inbox triage, form filling. Sits behind the decline in administrative assistant and clerk roles.", "ref": "Section 2, Declining jobs; derived category", "verified": false },
+    { "id": "tc-writing", "label": "Written communication and drafting", "direction": "augmenting", "note": "First drafts, summaries, replies. Generative AI's strongest area is text; judgment and voice stay with the person.", "ref": "Section 3, Generative AI; derived category", "verified": false },
+    { "id": "tc-analysis", "label": "Analysis and decision support", "direction": "augmenting", "note": "Analytical thinking is the top core skill; the tools change what the analysis is done with, not who owns the conclusion.", "ref": "Section 3, Core skills; derived category", "verified": false },
+    { "id": "tc-customer", "label": "Customer and stakeholder interaction", "direction": "human-led", "note": "Service orientation and empathy are core skills. Routine query handling is exposed; relationship and escalation work is not.", "ref": "Section 3, Core skills; derived category", "verified": false },
+    { "id": "tc-people", "label": "People management and coaching", "direction": "human-led", "note": "Leadership and social influence, talent management, empathy: all rising or core.", "ref": "Section 3, Skills on the rise; derived category", "verified": false },
+    { "id": "tc-physical", "label": "Physical and on-site work", "direction": "human-led", "note": "Care, trades, driving and frontline retail sit in the largest-growth job lists. Robotics has limited reach in most SMEs by 2030.", "ref": "Section 2, Largest growing jobs; derived category", "verified": false },
+    { "id": "tc-creative", "label": "Creative and design work", "direction": "augmenting", "note": "Creative thinking is a core and rising skill, while graphic designer appears among declining jobs. Concept stays human; production is exposed.", "ref": "Section 2 and 3; derived category", "verified": false },
+    { "id": "tc-judgment", "label": "Judgment with accountability", "direction": "human-led", "note": "Sign-offs, compliance calls, safeguarding, hiring decisions. The person is answerable, whatever the tool suggested.", "ref": "Derived category", "verified": false }
+  ],
+  "jobs": {
+    "fastestGrowing": [
+      "Big Data Specialists", "FinTech Engineers", "AI and Machine Learning Specialists", "Software and Applications Developers",
+      "Security Management Specialists", "Data Warehousing Specialists", "Autonomous and Electric Vehicle Specialists",
+      "UI and UX Designers", "Light Truck or Delivery Services Drivers", "Internet of Things Specialists",
+      "Data Analysts and Scientists", "Environmental Engineers", "Information Security Analysts", "DevOps Engineers", "Renewable Energy Engineers"
+    ],
+    "fastestDeclining": [
+      "Postal Service Clerks", "Bank Tellers and Related Clerks", "Data Entry Clerks", "Cashiers and Ticket Clerks",
+      "Administrative Assistants and Executive Secretaries", "Printing and Related Trades Workers",
+      "Accounting, Bookkeeping and Payroll Clerks", "Material-Recording and Stock-Keeping Clerks",
+      "Transportation Attendants and Conductors", "Door-to-Door Sales Workers, News and Street Vendors",
+      "Graphic Designers", "Claims Adjusters, Examiners and Investigators", "Legal Officials", "Legal Secretaries", "Telemarketers"
+    ],
+    "largestGrowth": [
+      "Farmworkers, Labourers and Other Agricultural Workers", "Light Truck or Delivery Services Drivers",
+      "Software and Applications Developers", "Building Framers, Finishers and Related Trades Workers", "Shop Salespersons",
+      "Food Processing and Related Trades Workers", "Car, Van and Motorcycle Drivers", "Nursing Professionals",
+      "Food and Beverage Serving Workers", "General and Operations Managers", "Social Work and Counselling Professionals",
+      "Project Managers", "University and Higher Education Teachers", "Secondary Education Teachers", "Personal Care Aides"
+    ],
+    "largestDecline": [
+      "Cashiers and Ticket Clerks", "Administrative Assistants and Executive Secretaries",
+      "Building Caretakers, Cleaners and Housekeepers", "Material-Recording and Stock-Keeping Clerks",
+      "Printing and Related Trades Workers", "Accounting, Bookkeeping and Payroll Clerks", "Accountants and Auditors",
+      "Transportation Attendants and Conductors", "Security Guards", "Bank Tellers and Related Clerks", "Data Entry Clerks",
+      "Client Information and Customer Service Workers", "Graphic Designers", "Business Services and Administration Managers",
+      "Claims Adjusters, Examiners and Investigators"
+    ],
+    "ref": "Section 2, Fastest growing and declining jobs; Largest growing and declining jobs",
+    "verified": false
+  },
+  "clusters": [
+    { "id": "ops-management", "label": "Operations and general management", "direction": "growing", "wefJobs": ["General and Operations Managers"], "wefEvidence": "General and Operations Managers appear in the largest-growth list; Business Services and Administration Managers appear in the largest-decline list. Growth is in roles that run the operation, not roles that administer it.", "typicalTasks": ["Weekly performance and KPI reporting", "Scheduling, rota and shift cover", "Escalations and incident handling", "Supplier and customer coordination", "Process improvement and fixes", "Budget and cost tracking", "Team meetings and one-to-ones"], "verified": false },
+    { "id": "admin-exec-support", "label": "Administration and executive support", "direction": "declining", "wefJobs": ["Administrative Assistants and Executive Secretaries", "Data Entry Clerks"], "wefEvidence": "Both roles appear in the fastest-declining and largest-decline lists.", "typicalTasks": ["Diary and meeting management", "Inbox triage and correspondence", "Document and slide preparation", "Minute taking and follow-ups", "Travel, expenses and purchasing", "Data entry and record keeping", "Front-of-house and visitor handling"], "verified": false },
+    { "id": "finance-clerical", "label": "Finance, bookkeeping and payroll", "direction": "declining", "wefJobs": ["Accounting, Bookkeeping and Payroll Clerks", "Accountants and Auditors"], "wefEvidence": "Clerks appear in both declining lists; Accountants and Auditors appear in the largest-decline list.", "typicalTasks": ["Invoice processing and approvals", "Bank and ledger reconciliations", "Payroll runs", "Expense checking", "Month-end close and reporting", "Chasing payments and credit control", "Audit and compliance preparation"], "verified": false },
+    { "id": "customer-service", "label": "Customer service and support", "direction": "declining", "wefJobs": ["Client Information and Customer Service Workers"], "wefEvidence": "Appears in the largest-decline list, while service orientation remains a top-ten core skill. Routine handling is exposed; the human service layer is valued.", "typicalTasks": ["Inbound queries by phone, email and chat", "Complaint handling and resolution", "Order and account changes", "Ticket notes and case records", "Escalation to specialists", "Knowledge base and FAQ updates"], "verified": false },
+    { "id": "sales", "label": "Sales and account management", "direction": "mixed", "wefJobs": ["Shop Salespersons", "Telemarketers", "Door-to-Door Sales Workers, News and Street Vendors"], "wefEvidence": "Shop Salespersons in the largest-growth list; Telemarketers and door-to-door sales in the fastest-declining list. Relationship selling grows, scripted outreach declines.", "typicalTasks": ["Prospecting and outreach", "Discovery calls and meetings", "Proposals, quotes and tenders", "CRM updates and pipeline hygiene", "Negotiation and closing", "Account reviews and renewals", "Forecasting"], "verified": false },
+    { "id": "hr-ld", "label": "HR, learning and talent", "direction": "growing", "wefJobs": [], "wefEvidence": "Talent management is both a core skill and a rising skill. 85 percent of employers plan to prioritise upskilling.", "typicalTasks": ["Recruitment coordination and screening", "Onboarding", "Policy, casework and employee relations", "Training design and delivery", "Performance and development cycles", "Engagement surveys and actions", "HR data and reporting"], "verified": false },
+    { "id": "marketing-content", "label": "Marketing, content and design", "direction": "mixed", "wefJobs": ["Graphic Designers"], "wefEvidence": "Graphic Designers appear in the fastest-declining list. Creative thinking is a core and rising skill. Production is exposed; strategy and concept are not.", "typicalTasks": ["Content writing and editing", "Campaign planning", "Social media scheduling and community", "Design and creative production", "Analytics and performance reporting", "Email marketing", "Brand governance"], "verified": false },
+    { "id": "software-data", "label": "Software, data and AI", "direction": "growing", "wefJobs": ["Software and Applications Developers", "Data Analysts and Scientists", "AI and Machine Learning Specialists", "Big Data Specialists"], "wefEvidence": "All appear in the fastest-growing list; developers also in the largest-growth list.", "typicalTasks": ["Writing and reviewing code", "Debugging and incident response", "Data pipelines and integrations", "Dashboards and analysis", "Requirements and design", "Testing and release", "Documentation"], "verified": false },
+    { "id": "project-management", "label": "Project and programme management", "direction": "growing", "wefJobs": ["Project Managers"], "wefEvidence": "Project Managers appear in the largest-growth list.", "typicalTasks": ["Planning and scheduling", "Status reporting", "Risk, issue and dependency logs", "Stakeholder meetings", "Budget tracking", "Change control", "Project documentation"], "verified": false },
+    { "id": "healthcare-care", "label": "Health and social care", "direction": "growing", "wefJobs": ["Nursing Professionals", "Personal Care Aides", "Social Work and Counselling Professionals"], "wefEvidence": "All three appear in the largest-growth list.", "typicalTasks": ["Direct patient or client care", "Records, notes and care plans", "Medication and treatment administration", "Handovers and multidisciplinary meetings", "Family and carer communication", "Compliance and safeguarding paperwork"], "verified": false },
+    { "id": "teaching-training", "label": "Teaching and training", "direction": "growing", "wefJobs": ["University and Higher Education Teachers", "Secondary Education Teachers"], "wefEvidence": "Both appear in the largest-growth list.", "typicalTasks": ["Lesson and session design", "Delivery and facilitation", "Marking, assessment and feedback", "Pastoral and learner support", "Admin, reporting and compliance", "Curriculum planning"], "verified": false },
+    { "id": "logistics-drivers", "label": "Logistics, warehousing and driving", "direction": "mixed", "wefJobs": ["Light Truck or Delivery Services Drivers", "Car, Van and Motorcycle Drivers", "Material-Recording and Stock-Keeping Clerks", "Transportation Attendants and Conductors"], "wefEvidence": "Drivers appear in both growth lists; stock-keeping clerks and transport attendants in the declining lists. The moving stays human, the recording does not.", "typicalTasks": ["Route planning and dispatch", "Deliveries and collections", "Vehicle and load checks", "Proof of delivery and paperwork", "Customer contact on the road", "Stock recording and warehouse admin"], "verified": false },
+    { "id": "retail-frontline", "label": "Retail and frontline service", "direction": "mixed", "wefJobs": ["Shop Salespersons", "Cashiers and Ticket Clerks", "Food and Beverage Serving Workers"], "wefEvidence": "Salespersons and serving workers in the largest-growth list; Cashiers and Ticket Clerks top the largest-decline list.", "typicalTasks": ["Serving and advising customers", "Till and payment handling", "Stock replenishment", "Merchandising and displays", "Returns and complaints", "Store admin and reporting"], "verified": false },
+    { "id": "legal-compliance", "label": "Legal, claims and compliance", "direction": "declining", "wefJobs": ["Legal Officials", "Legal Secretaries", "Claims Adjusters, Examiners and Investigators"], "wefEvidence": "All three appear in the fastest-declining list.", "typicalTasks": ["Document review", "Drafting and templating", "Case and matter administration", "Research", "Compliance checks and audits", "Client correspondence"], "verified": false },
+    { "id": "leadership-exec", "label": "Senior leadership", "direction": "mixed", "wefJobs": ["General and Operations Managers", "Business Services and Administration Managers"], "wefEvidence": "General and Operations Managers grow; Business Services and Administration Managers decline. Leadership and social influence is a top-three core skill.", "typicalTasks": ["Strategy and planning", "Board and executive reporting", "People leadership and hiring", "Financial oversight", "External relationships", "Decisions and sign-offs"], "verified": false }
+  ]
+}
