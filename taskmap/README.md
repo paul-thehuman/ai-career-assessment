@@ -21,20 +21,21 @@ Needs an Anthropic API key. Either export `ANTHROPIC_API_KEY`, or put it in a
 
 ```
 echo 'ANTHROPIC_API_KEY=sk-ant-...' > .env
-
 npm install
-npm run check-data                            # data sanity check, no API
-node src/cli.js --dry                         # system prompt + schemas, no API
-node --env-file=.env src/cli.js               # the interview, in your terminal
-node --env-file=.env src/simulate.js          # all three personas
-node --env-file=.env src/simulate.js hr-bp    # or just one
 
-node src/page.js --sample                     # the sample report, no API
-node src/page.js <record id>                  # a real one → pages/<id>.html
+npm test                      # the offline self-test, no API
+npm run check-data            # data sanity check, no API
+npm run page -- --sample      # the sample report, no API → pages/<id>.html
+
+npm run interview             # sit the interview yourself
+npm run simulate              # all three simulated people
+npm run simulate hr-bp        # or just one
+npm run page -- <record id>   # a saved interview as a page
 ```
 
-Drop `--env-file=.env` if the key is already exported; the `npm run` scripts
-assume that case.
+`node src/cli.js --dry` prints the system prompt and both output schemas
+without calling the API. The scripts that need a key read `.env`; if the key
+is already exported, `node src/<file>.js` works directly.
 
 Model defaults: interviewer `claude-opus-5` (medium effort on questions, high on the report), personas `claude-sonnet-5`. Override with `TASKMAP_MODEL` and `TASKMAP_PERSONA_MODEL`. Turn limits: `TASKMAP_MIN_TURNS` (5) and `TASKMAP_MAX_TURNS` (8).
 

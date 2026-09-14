@@ -1,13 +1,15 @@
 {
-  "name": "taskmap-engine",
+  "name": "task-map",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Task Map stage one: WEF data slice + interview engine, run in the terminal.",
+  "description": "Discovery for one person. A WEF-grounded adaptive interview about your actual working week, and a report where every claim shows where it came from.",
   "scripts": {
-    "interview": "node src/cli.js",
-    "simulate": "node src/simulate.js",
-    "check-data": "node src/check-data.js"
+    "interview": "node --env-file=.env src/cli.js",
+    "simulate": "node --env-file=.env src/simulate.js",
+    "page": "node src/page.js",
+    "check-data": "node src/check-data.js",
+    "test": "node src/selftest.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.96.0",
