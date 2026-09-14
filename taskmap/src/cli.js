@@ -9,6 +9,7 @@ import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { Interview, SYSTEM_PROMPT, ROOT, MODEL, MAX_TURNS, MIN_TURNS } from "./engine.js";
 import { AskTurn, DoneTurn } from "./schema.js";
 import { renderMarkdown } from "./render.js";
+import { save } from "./store.js";
 
 if (process.argv.includes("--dry")) {
   console.log(SYSTEM_PROMPT);
@@ -37,10 +38,21 @@ while (result.phase === "asking") {
 }
 rl.close();
 
+const cohort = process.env.TASKMAP_COHORT || null;
+const record = save({
+  profile,
+  exchanges: interview.exchanges,
+  caseFile: interview.caseFile,
+  report: interview.report,
+  usage: interview.usage,
+  cohort,
+});
+
 const md = renderMarkdown({ profile, exchanges: interview.exchanges, caseFile: interview.caseFile, report: interview.report, usage: interview.usage });
-const stamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
-const file = path.join(ROOT, "transcripts", `${stamp}-${profile.role.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.md`);
+const file = path.join(ROOT, "transcripts", `${record.id}.md`);
 fs.mkdirSync(path.dirname(file), { recursive: true });
 fs.writeFileSync(file, md);
 console.log("\n" + md);
-console.log(`\nSaved to ${file}`);
+console.log(`\nSaved as ${record.id}${cohort ? ` (cohort: ${cohort})` : ""}`);
+console.log(`  transcript  ${path.relative(ROOT, file)}`);
+console.log(`  page        node src/page.js ${record.id}`);

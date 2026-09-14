@@ -1,0 +1,289 @@
+{
+  "id": "samplemapopslogi",
+  "version": 1,
+  "createdAt": "2026-09-14T08:06:00.000Z",
+  "cohort": "sample-team",
+  "profile": {
+    "role": "Operations Manager",
+    "industry": "Logistics and distribution",
+    "location": "Manchester, UK"
+  },
+  "meta": {
+    "simulated": true,
+    "persona": "ops-logistics",
+    "note": "Sample record. The answers came from a simulated person, not a real one. Kept in the repository so the page and the team view can be developed and demoed without live model calls."
+  },
+  "exchanges": [
+    {
+      "turn": 1,
+      "question": "For operations managers, the usual week looks like this: KPI and performance reporting, rotas and shift cover, escalations and incident handling, supplier and customer coordination, process fixes, budget tracking, and team meetings and one-to-ones. Which of those actually eat your week in logistics, roughly what share each, and what's on your list that I've missed?",
+      "rationale": "Open from the cluster's typical tasks to get a real map of the week with shares.",
+      "answer": "Right, so honestly it's the reporting and the escalations that eat most of it. Monday's basically a write-off pulling last week's numbers together across three depot spreadsheets for the MD - that's probably 20% of my week right there, just Mondays. Then escalations and firefighting, drivers ringing when a van's broken down or a route's gone wrong, that's maybe another 30%, and it's unpredictable so it eats into everything else. Rotas and shift cover is a constant background hum, maybe 15%, especially when someone rings in sick and you're rejigging things last minute. The rest is a mix of supplier stuff - depots chasing me about deliveries or contract issues - and one-to-ones, which I probably don't do as often as I should if I'm honest. What you've not really got on there is just... people management in the loose sense, calming things down, keeping morale up when it's a bad week. That's not a line item but it's a lot of my actual time."
+    },
+    {
+      "turn": 2,
+      "question": "That's a week where a third of it is unplanned. Park the week for a second: where do you actually want to be in two or three years' time?",
+      "rationale": "Tasks are mapped; aspiration is the biggest hole and everything else hangs off it.",
+      "answer": "I want to be head of ops across the region, that's the honest answer. I've been doing this job long enough and I know all three depots inside out, so it feels like the next step rather than a stretch. I'd want to be less in the weeds of day-to-day firefighting and more setting things up so my managers underneath me aren't drowning the way I sometimes am. That's really it - I'm not chasing something flashy, I just think I've earned the next rung and I know I could do it well."
+    },
+    {
+      "turn": 3,
+      "question": "That Monday report: three depot spreadsheets, every week, by hand. What have you already tried to make that go away, and what stopped you?",
+      "rationale": "Tests tech confidence and surfaces avoidance on the single most automatable 20% of his week.",
+      "answer": "Honestly, not much. I've thought about it, but every Monday it's already 8am and drivers are ringing and the report needs to be with the MD by lunchtime, so I just do it the way I've always done it rather than stop and fix it. I know there's probably a smarter way, maybe some kind of template or tool that pulls it together automatically, but I've never actually sat down and tried one. It's one of those things where it's never quite bad enough to force me to stop and sort it, if that makes sense - it's just annoying every week rather than a crisis."
+    },
+    {
+      "turn": 4,
+      "question": "Here's the thing I can't square. You want Head of Ops because you'd be the one setting things up so your managers aren't drowning, but the one broken system you own, that Monday report, you've left alone for years because it's \"just annoying\". That's the exact job you're asking for, in miniature. So: if you had help, would you want it pointed at freeing up your own week, or at making your managers less dependent on you?",
+      "rationale": "Their ambition contradicts their inaction on the one system they control; the challenge earns the help-wanted question.",
+      "answer": "Fair point, that's landed a bit. If I'm honest, my instinct is still to say point it at my team - get the drivers' rota stuff sorted, take pressure off the depot leads. But you're right, I can't ask for that job while I'm the bottleneck on my own patch. Maybe the truth is it has to be both - if the Monday report stopped eating my morning, I'd actually have time to sit with my managers and sort their stuff out properly instead of just reacting. So I suppose fixing my bit isn't really \"for me\", it's what lets me do the other part properly."
+    },
+    {
+      "turn": 5,
+      "question": "Last practical one: between now and next Monday, how much time could you genuinely protect to sit down and rebuild that report, an hour, half a day, and who would you need to square it with?",
+      "rationale": "Need to know the realistic time and permission constraints before setting a 30/60/90 plan he'll actually keep.",
+      "answer": "Realistically an hour, maybe ninety minutes, that's about the honest amount I could carve out without something else falling over. I'd probably need to do it Wednesday or Thursday when things are calmer, not Monday obviously. I don't think I'd need to square it with anyone above me, it's my own report, but I might mention it to my deputy so she covers the phones for that hour without me getting pulled away three times."
+    }
+  ],
+  "caseFile": {
+    "cluster": "ops-management",
+    "tasks": [
+      { "task": "Weekly KPI reporting pulled from three depot spreadsheets for the MD", "shareOfWeek": 0.2, "exposure": "high", "category": "tc-info-processing", "sourceTurn": 1 },
+      { "task": "Escalations and firefighting (breakdowns, routes gone wrong, driver calls)", "shareOfWeek": 0.3, "exposure": "low", "category": "tc-judgment", "sourceTurn": 1 },
+      { "task": "Rotas and last-minute shift cover", "shareOfWeek": 0.15, "exposure": "medium", "category": "tc-admin-scheduling", "sourceTurn": 1 },
+      { "task": "Supplier and depot coordination, contract and delivery chasing", "shareOfWeek": 0.15, "exposure": "medium", "category": "tc-customer", "sourceTurn": 1 },
+      { "task": "Informal people management: calming things down, keeping morale up", "shareOfWeek": 0.15, "exposure": "low", "category": "tc-people", "sourceTurn": 1 },
+      { "task": "One-to-ones with the team", "shareOfWeek": 0.05, "exposure": "low", "category": "tc-people", "sourceTurn": 1 }
+    ],
+    "skills": [
+      { "skill": "Technological literacy", "wefId": "sk-tech-literacy", "importance": 4, "confidence": 1, "evidence": "I've never actually sat down and tried one", "evidenceTurn": 3 },
+      { "skill": "Systems thinking", "wefId": "sk-systems", "importance": 5, "confidence": 2, "evidence": "it's never quite bad enough to force me to stop and sort it", "evidenceTurn": 3 },
+      { "skill": "Talent management", "wefId": "sk-talent", "importance": 4, "confidence": 2, "evidence": "one-to-ones, which I probably don't do as often as I should if I'm honest", "evidenceTurn": 1 },
+      { "skill": "Resilience, flexibility and agility", "wefId": "sk-resilience", "importance": 4, "confidence": 3, "evidence": "it's unpredictable so it eats into everything else", "evidenceTurn": 1 }
+    ],
+    "aspiration": "Head of operations across the region within two to three years",
+    "avoiding": "Has never tried any tool on the Monday report despite knowing a better way exists",
+    "helpWanted": "get the drivers' rota stuff sorted, take pressure off the depot leads",
+    "helpFor": "both",
+    "challengeUsed": true,
+    "gaps": []
+  },
+  "report": {
+    "headline": {
+      "text": "You want to be the person who builds the system, but a third of your week is spent being the system. Half your exposed hours, the Monday report and the rota churn, are the exact hours that would buy you the Head of Ops job.",
+      "sources": [
+        { "type": "quote", "turn": 1, "text": "Monday's basically a write-off pulling last week's numbers together across three depot spreadsheets for the MD", "id": "" },
+        { "type": "quote", "turn": 2, "text": "I'd want to be less in the weeds of day-to-day firefighting and more setting things up so my managers underneath me aren't drowning the way I sometimes am", "id": "" },
+        { "type": "wef", "turn": 0, "text": "", "id": "tc-info-processing" }
+      ]
+    },
+    "week": [
+      {
+        "task": "Escalations and firefighting (breakdowns, routes gone wrong, driver calls)",
+        "shareOfWeek": 0.3,
+        "verdict": "human",
+        "reason": "When a van goes down mid-route, someone has to make the call and carry it. That is judgment with accountability, and it is the part of your week that genuinely needs you. What AI can do is shrink the reporting round it, not the decision.",
+        "sources": [
+          { "type": "quote", "turn": 1, "text": "drivers ringing when a van's broken down or a route's gone wrong, that's maybe another 30%", "id": "" },
+          { "type": "wef", "turn": 0, "text": "", "id": "tc-judgment" }
+        ]
+      },
+      {
+        "task": "Weekly KPI reporting pulled from three depot spreadsheets for the MD",
+        "shareOfWeek": 0.2,
+        "verdict": "automate",
+        "reason": "Three spreadsheets collated by hand every Monday morning is textbook information processing. The collation, the formatting and the first-pass commentary can all be handed over. You keep the read on what the numbers mean.",
+        "sources": [
+          { "type": "quote", "turn": 1, "text": "pulling last week's numbers together across three depot spreadsheets for the MD", "id": "" },
+          { "type": "wef", "turn": 0, "text": "", "id": "tc-info-processing" },
+          { "type": "wef", "turn": 0, "text": "", "id": "h-clerical-drivers" }
+        ]
+      },
+      {
+        "task": "Rotas and last-minute shift cover",
+        "shareOfWeek": 0.15,
+        "verdict": "augment",
+        "reason": "The rebuild when someone rings in sick is scheduling work a tool can draft in seconds. Who you ask to cover a Friday night after a rough week is still your call.",
+        "sources": [
+          { "type": "quote", "turn": 1, "text": "especially when someone rings in sick and you're rejigging things last minute", "id": "" },
+          { "type": "wef", "turn": 0, "text": "", "id": "tc-admin-scheduling" }
+        ]
+      },
+      {
+        "task": "Supplier and depot coordination, contract and delivery chasing",
+        "shareOfWeek": 0.15,
+        "verdict": "augment",
+        "reason": "Chasing and correspondence can be drafted for you. The contract conversations and the relationship with each depot stay yours because you are the one who knows all three.",
+        "sources": [
+          { "type": "quote", "turn": 1, "text": "depots chasing me about deliveries or contract issues", "id": "" },
+          { "type": "quote", "turn": 2, "text": "I know all three depots inside out", "id": "" },
+          { "type": "wef", "turn": 0, "text": "", "id": "tc-customer" }
+        ]
+      },
+      {
+        "task": "Informal people management: calming things down, keeping morale up",
+        "shareOfWeek": 0.15,
+        "verdict": "human",
+        "reason": "You named this yourself as the thing that is not on any list but takes real time, and it is the skill that has risen further than any other since 2023. It is the reason you would be good in the bigger job.",
+        "sources": [
+          { "type": "quote", "turn": 1, "text": "calming things down, keeping morale up when it's a bad week", "id": "" },
+          { "type": "wef", "turn": 0, "text": "", "id": "h-skills-shift-since-2023" },
+          { "type": "wef", "turn": 0, "text": "", "id": "tc-people" }
+        ]
+      },
+      {
+        "task": "One-to-ones with the team",
+        "shareOfWeek": 0.05,
+        "verdict": "human",
+        "reason": "At five percent of your week this is the most under-invested thing you do, and it is the exact muscle Head of Ops is judged on. No tool substitutes for it; prep and follow-up can be lifted so it actually happens.",
+        "sources": [
+          { "type": "quote", "turn": 1, "text": "one-to-ones, which I probably don't do as often as I should if I'm honest", "id": "" },
+          { "type": "wef", "turn": 0, "text": "", "id": "tc-people" }
+        ]
+      }
+    ],
+    "exposure": {
+      "direction": "growing",
+      "summary": "You are in the right half of the logistics picture. General and Operations Managers sit in the largest-growth list, and in logistics the moving stays human while the recording does not. But 35% of your week is recording and scheduling, the two categories the report flags as automating. In the UK, employers expect a third of skills to change by 2030 and name technological literacy and AI as the rising demands, the two you rated yourself lowest on.",
+      "sources": [
+        { "type": "wef", "turn": 0, "text": "", "id": "h-task-split-2030" },
+        { "type": "wef", "turn": 0, "text": "", "id": "tc-info-processing" },
+        { "type": "wef", "turn": 0, "text": "", "id": "tc-admin-scheduling" },
+        { "type": "wef", "turn": 0, "text": "", "id": "uk-rising-skills" },
+        { "type": "wef", "turn": 0, "text": "", "id": "uk-skills-change" }
+      ]
+    },
+    "skillGaps": [
+      {
+        "skill": "Technological literacy",
+        "importance": 4,
+        "confidence": 1,
+        "cost": "You have thought about a better way for years and never tested one. Every week that stays true is a Monday morning gone, and it is the clearest evidence against you when the Head of Ops conversation comes round. You cannot claim you would build systems for others when you have not built one for yourself.",
+        "sources": [
+          { "type": "quote", "turn": 3, "text": "I know there's probably a smarter way, maybe some kind of template or tool that pulls it together automatically, but I've never actually sat down and tried one", "id": "" },
+          { "type": "wef", "turn": 0, "text": "", "id": "uk-rising-skills" },
+          { "type": "wef", "turn": 0, "text": "", "id": "sk-tech-literacy" }
+        ]
+      },
+      {
+        "skill": "Systems thinking",
+        "importance": 5,
+        "confidence": 2,
+        "cost": "You describe the job you want entirely in systems terms, but your current week has no evidence of you building any. Without a worked example you can point at, the promotion case rests on tenure rather than proof.",
+        "sources": [
+          { "type": "quote", "turn": 2, "text": "more setting things up so my managers underneath me aren't drowning", "id": "" },
+          { "type": "quote", "turn": 3, "text": "it's never quite bad enough to force me to stop and sort it", "id": "" },
+          { "type": "wef", "turn": 0, "text": "", "id": "sk-systems" }
+        ]
+      },
+      {
+        "skill": "Talent management",
+        "importance": 4,
+        "confidence": 2,
+        "cost": "Five percent of your week on one-to-ones means your depot leads stay dependent on you and you stay the bottleneck. Leadership and talent management are among the fastest-rising core skills. This is the thing you would be assessed on in the regional job, and right now it is the first thing you drop.",
+        "sources": [
+          { "type": "quote", "turn": 1, "text": "one-to-ones, which I probably don't do as often as I should if I'm honest", "id": "" },
+          { "type": "wef", "turn": 0, "text": "", "id": "sk-talent" },
+          { "type": "wef", "turn": 0, "text": "", "id": "h-skills-shift-since-2023" }
+        ]
+      },
+      {
+        "skill": "Resilience, flexibility and agility",
+        "importance": 4,
+        "confidence": 3,
+        "cost": "You cope well with chaos, but coping is not the same as designing it out. As long as 30% of your week is unpredictable and unbuffered, every improvement plan gets eaten by Tuesday.",
+        "sources": [
+          { "type": "quote", "turn": 1, "text": "it's unpredictable so it eats into everything else", "id": "" },
+          { "type": "wef", "turn": 0, "text": "", "id": "sk-resilience" },
+          { "type": "wef", "turn": 0, "text": "", "id": "uk-rising-skills" }
+        ]
+      }
+    ],
+    "truth": {
+      "text": "You are not short of ability or ambition. You are waiting for the Monday report to become a crisis before you will treat it as one, and that habit is the single strongest argument against giving you the bigger job.",
+      "sources": [
+        { "type": "quote", "turn": 3, "text": "it's one of those things where it's never quite bad enough to force me to stop and sort it", "id": "" },
+        { "type": "quote", "turn": 4, "text": "I can't ask for that job while I'm the bottleneck on my own patch", "id": "" }
+      ]
+    },
+    "plan": {
+      "day30": [
+        {
+          "commitment": "Block the ninety minutes this Wednesday, tell your deputy she has the phones, and rebuild the Monday report with AI in that one sitting. Not a plan for it, a working version.",
+          "sources": [
+            { "type": "quote", "turn": 5, "text": "Realistically an hour, maybe ninety minutes", "id": "" },
+            { "type": "quote", "turn": 5, "text": "I might mention it to my deputy so she covers the phones for that hour without me getting pulled away three times", "id": "" }
+          ]
+        },
+        {
+          "commitment": "Run the next four Monday reports through the new method and time yourself each week. Prove the twenty percent is coming down, in numbers you can show the MD.",
+          "sources": [
+            { "type": "quote", "turn": 1, "text": "that's probably 20% of my week right there, just Mondays", "id": "" },
+            { "type": "wef", "turn": 0, "text": "", "id": "tc-info-processing" }
+          ]
+        },
+        {
+          "commitment": "Put recurring one-to-ones in the diary for every depot lead now, in the hours the report used to take. Make the freed time visible rather than letting firefighting absorb it.",
+          "sources": [
+            { "type": "quote", "turn": 1, "text": "one-to-ones, which I probably don't do as often as I should if I'm honest", "id": "" },
+            { "type": "quote", "turn": 4, "text": "I'd actually have time to sit with my managers and sort their stuff out properly instead of just reacting", "id": "" }
+          ]
+        }
+      ],
+      "day60": [
+        {
+          "commitment": "Turn the sick-cover scramble into a written process with an AI-drafted first pass at the rota, and hand it to your deputy to run without you.",
+          "sources": [
+            { "type": "quote", "turn": 1, "text": "especially when someone rings in sick and you're rejigging things last minute", "id": "" },
+            { "type": "wef", "turn": 0, "text": "", "id": "tc-admin-scheduling" }
+          ]
+        },
+        {
+          "commitment": "Write down the three escalation types you handle most and what a good decision looks like for each, then let your depot leads make those calls for a month while you review rather than answer.",
+          "sources": [
+            { "type": "quote", "turn": 1, "text": "drivers ringing when a van's broken down or a route's gone wrong, that's maybe another 30%", "id": "" },
+            { "type": "quote", "turn": 4, "text": "take pressure off the depot leads", "id": "" }
+          ]
+        },
+        {
+          "commitment": "Teach one depot lead the reporting method you built. One person fixing their own patch is a story; two is a system.",
+          "sources": [
+            { "type": "quote", "turn": 4, "text": "Maybe the truth is it has to be both", "id": "" },
+            { "type": "wef", "turn": 0, "text": "", "id": "sk-teaching" }
+          ]
+        }
+      ],
+      "day90": [
+        {
+          "commitment": "Take the MD a one-page case for regional ops: the hours you removed, the processes you documented, and what your managers now handle without you. Ask for the job on evidence, not tenure.",
+          "sources": [
+            { "type": "quote", "turn": 2, "text": "I want to be head of ops across the region, that's the honest answer", "id": "" },
+            { "type": "quote", "turn": 2, "text": "I just think I've earned the next rung and I know I could do it well", "id": "" }
+          ]
+        },
+        {
+          "commitment": "Audit your week again against this map. If firefighting is still thirty percent, name the specific reason and fix that next rather than accepting it as the nature of logistics.",
+          "sources": [
+            { "type": "quote", "turn": 1, "text": "it's unpredictable so it eats into everything else", "id": "" },
+            { "type": "wef", "turn": 0, "text": "", "id": "h-task-split-2030" }
+          ]
+        },
+        {
+          "commitment": "Decide the one capability you will be known for at regional level and go deep on it, rather than spreading yourself across three depots' worth of detail.",
+          "sources": [
+            { "type": "quote", "turn": 2, "text": "I know all three depots inside out", "id": "" },
+            { "type": "wef", "turn": 0, "text": "", "id": "sk-systems" }
+          ]
+        }
+      ]
+    },
+    "nextSteps": [
+      { "slug": "ai-for-spreadsheets-formulas-and-data", "why": "Straight at the twenty percent: three depot spreadsheets collated by hand every Monday for the MD." },
+      { "slug": "turn-messy-notes-into-sops-with-ai", "why": "You want your managers to stop drowning. That starts with the rota and escalation processes nobody has written down." },
+      { "slug": "manager-prompt-pack", "why": "Gives you ready-made structure for the one-to-ones you admit you skip, so the freed Monday time actually goes into your people." }
+    ],
+    "helpWanted": "get the drivers' rota stuff sorted, take pressure off the depot leads, but also if the Monday report stopped eating my morning, I'd actually have time to sit with my managers and sort their stuff out properly",
+    "helpFor": "both"
+  },
+  "usage": { "input": 18146, "output": 10309, "cacheRead": 57040, "cacheWrite": 23359 }
+}

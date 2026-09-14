@@ -3,6 +3,9 @@
 // renderer's checks can be exercised without an API key. Not a quality
 // test of the interviewer; that needs the real model.
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import { Interview, MIN_TURNS, MAX_TURNS } from "./engine.js";
 import { renderMarkdown, unsourcedClaims, badSources, unverifiedQuotes, misattributedTurns, resolveTurn, sourceLine } from "./render.js";
 import { emptyCaseFile } from "./schema.js";
@@ -87,5 +90,68 @@ assert.ok(md.includes("→ AUTOMATE") && md.includes("INVENTED SLUG made-up-slug
   assert.equal(misattributedTurns(bent, ex).length, 1, "a wrong claimed turn must be counted");
   assert.equal(misattributedTurns(iv.report, ex).length, 0, "correct turns must not be flagged");
 }
-console.log(`selftest ok: ${iv.exchanges.length} questions, ${calls} model calls, floor enforced, early finish honoured above it, checks working, turn numbers resolved from the transcript.`);
+// ---- store: records are the thing a link points at, so they must round-trip
+// exactly, never half-write, and never let an id become a path.
+{
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "taskmap-store-"));
+  process.env.TASKMAP_RECORDS_DIR = tmp;
+  const store = await import(`./store.js?dir=${encodeURIComponent(tmp)}`);
+  // the module reads the env var at import time, so point it at the temp dir first
+  assert.equal(store.RECORDS_DIR, tmp, "store must honour TASKMAP_RECORDS_DIR");
+
+  const a = store.save({ profile, exchanges: iv.exchanges, caseFile: iv.caseFile, report: iv.report, usage: iv.usage, cohort: "team-x" });
+  const b = store.save({ profile, exchanges: iv.exchanges, caseFile: iv.caseFile, report: iv.report, usage: iv.usage, cohort: null });
+  assert.notEqual(a.id, b.id, "ids must be unique");
+  assert.ok(store.validId(a.id), `generated id must be valid: ${a.id}`);
+  assert.deepEqual(store.load(a.id), a, "a record must round-trip unchanged");
+  assert.equal(store.list().length, 2);
+  assert.equal(store.byCohort("team-x").length, 1, "cohort filter must select only that team");
+  assert.equal(store.byCohort(null).length, 1, "an individual record has no cohort");
+
+  // An id arrives from a URL. It must never be trusted enough to build a path.
+  for (const bad of ["../../etc/passwd", "../secrets", "SHORT", "", null, "a".repeat(17), "abc/def"]) {
+    assert.equal(store.validId(bad), false, `must reject id: ${JSON.stringify(bad)}`);
+    assert.equal(store.load(bad), null, `must not load id: ${JSON.stringify(bad)}`);
+  }
+  assert.equal(store.load("aaaaaaaaaaaaaaaa"), null, "a well-formed but absent id returns null, not a throw");
+  assert.throws(() => store.save({ profile, exchanges: [], caseFile: {}, report: null }), /no report/,
+    "an interview with no report must never be saved");
+  assert.equal(fs.readdirSync(tmp).filter((f) => f.endsWith(".tmp")).length, 0, "no half-written files left behind");
+  fs.rmSync(tmp, { recursive: true, force: true });
+  delete process.env.TASKMAP_RECORDS_DIR;
+}
+
+// ---- page: the HTML must escape what people typed, show resolved turns, and
+// never silently drop a source.
+{
+  const { renderPage } = await import("./page.js");
+  const record = {
+    id: "testtesttesttest", version: 1, createdAt: "2026-09-14T00:00:00.000Z", cohort: null,
+    profile: { role: '<script>alert("x")</script>', industry: "Logistics & Co", location: "Manchester, UK" },
+    exchanges: iv.exchanges,
+    caseFile: structuredClone(iv.caseFile),
+    report: structuredClone(iv.report),
+    usage: iv.usage,
+    meta: {},
+  };
+  record.report.truth.sources.push({ type: "quote", turn: 1, text: "words nobody ever said", id: "" });
+  record.report.headline.sources.push({ type: "wef", turn: 0, text: "", id: "not-a-real-id" });
+
+  const html = renderPage(record);
+  assert.ok(!html.includes("<script>alert"), "a role must not be able to inject script");
+  assert.ok(html.includes("&lt;script&gt;"), "the role is escaped, not dropped");
+  assert.ok(html.includes("Logistics &amp; Co"), "ampersands are escaped");
+  assert.ok(html.includes("NOT FOUND IN ANY ANSWER"), "a quote in no answer must be called out, not shown as fact");
+  assert.ok(html.includes("Unknown source"), "an unknown WEF id must be called out");
+  assert.ok(html.includes("See this as a table"), "the table view is the relief for the low-contrast slot");
+  const opens = (html.match(/<details/g) || []).length, closes = (html.match(/<\/details>/g) || []).length;
+  assert.equal(opens, closes, "details tags must balance");
+  // every claim that has sources gets a toggle
+  const claims = 1 + record.report.week.length + 1 + record.report.skillGaps.length + 1
+    + record.report.plan.day30.length + record.report.plan.day60.length + record.report.plan.day90.length;
+  assert.equal((html.match(/class="why"/g) || []).length, claims, "every sourced claim needs its own toggle");
+  assert.equal((html.match(/class="nosource"/g) || []).length, 0, "no claim in this record is unsourced");
+}
+
+console.log(`selftest ok: ${iv.exchanges.length} questions, ${calls} model calls, floor enforced, early finish honoured above it, checks working, turn numbers resolved from the transcript, store and page covered.`);
 console.log(md.split("\n").slice(0, 12).join("\n") + "\n...");

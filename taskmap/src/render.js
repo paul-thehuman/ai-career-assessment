@@ -12,6 +12,13 @@ for (const f of wef.economies.uk.findings) index.set(f.id, `WEF 2025, United Kin
 for (const c of wef.clusters) index.set(c.id, `WEF 2025 cluster: ${c.label} (${c.direction}). ${c.wefEvidence}`);
 const resourceIndex = new Map(resources.items.map((r) => [r.slug, r]));
 
+// What a WEF id means, in one sentence. Shared with the HTML page renderer.
+export function describeWef(id) {
+  return index.get(id ?? "") ?? null;
+}
+
+export const resourceFor = (slug) => resourceIndex.get(slug) ?? null;
+
 const norm = (t) => (t ?? "").toLowerCase().replace(/\s+/g, " ").trim();
 
 // The model is not trusted with turn numbers: it gets them wrong often enough

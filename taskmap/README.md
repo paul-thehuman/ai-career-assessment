@@ -1,6 +1,8 @@
-# Task Map, stage one
+# Task Map
 
-The interview engine and the WEF data slice, run in the terminal. No interface yet, on purpose: the quality of the conversation and the report is decided here.
+Discovery for one person, in about ten minutes. A WEF-grounded adaptive interview about someone's actual working week, and a report where every claim shows where it came from.
+
+Stages one and two are built: the interview engine, the data slice, saved records, and a standalone HTML report with charts. No web app yet.
 
 ## What's in it
 
@@ -26,12 +28,33 @@ node src/cli.js --dry                         # system prompt + schemas, no API
 node --env-file=.env src/cli.js               # the interview, in your terminal
 node --env-file=.env src/simulate.js          # all three personas
 node --env-file=.env src/simulate.js hr-bp    # or just one
+
+node src/page.js --sample                     # the sample report, no API
+node src/page.js <record id>                  # a real one → pages/<id>.html
 ```
 
 Drop `--env-file=.env` if the key is already exported; the `npm run` scripts
 assume that case.
 
 Model defaults: interviewer `claude-opus-5` (medium effort on questions, high on the report), personas `claude-sonnet-5`. Override with `TASKMAP_MODEL` and `TASKMAP_PERSONA_MODEL`. Turn limits: `TASKMAP_MIN_TURNS` (5) and `TASKMAP_MAX_TURNS` (8).
+
+## The charts, and why they look like that
+
+Three charts and one status tile, in the order a reader needs them.
+
+- **The week, as one bar.** The hero. Every task, sized by its share, coloured by verdict, ordered so the changing half reads as one block.
+- **Skill gaps, as a dumbbell.** Importance against confidence, joined by the gap, sorted so the widest is first. The distance is the point, so the connector is the emphasised mark rather than the endpoints.
+- **The ninety days, as a timeline.** Three periods on an axis. Reads as a plan rather than a list.
+- **Where the role sits** is one value, so it is a status tile, not a plot.
+
+Colour decisions worth not undoing by accident:
+
+- The three verdict colours are a validated categorical set, checked all-pairs in both light and dark against this page's own surfaces. Warm for the work that is going, cool green for the work that stays yours, because a reader reads valence into a verdict whether or not one is intended.
+- Segment labels use near-black ink. It beats white on all three hues in both modes.
+- Green sits below 3:1 on the light surface, so colour never carries meaning alone: every segment is labelled, every verdict is named in the rows below, and the page ships a table view.
+- Exposure uses the reserved status palette, never the series colours, and always ships with a glyph and a word.
+
+Every visual decision is a CSS custom property in one block at the top of the page's stylesheet, so the look can be reworked without touching the markup or the numbers.
 
 ## What a run costs
 
@@ -47,3 +70,7 @@ on top and is not part of the real product.
 3. Is the one challenge used, and used well?
 4. In the report: are the verdicts specific to this person? Is every quote real (the Checks section counts the ones that aren't)? Do the commitments read as things someone would actually do?
 5. Does it feel like The Human Co., or like any career quiz?
+
+## What stage three adds
+
+The browser. The interview itself as a web page, a microphone on every question, the report streaming in as it is written, and the seeded team view. The markup in `page.js` is meant to survive that move.

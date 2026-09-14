@@ -1,3 +1,5 @@
 node_modules/
 transcripts/
+pages/
 .env
+data/records/

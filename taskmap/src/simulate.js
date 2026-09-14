@@ -7,6 +7,7 @@ import path from "node:path";
 import Anthropic from "@anthropic-ai/sdk";
 import { Interview, ROOT } from "./engine.js";
 import { renderMarkdown, unsourcedClaims, badSources, unverifiedQuotes, misattributedTurns } from "./render.js";
+import { save } from "./store.js";
 
 const PERSONA_MODEL = process.env.TASKMAP_PERSONA_MODEL || "claude-sonnet-5";
 
@@ -55,13 +56,22 @@ async function run(p, client) {
     const answer = await personaAnswer(client, p.persona, interview.exchanges);
     result = await interview.next(answer);
   }
+  const record = save({
+    profile: p.profile,
+    exchanges: interview.exchanges,
+    caseFile: interview.caseFile,
+    report: interview.report,
+    usage: interview.usage,
+    cohort: process.env.TASKMAP_COHORT || "sample-team",
+    meta: { simulated: true, persona: p.key },
+  });
   const md = renderMarkdown({ profile: p.profile, exchanges: interview.exchanges, caseFile: interview.caseFile, report: interview.report, usage: interview.usage, meta: { persona: p.key } });
   const file = path.join(ROOT, "transcripts", `sim-${p.key}.md`);
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, md);
   const r = interview.report;
   return {
-    key: p.key, questions: interview.exchanges.length, file,
+    key: p.key, questions: interview.exchanges.length, file, id: record.id,
     unsourced: unsourcedClaims(r).length, bad: badSources(r).length, unverifiedQuotes: unverifiedQuotes(r, interview.exchanges).length,
     wrongTurns: misattributedTurns(r, interview.exchanges).length,
     tokens: interview.usage,
@@ -80,5 +90,5 @@ for (const p of chosen) {
 console.log("\nSummary");
 for (const r of results) {
   if (r.error) { console.log(`- ${r.key}: FAILED ${r.error}`); continue; }
-  console.log(`- ${r.key}: ${r.questions} questions · unsourced ${r.unsourced} · bad sources ${r.bad} · unverified quotes ${r.unverifiedQuotes} · wrong turns ${r.wrongTurns} · tokens in ${r.tokens.input} out ${r.tokens.output} cache ${r.tokens.cacheRead} · ${path.relative(ROOT, r.file)}`);
+  console.log(`- ${r.key}: ${r.questions} questions · unsourced ${r.unsourced} · bad sources ${r.bad} · unverified quotes ${r.unverifiedQuotes} · wrong turns ${r.wrongTurns} · tokens in ${r.tokens.input} out ${r.tokens.output} cache ${r.tokens.cacheRead} · id ${r.id}`);
 }
