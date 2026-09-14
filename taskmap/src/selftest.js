@@ -4,7 +4,7 @@
 // test of the interviewer; that needs the real model.
 import assert from "node:assert/strict";
 import { Interview, MIN_TURNS, MAX_TURNS } from "./engine.js";
-import { renderMarkdown, unsourcedClaims, badSources, unverifiedQuotes } from "./render.js";
+import { renderMarkdown, unsourcedClaims, badSources, unverifiedQuotes, misattributedTurns, resolveTurn, sourceLine } from "./render.js";
 import { emptyCaseFile } from "./schema.js";
 
 const profile = { role: "Operations Manager", industry: "Logistics", location: "Manchester, UK" };
@@ -71,5 +71,21 @@ assert.equal(unsourcedClaims(iv.report).length, 0);
 assert.deepEqual(badSources(iv.report), ["nextSteps: invented slug made-up-slug"]);
 assert.equal(unverifiedQuotes(iv.report, iv.exchanges).length, 0, "all scripted quotes appear verbatim in answers");
 assert.ok(md.includes("→ AUTOMATE") && md.includes("INVENTED SLUG made-up-slug"));
-console.log(`selftest ok: ${iv.exchanges.length} questions, ${calls} model calls, floor enforced, early finish honoured above it, checks working.`);
+// Turn numbers come from the transcript, not the model. A live run showed the
+// model getting most of them wrong in one interview out of three, so a wrong
+// claimed turn must be corrected in the output and counted in the checks.
+{
+  const ex = iv.exchanges;
+  const realTurn = resolveTurn("mostly copy last week's format", ex);
+  assert.ok(realTurn >= 1, "a quote that exists must resolve to a turn");
+  const lying = { type: "quote", turn: 99, text: "mostly copy last week's format", id: "" };
+  assert.ok(sourceLine(lying, ex).includes(`(turn ${realTurn})`), "render must show the resolved turn, not the claimed one");
+  const invented = { type: "quote", turn: 1, text: "words nobody ever said here", id: "" };
+  assert.ok(sourceLine(invented, ex).includes("NOT FOUND IN ANY ANSWER"), "a quote in no answer must be flagged in the output");
+  const bent = structuredClone(iv.report);
+  bent.truth.sources[0].turn = 99;
+  assert.equal(misattributedTurns(bent, ex).length, 1, "a wrong claimed turn must be counted");
+  assert.equal(misattributedTurns(iv.report, ex).length, 0, "correct turns must not be flagged");
+}
+console.log(`selftest ok: ${iv.exchanges.length} questions, ${calls} model calls, floor enforced, early finish honoured above it, checks working, turn numbers resolved from the transcript.`);
 console.log(md.split("\n").slice(0, 12).join("\n") + "\n...");

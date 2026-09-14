@@ -6,7 +6,7 @@ import fs from "node:fs";
 import path from "node:path";
 import Anthropic from "@anthropic-ai/sdk";
 import { Interview, ROOT } from "./engine.js";
-import { renderMarkdown, unsourcedClaims, badSources, unverifiedQuotes } from "./render.js";
+import { renderMarkdown, unsourcedClaims, badSources, unverifiedQuotes, misattributedTurns } from "./render.js";
 
 const PERSONA_MODEL = process.env.TASKMAP_PERSONA_MODEL || "claude-sonnet-5";
 
@@ -63,6 +63,7 @@ async function run(p, client) {
   return {
     key: p.key, questions: interview.exchanges.length, file,
     unsourced: unsourcedClaims(r).length, bad: badSources(r).length, unverifiedQuotes: unverifiedQuotes(r, interview.exchanges).length,
+    wrongTurns: misattributedTurns(r, interview.exchanges).length,
     tokens: interview.usage,
   };
 }
@@ -79,5 +80,5 @@ for (const p of chosen) {
 console.log("\nSummary");
 for (const r of results) {
   if (r.error) { console.log(`- ${r.key}: FAILED ${r.error}`); continue; }
-  console.log(`- ${r.key}: ${r.questions} questions · unsourced ${r.unsourced} · bad sources ${r.bad} · unverified quotes ${r.unverifiedQuotes} · tokens in ${r.tokens.input} out ${r.tokens.output} cache ${r.tokens.cacheRead} · ${path.relative(ROOT, r.file)}`);
+  console.log(`- ${r.key}: ${r.questions} questions · unsourced ${r.unsourced} · bad sources ${r.bad} · unverified quotes ${r.unverifiedQuotes} · wrong turns ${r.wrongTurns} · tokens in ${r.tokens.input} out ${r.tokens.output} cache ${r.tokens.cacheRead} · ${path.relative(ROOT, r.file)}`);
 }

@@ -14,17 +14,31 @@ The interview engine and the WEF data slice, run in the terminal. No interface y
 
 ## Running it
 
-Needs `ANTHROPIC_API_KEY` in the environment (or an `ant auth login` profile).
+Needs an Anthropic API key. Either export `ANTHROPIC_API_KEY`, or put it in a
+`.env` file next to this README and let Node load it (`.env` is gitignored):
 
 ```
+echo 'ANTHROPIC_API_KEY=sk-ant-...' > .env
+
 npm install
-npm run check-data          # data sanity + verification checklist, no API
-node src/cli.js --dry       # prints the system prompt and output schema, no API
-npm run interview           # the real thing, in your terminal
-npm run simulate            # all three personas; or: node src/simulate.js ops-logistics
+npm run check-data                            # data sanity check, no API
+node src/cli.js --dry                         # system prompt + schemas, no API
+node --env-file=.env src/cli.js               # the interview, in your terminal
+node --env-file=.env src/simulate.js          # all three personas
+node --env-file=.env src/simulate.js hr-bp    # or just one
 ```
+
+Drop `--env-file=.env` if the key is already exported; the `npm run` scripts
+assume that case.
 
 Model defaults: interviewer `claude-opus-5` (medium effort on questions, high on the report), personas `claude-sonnet-5`. Override with `TASKMAP_MODEL` and `TASKMAP_PERSONA_MODEL`. Turn limits: `TASKMAP_MIN_TURNS` (5) and `TASKMAP_MAX_TURNS` (8).
+
+## What a run costs
+
+One full interview is about 18k input tokens and 10k output, with roughly 57k
+more served from the cached system prompt. On Opus 5 that is a few pence per
+person at the time of writing. The persona model in `simulate.js` adds a little
+on top and is not part of the real product.
 
 ## What to judge in a transcript
 

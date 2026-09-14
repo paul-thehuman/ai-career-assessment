@@ -12,16 +12,33 @@ for (const f of wef.economies.uk.findings) index.set(f.id, `WEF 2025, United Kin
 for (const c of wef.clusters) index.set(c.id, `WEF 2025 cluster: ${c.label} (${c.direction}). ${c.wefEvidence}`);
 const resourceIndex = new Map(resources.items.map((r) => [r.slug, r]));
 
-export function sourceLine(s) {
-  if (s.type === "quote") return `> "${s.text ?? ""}" (turn ${s.turn || "?"})`;
+const norm = (t) => (t ?? "").toLowerCase().replace(/\s+/g, " ").trim();
+
+// The model is not trusted with turn numbers: it gets them wrong often enough
+// to break the "open any claim and see where it came from" promise (one run in
+// three had most of them wrong). The quote text is already required to appear
+// verbatim, so the turn is derivable — find the answer that contains it.
+// Returns the turn number, or 0 when the quote appears in no answer.
+export function resolveTurn(text, exchanges) {
+  const needle = norm(text);
+  if (!needle) return 0;
+  const hit = exchanges.find((e) => norm(e.answer).includes(needle));
+  return hit ? hit.turn : 0;
+}
+
+export function sourceLine(s, exchanges = []) {
+  if (s.type === "quote") {
+    const turn = resolveTurn(s.text, exchanges);
+    return `> "${s.text ?? ""}" (turn ${turn || "NOT FOUND IN ANY ANSWER"})`;
+  }
   const known = index.get(s.id ?? "");
   return known ? `> ${known} [${s.id}]` : `> UNKNOWN WEF ID: ${s.id}`;
 }
 
-function claimBlock(text, sources) {
+function claimBlock(text, sources, exchanges) {
   const lines = [text];
   if (!sources || sources.length === 0) lines.push("> NO SOURCE GIVEN");
-  else for (const s of sources) lines.push(sourceLine(s));
+  else for (const s of sources) lines.push(sourceLine(s, exchanges));
   return lines.join("\n");
 }
 
@@ -58,6 +75,32 @@ export function badSources(report) {
 // Quotes must actually appear in the person's answers. This catches
 // paraphrase dressed up as a quote, which is the failure that would sink
 // the "show your working" promise.
+// Every (label, source) pair in a report, in render order.
+export function eachSource(report) {
+  const out = [];
+  const add = (label, sources) => { for (const s of sources ?? []) out.push([label, s]); };
+  add("headline", report.headline.sources);
+  report.week.forEach((w) => add(`week: ${w.task}`, w.sources));
+  add("exposure", report.exposure.sources);
+  report.skillGaps.forEach((g) => add(`skill gap: ${g.skill}`, g.sources));
+  add("truth", report.truth.sources);
+  for (const k of ["day30", "day60", "day90"]) report.plan[k].forEach((c) => add(k, c.sources));
+  return out;
+}
+
+// Turn numbers the model claimed that disagree with where the quote actually
+// appears. Rendering uses the resolved turn, so these are reported rather than
+// shown: they are a signal about the model, not a defect in the output.
+export function misattributedTurns(report, exchanges) {
+  const out = [];
+  for (const [label, s] of eachSource(report)) {
+    if (s.type !== "quote" || !s.text) continue;
+    const actual = resolveTurn(s.text, exchanges);
+    if (actual && actual !== s.turn) out.push(`${label}: claimed turn ${s.turn}, actually turn ${actual}`);
+  }
+  return out;
+}
+
 export function unverifiedQuotes(report, exchanges) {
   const answers = exchanges.map((e) => (e.answer ?? "").toLowerCase().replace(/\s+/g, " "));
   const all = answers.join(" \n ");
@@ -103,7 +146,7 @@ export function renderMarkdown({ profile, exchanges, caseFile, report, usage, me
   L.push("## Report");
   L.push("");
   L.push(`**${report.headline.text}**`);
-  for (const s of report.headline.sources) L.push(sourceLine(s));
+  for (const s of report.headline.sources) L.push(sourceLine(s, exchanges));
   L.push("");
   L.push("### Your week, task by task");
   L.push("");
@@ -111,24 +154,24 @@ export function renderMarkdown({ profile, exchanges, caseFile, report, usage, me
   for (const w of week) {
     L.push(`- \`${bar(w.shareOfWeek)}\` ${Math.round(w.shareOfWeek * 100)}% · **${w.task}** → ${w.verdict.toUpperCase()}`);
     L.push(`  ${w.reason}`);
-    for (const s of w.sources) L.push(`  ${sourceLine(s)}`);
+    for (const s of w.sources) L.push(`  ${sourceLine(s, exchanges)}`);
   }
   L.push("");
   L.push(`### Exposure: ${report.exposure.direction}`);
   L.push("");
-  L.push(claimBlock(report.exposure.summary, report.exposure.sources));
+  L.push(claimBlock(report.exposure.summary, report.exposure.sources, exchanges));
   L.push("");
   L.push("### Skill gaps");
   L.push("");
   for (const g of report.skillGaps) {
     L.push(`- **${g.skill}** · importance ${g.importance}/5 · confidence ${g.confidence}/5 · gap ${g.importance - g.confidence}`);
     L.push(`  ${g.cost}`);
-    for (const s of g.sources) L.push(`  ${sourceLine(s)}`);
+    for (const s of g.sources) L.push(`  ${sourceLine(s, exchanges)}`);
   }
   L.push("");
   L.push("### Truth you might be avoiding");
   L.push("");
-  L.push(claimBlock(report.truth.text, report.truth.sources));
+  L.push(claimBlock(report.truth.text, report.truth.sources, exchanges));
   L.push("");
   L.push("### The next ninety days");
   L.push("");
@@ -136,7 +179,7 @@ export function renderMarkdown({ profile, exchanges, caseFile, report, usage, me
     L.push(`**${label}**`);
     for (const c of report.plan[k]) {
       L.push(`- ${c.commitment}`);
-      for (const s of c.sources) L.push(`  ${sourceLine(s)}`);
+      for (const s of c.sources) L.push(`  ${sourceLine(s, exchanges)}`);
     }
     L.push("");
   }
@@ -154,9 +197,11 @@ export function renderMarkdown({ profile, exchanges, caseFile, report, usage, me
   L.push("## Checks");
   L.push("");
   const u = unsourcedClaims(report), b = badSources(report), q = unverifiedQuotes(report, exchanges);
+  const t = misattributedTurns(report, exchanges);
   L.push(`- Unsourced claims: ${u.length}${u.length ? "\n  - " + u.join("\n  - ") : ""}`);
   L.push(`- Bad sources: ${b.length}${b.length ? "\n  - " + b.join("\n  - ") : ""}`);
   L.push(`- Quotes not found verbatim in answers: ${q.length}${q.length ? "\n  - " + q.join("\n  - ") : ""}`);
+  L.push(`- Turn numbers the model got wrong (corrected in the output above): ${t.length}${t.length ? "\n  - " + t.join("\n  - ") : ""}`);
   const shareSum = caseFile?.tasks?.reduce((a, t) => a + (t.shareOfWeek ?? 0), 0) ?? 0;
   L.push(`- Task shares sum: ${shareSum.toFixed(2)}`);
   if (usage) L.push(`- Tokens: in ${usage.input}, out ${usage.output}, cache read ${usage.cacheRead}, cache write ${usage.cacheWrite}`);
