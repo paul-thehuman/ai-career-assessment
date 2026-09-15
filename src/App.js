@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 
 // Define the color palette outside the component for global access
 const colors = {
@@ -826,6 +827,7 @@ const App = () => {
   return (
     <div className="App">
       {renderPage()}
+      <Analytics />
 
       {/* User Profile Modal */}
       {showProfileModal && (
